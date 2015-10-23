@@ -14,3 +14,7 @@ Periodically:
 
 Please get in touch if you have some software to contribute to the collection.
 
+## Acknowledgments
+
+Special thanks to Aaron Brockbank for donating a significant portion of the contents of this archive.
+
