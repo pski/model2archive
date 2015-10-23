@@ -1,4 +1,5 @@
-DOSPLUS2
-DosPLUS II
+DOSPLUS II
 
-Also contains EDAS Model II Editor Assembler 4.0.1 from Galactic Software
+DPIIA00.IMD 	original release
+DPIIA01.IMD 	update .01
+DPIIA01D.IMD 	date patch update
