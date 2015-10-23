@@ -1,1 +1,3 @@
-Need to check if these are all the disks in this package.
+TRS-80 Model II
+26-4550
+Business Graphics Analysis Pak
