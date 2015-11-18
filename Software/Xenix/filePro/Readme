@@ -1,0 +1,5 @@
+filePro 16 Plus 
+Disks images created on a Tandy Model 6000 on 3/4/2005.
+Created using dd if=/dev/rfd0 of=<filename>.dd
+Double sided 8" disks
+
