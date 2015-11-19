@@ -5,4 +5,4 @@ GAMES2	A collection of 4 games including Star Trek, Taipan, Worms and the Scott 
 GAMES3	A collection of silly little fun utilities like X (Christmas Tree), Friends and Calendar.
 
 MRYGAMV1	Maryland Model II Games - Vol I (See PDF)
-
+MRYGAMV2	Maryland Model II Games - Vol II (See PDF)
