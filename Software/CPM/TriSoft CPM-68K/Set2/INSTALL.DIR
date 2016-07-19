@@ -1,0 +1,12 @@
+CDIR Ver. 1.44-Sep 14 1997, Copyright 1996, Sydex.  All rights reserved.
+Generic CP/M - SSSD 8" format
+
+Y0:AR68.68K        Y0:AS68.68K        Y0:AS68INIT        Y0:ASM.SUB         
+Y0:COPY.68K        Y0:CPM68.SYS       Y0:CPMLDR.SYS      Y0:ED.68K          
+Y0:FIND.68K        Y0:LDM68.COM       Y0:LO68.68K        Y0:LOGIN.COM       
+Y0:LOGIN.SUB       Y0:M68.COM         Y0:M68RSX.RSX      Y0:MOV68CP+.SUB    
+Y0:MOVCPM68.SUB    Y0:NEWDISK.68K     Y0:PIP.68K         Y0:RELOC.68K       
+Y0:SD.68K          Y0:SET.68K         Y0:STAT.68K        Y0:VT52ATON.COM    
+Y0:VT52PLUS.COM    Y0:VT52PNT.COM     Y0:Z80.68K         
+
+0K free on drive Y:

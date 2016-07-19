@@ -1,0 +1,19 @@
+CDIR Ver. 1.44-Sep 14 1997, Copyright 1996, Sydex.  All rights reserved.
+TRS-80 II/12/16 Pickles & Trout - DSHD 8" format
+
+Y0:AS68.68K        Y0:AS68INIT        Y0:AS68SYMB.DAT    Y0:ASM.SUB         
+Y0:ASSERT.H        Y0:ASSIGN.COM      Y0:BDOS.S          Y0:BIOS.O          
+Y0:BIOS3.SPR       Y0:BIOSEQU.O       Y0:BIOSEQU.S       Y0:C.SUB           
+Y0:C068.68K        Y0:C168.68K        Y0:CBIOS.S         Y0:CE.SUB          
+Y0:CLIB            Y0:CLINK.SUB       Y0:CLINKE.SUB      Y0:CLINKF.SUB      
+Y0:CP68.68K        Y0:CPM.H           Y0:CPM15000.MAP    Y0:CPM15000.SR     
+Y0:CPMLIB          Y0:CPMXMPL.REL     Y0:CRCK.COM        Y0:CTYPE.H         
+Y0:DDT10.68K       Y0:DDT68010.68K    Y0:ERGBIOS.S       Y0:ERRNO.H         
+Y0:FLOATDEM.C      Y0:FLOATDEM.O      Y0:INSTLCP6.SUB    Y0:LDRLIB          
+Y0:LIBE.A          Y0:LIBF.A          Y0:LOADR.O         Y0:MEMTST68.COM    
+Y0:NOBIOSHI.S      Y0:OPTION.H        Y0:OSATTR.H        Y0:OSIF.H          
+Y0:OSIFERR.H       Y0:OVHDLR.O        Y0:PORTAB.H        Y0:PUTBOOT.S       
+Y0:S.O             Y0:SETJMP.H        Y0:SGTTY.H         Y0:SIGNAL.H        
+Y0:SIZER.COM       Y0:STDIO.H         Y0:TIME.S          Y0:W.O             
+
+480K free on drive Y:
