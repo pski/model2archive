@@ -11,7 +11,7 @@ LS-DOS 6.3.1
 Level 1A
 Single Sided Pristine Master Disk
 
-LSD631SS.IMD
+LSD631DS.IMD
 LS-DOS 6.3.1
 Level 1A
 Double Sided Master Disk with Extras
