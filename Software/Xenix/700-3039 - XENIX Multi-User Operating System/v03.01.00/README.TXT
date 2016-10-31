@@ -1,4 +1,4 @@
-TRS-80 Model 16
+Tandy 6000
 700-3039
 XENIX Multi-User Operating System
 v03.01.00
