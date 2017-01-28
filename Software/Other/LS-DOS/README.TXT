@@ -21,3 +21,6 @@ LS-DOS 6.3.1
 Single Sided Working Disk
 Model II LS-DOS 6.3.1 drivers for the Hans02 Lo-Tech IDE adapter interface.  See http://ianmav.customer.netspace.net.au/Hans/.
 
+LSD631SS_Ver1D.hfe
+This is a date patched version of LS-DOS 6.3.1 from Gazza which allows dates up to the year 2079.
+See http://www.vcfed.org/forum/showthread.php?55834-Model-II-LSDOS-2012-and-Beyond

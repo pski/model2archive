@@ -11,4 +11,4 @@ Install
 Notes: 
 
 1. To install, type "install" after login as root.
-2. This has only been tested on XENIX 3.2
+2. This has only been tested on XENIX 3.2.  It does not work on XENIX 1.3.5.

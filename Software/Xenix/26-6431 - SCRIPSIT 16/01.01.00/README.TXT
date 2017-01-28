@@ -14,3 +14,6 @@ Notes:
 
 1. To install, type "install" after login as root.
 
+2. The installation program may ask you to insert diskette number 2 and press <ENTER>. Just press Enter with the same single diskette and it should install fine.
+
+
