@@ -40,4 +40,4 @@ Zoo210.tar - source code for zoo archiving program. Precursor to pkzip.
 zoo201.exe - self extracting archive of zoo program for dos.
 uue.zip - uuencoder and decoder for dos.
 rzsz.tar - tar archive of rzsz. May be easier to transfer.
-uudecode.c - source code for a standard C uudecoder program
+uudecode.c - source code for a simple C uudecoder program
