@@ -12,5 +12,5 @@ Clean installation of XENIX v03.02.00 on a Seagate ST4053
 
 DRMX320D.CFG
 DRMX320D.DSK
-Clean installation of XENIX v03.02.00 on a Seagate ST4053
-with Software Development System
+Upgraded installation of XENIX v03.02.00 on a Seagate ST4053
+with 3.0 Software Development System
