@@ -21,7 +21,7 @@ The Detailed Steps
 3. If your Xenix installation has uudecode, ie. Xenix 3, then goto Step 6
 4. Transfer uudecode.c to Xenix using ASCII protocol.
 5. cc -o uudecode uudecode.c
-6. uudecode kermit < kermit.uu
+6. uudecode kermit
 7. For Xenix 1, you are done.  Use kermit for your file transfers.
 8. kermit -r
 9. Send zoo.tar using kermit protocol (Xenix 3 only)
