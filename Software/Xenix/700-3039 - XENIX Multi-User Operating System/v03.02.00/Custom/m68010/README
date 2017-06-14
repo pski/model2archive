@@ -1,0 +1,41 @@
+	  MC68010 PROCESSOR SUPPORT FOR THE TANDY 16B/6000
+	      XENIX/68000  Version 3.2(42a)  9 Nov 1987
+
+
+    The kernel in this directory will allow owners of Tandy Model 16A,
+16B,  and  Tandy  6000  systems  to  use  an MC68010 microprocessor of
+identical speed in their CPU board in place of the standard 68000.
+
+    The kernel changes to allow this were confined to one area.   They
+have  been  heavily  used  on  the  systems  used  by the XENIX System
+Programmers with no  problems.   The  68010  is  completely  backwards
+compatible.  There are no application software changes required to run 
+on a 68010.
+
+    At this time, however, this version of /xenix  IS  NOT  officially
+supported  or  approved  of  by Tandy Corporation or Radio Shack.  The
+contents of this directory are provided "as is", witout  any  warranty
+of  any  kind.   It  is  entirely  the  responsibility  of the user to
+determine whether these files should be used with the  users'  system.
+The  user  shall  make any adjustments or corrections necessary to use
+these materials.  There is no commitment of any kind to provide  these
+materials in a supported or unsupported form in the future.
+
+    When reporting problems with your system, make  sure  the  problem
+persists  when  running  with  the  standard  release of the operating
+system.  (Yes, you have to put the 68000 back in to run  the  standard
+release)
+
+    Also, if you take your machine in for repair, BE SURE you  replace
+the  68010 with the standard 68000, or the repair folk may think it is
+bad and replace it with a 68000 (their diagnostics will not run  on  a
+68010, sorry).
+
+    This kernel was benchmarked against the regular kernel, and  while
+there  were  improvments  in  several  areas, they were slight.  It is
+doubtful that any significant performance improvement will be noticed.
+
+    For a list of the differences between the 68010 microprocessor and
+the  68000  consult  the  M68000 PROGRAMMER'S REFERENCE MANUAL, fourth
+edition.
+

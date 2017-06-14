@@ -1,0 +1,134 @@
+: Run me with "sh", not "csh"
+
+: echo="echo"
+set -e
+PATH=/bin:/etc:/usr/bin ; export PATH
+$echo cd /usr/lib/m6010
+
+if [ -f /z80ctl- -o -f /hdboot- -o -f /hdbootr- ]; then
+cat << 'CAT_EOF'
+This installation writes over the files "/z80ctl-", "/hdboot-", and
+"/hdbootr-" to save your old versions.  Do you wish to write over 
+these files?  If you have run this installation before, answer NO.  
+To abort the installation, press <BREAK>.
+CAT_EOF
+loop=:
+while $loop ; do
+	echo " "
+	echo -n "Do you indeed wish to write over these files? "
+	read ans
+	case "$ans" in
+		y|Y|yes|YES)	ans=: ; loop=false;;
+		n|N|no|NO)	ans=false ; loop=false;;
+		*)		echo "Please type Y or N";;
+	esac
+done
+fi
+
+if $ans ; then
+	echo "Saving old /z80ctl, /hdboot, and /hdbootr..."
+	for i in /z80ctl /hdboot /hdbootr ; do
+		$echo cp $i ${i}-
+	done
+fi
+
+$echo cp z80ctl hdboot hdbootr /
+
+echo "Installing new boot track..."
+reboot="`autoboot | grep Reboo`"
+reboot="`expr "$reboot" : 'Reboot option is \(.*\)'`"
+autoboot="`autoboot | grep Auto`"
+autoboot="`expr "$autoboot" : 'Auto-boot option is \(.*\)'`"
+arg="-n"
+if [ "$autoboot" = "ON" ]; then
+	arg="-a";
+fi
+if [ "$reboot" = "ON" ]; then
+	arg="${arg}r"
+fi
+set -x
+$echo autoboot $arg
+set +x
+
+echo "Adding 'trs16j' to /etc/termcap..."
+if grep "^rj\|trs16j\|" /etc/termcap > /dev/null 2>&1 ; then
+	echo "Your termcap already has 'trs16j' installed"
+else
+ed /etc/termcap << 'ED_EOF' > /dev/null 2>&1
+/^[0-9a-zA-Z]
+i
+rj|trs16j|trs-80 model 16 console plus 2000 keyboard:\
+        :kb=^H:kh=\177G:kl=\177K:kr=\177M:ku=\177H:kd=\177P:\
+        :l1=f1:l2=f2:l3=f3:l4=f4:l5=f5:l6=f6:l7=f7:l8=f8:\
+        :k1=\177;:k2=\177<:k3=\177=:k4=\177>:\
+        :k5=\177?:k6=\177@:k7=\177A:k8=\177B:\
+        :tc=trs16:
+.
+w
+q
+ED_EOF
+fi
+
+if grep "^trs16j[ 	]*console$" /etc/ttytype > /dev/null 2>&1 ; then
+: Okay.  trs16j already is set.
+else
+cat << 'CAT_EOF'
+
+If you are going to use your new keyboard right away, the console
+terminal type needs to be changed to 'trs16j' so that the arrow
+keys and function keys will work properly.  If you are not going
+to use it immediately, then do not change the terminal type.
+
+CAT_EOF
+loop=:
+while $loop ; do
+	echo -n "Do you wish to change the console terminal type to 'trs16j' right now? "
+	read ans
+	case "$ans" in
+		y|Y|yes|YES)	ans=: ; loop=false;;
+		n|N|no|NO)	ans=false ; loop=false;;
+		*)		echo "Please type Y or N";;
+	esac
+done
+if $ans ; then
+echo "Changing console terminal type to trs16j..."
+ed /etc/ttytype << 'ED_EOF' > /dev/null 2>&1
+/console$
+s,trs16,trs16j,
+w
+q
+ED_EOF
+ed /.profile << 'ED_EOF' > /dev/null 2>&1
+/TERM=
+s,trs16[ 	],trs16j	,
+w
+q
+ED_EOF
+
+else
+
+cat << 'CAT_EOF'
+Very well.  The terminal type for the console will remain unchanged.
+Before you reboot next (when you are ready to use your new keyboard),
+you will need to change the line in /etc/ttytype which reads:
+
+	trs16 console
+to:
+	trs16j console
+
+and change the line in /.profile which reads:
+
+
+		TERM=trs16		; export TERM
+to:
+		TERM=trs16j		; export TERM
+
+so that your arrow keys will work properly.  The second change sets your 
+terminal type in system maintenance mode.
+CAT_EOF
+
+fi
+fi
+
+echo "Installation completed"
+exit 0
