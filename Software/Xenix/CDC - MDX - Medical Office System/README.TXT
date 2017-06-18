@@ -18,4 +18,6 @@ Notes:
 
 1. First you need to make a user named “mdx” using “mkuser” as root.
 2. To install, type "install" after login as root.
-3. Note: the installation is lengthy.
+3. Note: the installation takes about an hour.
+4. Login as mdx user and the program will autostart.
+5. Currently don't know how to get past the screen that asks for Name and Password.
