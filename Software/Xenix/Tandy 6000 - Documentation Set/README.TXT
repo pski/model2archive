@@ -7,3 +7,10 @@ The XENIX Development System
 
 Programmer’s Reference
 Tandy_6000-Xenix_Programmers_Reference.pdf
+
+
+The XENIX Text Processing System
+
+Text Processing Guide
+Tandy_6000-Xenix_Text_Processing_Guide.pdf
+
