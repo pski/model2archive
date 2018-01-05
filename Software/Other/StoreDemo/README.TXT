@@ -5,6 +5,7 @@ Store Demonstration Disk
 M2DEMO.IMD
 Single-Sided
 TRSDOS 2.0a
+50Hz
 
 This is a Radio Shack store demonstration disk for the Model II.  It has demonstration versions of:
 
@@ -13,6 +14,6 @@ This is a Radio Shack store demonstration disk for the Model II.  It has demonst
 	Profile II
 	Scripsit II
 
-Unfortunately, this version currently has an issue which causes the screen to roll horizontal continuously
+This version has been patched for 50Hz machines.  We await someone with a 50Hz machine to undo the 50Hz patch and provide the image for us to upload.
 
 

@@ -16,7 +16,8 @@ LS-DOS 6.3.1
 Level 1A
 Double Sided Master Disk with Extras
 
+HANS01.IMD
 HANS02.IMD
 LS-DOS 6.3.1
 Single Sided Working Disk
-Model II LS-DOS 6.3.1 drivers for the Hans02 Lo-Tech IDE adapter interface.  See http://ianmav.customer.netspace.net.au/Hans/.
+Model II LS-DOS 6.3.1 drivers for the Hans01/02 Lo-Tech IDE adapter interface.  See http://ianmav.customer.netspace.net.au/Hans/.
