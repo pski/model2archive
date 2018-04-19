@@ -1,0 +1,9 @@
+if [ $# -ne 1 ]
+then echo 'syntax: swap fast or swap slow' ; exit
+fi
+if [ $1 = fast ]
+then rm /xenix ; ln /xenix.f /xenix ; rm /dev/swap ; ln /dev/swap.f /dev/swap
+elif [ $1 = slow ]
+then rm /xenix ; ln /xenix.s /xenix ; rm /dev/swap ; ln /dev/swap.s /dev/swap
+else echo 'syntax: swap fast or swap slow'
+fi

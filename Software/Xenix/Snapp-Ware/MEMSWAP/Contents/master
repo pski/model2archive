@@ -1,0 +1,67 @@
+**
+***  TRS-XENIX 3.0  device master configuration file
+**
+*
+* The following devices are those that can be specified in the system
+* description file.  The name specified must agree with the name shown.
+* name vsiz msk typ  hndlr na bmaj cmaj #  na  vec1  vec2  vec3  vec4
+*  1    2    3    4      5  6   7   8   9  10   11    12    13    14
+disk    1    037 0234	dk  0   1   5   1  -1    5     0     0     0
+serial  1   0637 0324	ser 0  -1   0   1  -1    6     0     0     0
+dialer	1    037 0304	acu 0  -1   7	1  -1	 0     0     0	   0
+lp	    1    033 0304	lp  0  -1   6   1  -1    6     0     0     0
+graphic	1    037 0304	gr  0  -1   8	1  -1	 6     0     0	   0
+ptymas	1    037 0304	ptc 0  -1   9   1  -1    0     0     0     0
+ptyslv	1   0437 0304	pts 0  -1  10   1  -1    0     0     0     0
+mswap   1    037 0234   ms  0   2  12   1  -1    0     0     0     0
+*
+* The following devices must not be specified in the system description
+* file.  They are here to supply information to the config program.
+*
+memory  0   06  0324    mm  0  -1   3   1   0    0     0     0     0
+tty     0   027 0324    sy  0  -1   2   1   0    0     0     0     0
+*
+* The clock interrupt is hardwired in the assembly code, and not set
+* up by config.
+*
+clock   0   000 0321    .   0  -1  -1   1   0    0     0     0     0
+$$$
+*
+* The following is the line discipline table
+*
+tty     ttopen  ttclose ttread  ttwrite ttioctl ttin    ttout   nulldev
+$$$$$
+*
+* The following entries form the alias table.
+*
+dk	disk
+console	serial
+printer	lp
+acu	dialer
+screen	graphic
+ms mswap
+$$$
+*
+* The following entries form the tunable parameter table.
+*
+sabufs	NSABUF	 62
+* NHBUF should be set to the next power of 2 ABOVE sabufs
+hashbuf	NHBUF	 64
+* The Model 16 port does use mapped-out buffers
+buffers NBUF     0
+inodes  NINODE  144
+files   NFILE   144
+mounts  NMOUNT    8
+swapmap SMAPSIZ  (NPROC/2)
+coremap CMAPSIZ  (NPROC/2)
+calls   NCALL    25
+procs   NPROC    86
+texts   NTEXT    57
+clists  NCLIST  149
+locks   NFLOCKS 200
+maxproc MAXUPRC  20
+hz	HZ	 30
+cmask   CMASK   000
+maxprocmem MAXMEM   256
+timezone   TIMEZONE (8*60)
+daylight   DSTFLAG  1

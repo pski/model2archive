@@ -1,0 +1,40 @@
+HOW TO SET THE SWITCHES ON YOUR MEMORY BOARDS:  (VERY IMPORTANT)
+
+There are only a limited number of possibile combinations, so rather than
+go into the theory, I will simply enumerate each of them and tell you EXACTLY
+how to set the switches.
+
+Sometimes reading the switches is confusing, and occasionally a user has
+set ALL the switches backwards.  This is guaranteed not to work.  Here's a
+hint:  Your OLD board had switch 2 ONLY set on.  We normally ship new boards
+set the same way.  If you read the switches as 2 off, all others on, simply
+turn your eyes upside down and proceed.
+
+One 2 meg board ONLY (not recommended - gives you only 1 meg swap)
+	Set the board for switch 2 only.
+
+One 1 meg board, one 2 meg board:
+	Set the 2 meg board for switch 2 only.
+	Set the 1 meg board for switches 2 & 8.
+
+Two 2 meg boards:
+	Set one of the boards 2 only.
+	Set the other board 2 & 8.
+
+Two 2 meg boards plus one 1 meg board:
+	Set one of the 2 meg boards for 2 only.
+	Set the other 2 meg board for 2 & 8.
+	Set the 1 meg board for switches 2 & 6.
+
+Three 2 meg boards:
+	Set one of the boards 2 only.
+	Set another board 2 & 8.
+	Set the third board 2 & 6.
+
+Three 2 meg boards plus one 1 meg board:
+	Set one of the 2 meg boards 2 only.
+	Set another 2 meg board 2 & 8.
+	Set the third 2 meg board 2 & 6.
+	Set the 1 meg board 2, 6, & 8.
+
+

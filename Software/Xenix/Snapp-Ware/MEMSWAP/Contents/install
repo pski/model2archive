@@ -1,0 +1,90 @@
+
+if [ -f /bin/ld ]
+then :
+else
+	echo "You must have the SOFTWARE DEVELOPMENT TOOLS of the DEVELOPMENT SYSTEM KIT installed before proceeding."
+	exit
+fi
+
+if [ -d /usr/sys/conf ]
+then :
+else
+	echo "You must have the CONFIGURATION KIT installed before proceeding."
+	exit
+fi
+
+if [ -f /xenix.s ]
+then :
+else
+	mv /xenix /xenix.s
+fi
+
+if [ -f /usr/sys/conf/master.std ]
+then :
+else
+	mv /usr/sys/conf/master /usr/sys/conf/master.std
+fi
+
+echo 
+more /mnt/switches.doc
+echo "Press ENTER to continue."
+read akey
+echo 
+
+more /mnt/power.supply
+echo "Press ENTER to continue."
+read akey
+echo 
+
+echo "copying files........."
+
+cd /usr/sys/conf
+
+cp /mnt/master .
+cp /mnt/conf .
+cp /mnt/makefile .
+cp /mnt/swap.o .
+cp /mnt/swap.p .
+cp /mnt/patch .
+
+make
+
+mv xenix /xenix
+
+ln /xenix /xenix.f
+
+if [ -b /dev/swap.s ]
+then :
+else
+	mv /dev/swap /dev/swap.s
+fi
+
+/etc/mknod /dev/swap b 2 0
+
+cp /mnt/swap /etc/swap
+chmod 700 /etc/swap
+chown root /etc/swap
+if [ -f /bin/find ]
+	then
+		echo turning off sticky bits....
+		find / -type f -perm -1000 -exec chmod -t {} \;
+fi
+echo 'Press ENTER to continue.'
+read akey
+echo 
+
+ln /dev/swap /dev/swap.f
+
+echo "03.01.00 MEMSWAP   Bob Snapp's faster swapper    `date`" >> /etc/logbook
+echo 'The fast memory swapper has been installed.'
+echo 'To change the swapper, enter one of the commands:'
+echo 'swap fast'
+echo 'or'
+echo 'swap slow'
+echo 'After changing the swapper, you MUST shut down and reboot.'
+echo 'Press ENTER to continue.'
+read akey
+echo 
+echo 'Please reboot after the system shuts itself down.'
+sleep 1
+sync;sync;sync;/etc/haltsys

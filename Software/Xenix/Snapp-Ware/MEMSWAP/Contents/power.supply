@@ -1,0 +1,131 @@
+ABOUT YOUR FLAKEY POWER SUPPLY:
+
+The power supply in your machine is a fairly well designed switching unit,
+and can maintain a nearly constant output in the face of rather large 
+variations in the input AC voltage.  UNFORTUNATELY, its design does NOT
+allow for much in the way of compensation for significant variations in 
+the OUTPUT current drain.
+
+This VERY SAME supply is used to drive a simple floppy only Model 12, at
+the low end, all the way up to a Tandy 6000 with a fully stuffed card cage,
+which at this time might include four megabytes of memory and nine users,
+at the high end.
+
+Sadly, Tandy has been dragging its feet about this problem, and MOST of the
+machines coming from the factory are GROSSLY misadjusted for even a simple
+three user xenix system, LET ALONE A FULL BLOWN SYSTEM.
+
+We typically see measurements of 4.89 volts on the +5 volt supply with just
+a hard disk interface, 68000 cpu, and a single memory card.  THIS JUST ISN'T
+ENOUGH FOR RELIABLE OPERATION!  We have seen any number of 'weird' problems
+disappear simply with an appropriate adjustment to the power supply.
+
+EVERY TIME YOU ADD A CARD TO THE CAGE, THE VOLTAGE DROPS, AND SHOULD BE
+CHECKED, AND PROBABLY RE-ADJUSTED.
+
+Tandy's own internal tech memos suggest that a MINIMUM of 5.05 and a MAXIMUM
+of 5.17 are appropriate.  Values below that range often produce flakey 
+memory failures, values above that range will tend to burn out IC's, normally
+starting with the logic board on the floppy drive.
+
+Another design flaw which hinders reliable operation is the original sloppy
+air circulation design.  If your 16b, or upgraded 12 does not have the
+'turbo' fan on the back, GET THAT DONE NOW, even before you think about
+the power supply.  Something else that happens when the big fan is added
+is that the DC power cabling is replaced with heavier guage wire, which
+helps reduce the voltage drop to the top of the cage.
+
+HOW TO CHECK IT:
+If you are adding new boards, put them in first, or you will be wasting your
+time.  Get a DIGITAL voltmeter.  An analog voltmeter simply WON'T DO, as they
+are rated at +/- 3% accuracy, and that much variance is more than enough to
+blow this whole operation.  If you don't have ready access to a digital
+voltmeter, we will rent (to those who purchase boards from us) you one 
+for thirty days for just ONE CENT.
+
+Remove the square white back panel (which in upgraded 12's, and most 16b's,
+should have the big fan mounted on it) by removing the two screws at the 
+bottom.  Most machines have 'thumbscrews' here, and no tools are required.
+A few will require a screwdriver for this.
+
+Locate the 68000 cpu card, and the associated memory card(s).  Normally the
+68000 cpu is in the very top slot in the cage.  The memory card(s) will 
+always be directly below the cpu card, and attached thereto with a pair of
+signal cables, one 50 pin and one 34 pin.
+
+Select one of the bypass capacitors at the outside edge of the memory card.
+For most memory boards, C5 is easily accessible while the machine is running.
+Place one of the probes from the voltmeter on each side of the selected
+capacitor, and observe the reading.    
+
+O.K., IT'S LOW!  WHAT DO I DO NOW?
+
+Good question.  For the faint of heart, take the machine to the shack, and
+pay their service people to adjust it for you.  IF YOU DO THIS, TELL THEM
+EXACTLY WHAT YOU WANT, AND TAKE YOUR METER WITH YOU WHEN YOU GO TO PICK THE
+MACHINE UP.  DON'T ACCEPT THE MACHINE BACK UNTIL YOU SEE WITH YOUR OWN EYES
+THAT IT HAS BEEN CORRECTED.
+
+I'M A LITTLE HANDY, AND WOULD LIKE TO FIX IT MYSELF, PLEASE.
+
+No big deal.  Run to your local shack and pick up one each 271-1341 and 
+271-1342 resistor packages (33k and 47k, 1/4 watt, 5 per pack, 39 cents
+per pack).  Find your soldering iron, a little solder, and a #2 phillips
+screwdriver.
+
+Flip the machine on it's side and remove a total of ten screws holding the
+top on.  Three in the front, three in the rear, and two on each side.
+DISCONNECT THE CABLES GOING TO THE VIDEO CONTROLLER BOARD IN THE CARD CAGE.
+THEY AREN'T LONG ENOUGH, AND YOU ARE LIABLE TO BREAK SOMETHING BY STRECHING
+THEM.  Remove top cover, back first.  It will seem as if you have to force
+it a little, actualy bending the plastic of the cover slightly in the rear
+to get clearance.  Lay the cover on it's left side on the left side of the
+computer.
+
+Locate the power supply.  It's right about in the center of the machine, 
+just forward of the card cage.  There should be a small muffin fan mounted
+on a metal plate right on top of the power supply.  IF THE FAN ISN'T THERE,
+YOUR 'TURBO' KIT WAS EITHER NOT INSTALLED OR INCORRECTLY INSTALLED.  GET
+THAT TAKEN CARE OF RIGHT AWAY.  On the left hand edge of the supply, about
+midway front / back, locate resistors R43, R42, R40, and R41, in that order
+from the left side.  R41 may be absent.  Don't worry if it is.
+
+If the previously measured value was BELOW 5.04, and R41 is still installed,
+start by removing R41, and measure again.  You can re-attach the cables
+to the video board at this time.
+
+R40, R42, and R43 are all in parallel, and we will be adding further resistors
+in parallel with them to bring up the voltage to the desired level.  When 
+adding resistors, you may put the additional resistors across ANY of these
+three, depending solely upon which spot seems the easiest.
+
+Using the resistors I suggested you purchase, by putting two in series, you
+can produce values of 66k, 80k, and 94k.  With the original values of 33k
+and 47k, you now have five choices to fiddle with.  HIGH VALUES PRODUCE 
+SMALL INCREASES, LOW VALUES PRODUCE LARGE INCREASES.  Try starting with
+a 47k and see where that gets you, then fiddle from there.  You may need
+two to get the voltage where you want it.
+
+O.K.  NOW THAT I'M GOING TO ALL THIS TROUBLE WHAT DO YOU SPECIFICALLY
+RECOMMEND THAT I TRY FOR?
+
+Well, first make durned sure that all the cards you plan to be using are
+currently in the cage, else all is for naught.  I suggest a little forward
+planning for future expansion in the hopes that if you later add another board
+that you might not have to go through this B.S. again (I wasn't referring to
+myself in that sentence).   So, my recommendations are:
+If you currently have NO    empty slots in the card cage -- 5.10-5.12
+If you currently have ONE   empty slot  in the card cage -- 5.11-5.13
+If you currently have TWO   empty slots in the card cage -- 5.12-5.14
+If you currently have THREE empty slots in the card cage -- 5.13-5.15
+
+Don't forget to disconnect the cables from the video board in the cage
+before re-assembling the system.
+
+Don't forget to send my voltmeter back after everything is up and running.
+
+Cheers, and happy xenixing....
+
+Bob
+
+

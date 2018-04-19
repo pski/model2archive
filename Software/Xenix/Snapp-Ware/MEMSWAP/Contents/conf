@@ -1,0 +1,14 @@
+**
+***   Standard distribution large memory XENIX configuration file
+**
+disk    1
+console 1
+printer	1
+screen	1
+*** note that the minor number 0377 causes the kernel to autoconfigure
+root    disk 0377
+pipe    disk 0377
+swap    disk 0377 0 8000
+*** tunables
+timezone (5*60)
+maxprocmem 384
