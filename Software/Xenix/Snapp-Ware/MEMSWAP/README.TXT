@@ -10,9 +10,9 @@ MEMSWAP.JPG - A picture of the original software disk
 
 Contents - The contents of the installation disk
 
-Requires 700-3039 - XENIX Multi-User Operating System v3.1.0.
+Requires 700-3039 - XENIX Multi-User Operating System v3.1.0
 Requires 700-3033 - XENIX Configuration Kit v3.1.0
 Requires 26-6402 - XENIX Development System
 
 
-To install, insert the disk and type INSTALL as root.
+To install, insert the disk and type 'install' as root.
