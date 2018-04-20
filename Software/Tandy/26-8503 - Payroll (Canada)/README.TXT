@@ -2,10 +2,10 @@ TRS-80 Model II
 26-8503
 Payroll (Canada)
 
-26-8503A.IMD	
+v1.0/26-8503.IMD	
 Payroll v1.0
 
-26-8503B.IMD	
+v1.1/26-8503.IMD	
 Payroll v1.1
 
 
