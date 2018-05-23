@@ -16,5 +16,8 @@ Please get in touch if you have some software to contribute to the collection.
 
 ## Acknowledgments
 
-Special thanks to Aaron Brockbank for donating a significant portion of the contents of this archive.
+Thanks to the many donors of documents and software who have helped to build this archive.
+
+Special thanks to Aaron Brockbank for donating a significant portion of the initial contents of this archive.
+
 
