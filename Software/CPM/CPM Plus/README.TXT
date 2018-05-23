@@ -1,19 +1,16 @@
-TRS-80 Model II/12/16
+TRS-80 Model II/12
 CP/M Plus
-Version 01.00.00
+26-4740
 
 
-CPMPLUS.IMD
-Single-Sided
-System Disk
+This is the Radio Shack release of CP/M Plus (aka CP/M 3.0)
 
-This looks to be almost a pristine copy of CP/M Plus for the Model II, except for a few issues:
+This was released as a 4 disk set.  We have 2 different versions with incomplete sets.  However, both versions have the critical unbanked system disk which allows you to use CP/M with 64K.
 
-1. PROFILE.SUB set up for a dual disk
-2. ED.COM is missing
-3. Includes MBASIC.COM
-4. There may be other issues
 
+Digital_Research_CPM_Plus_Command_Summary.pdf
+
+List of CP/M Plus commands from the Digital Research official documentation.
 
 
 CPM_Plus_TRS-80_Model_4_Reference_Manual.pdf
