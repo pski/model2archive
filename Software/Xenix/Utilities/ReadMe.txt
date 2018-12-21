@@ -18,6 +18,9 @@ The Detailed Steps
 1. UUENCODE kermit on your PC/Mac
 	e.g Mac: uuencode kermit kermit > kermit.uu
 2. Transfer kermit.uu to Xenix using ASCII protocol
+        a. cat > kermit.uu
+	b. send file from terminal as text/ascii
+	c. ctrl-d
 3. If your Xenix installation has uudecode, ie. Xenix 3, then goto Step 6
 4. Transfer uudecode.c to Xenix using ASCII protocol.
 5. cc -o uudecode uudecode.c
