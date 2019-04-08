@@ -21,3 +21,9 @@ HANS02.IMD
 LS-DOS 6.3.1
 Single Sided Working Disk
 Model II LS-DOS 6.3.1 drivers for the Hans01/02 Lo-Tech IDE adapter interface.  See http://ianmav.customer.netspace.net.au/Hans/.
+
+LSD631EX.IMD
+This is the LSD631SS.IMD from above with these additional utilities added:
+  XMODEM/CMD: an XMODEM program for transferring files via the serial port
+  DB/CMD: v0.7 of TRS-Box (see http://pski.net/trs-box-serial)
+  XMODEM/BAS: an XMODEM generation script that creates the XMODEM/CMD
