@@ -8,6 +8,38 @@ A suite of tests by Tandy.  Will autoboot.  Run MAIN to get back into test suite
 Contains many of the tests found on DIAGNOST.IMD some of which are updated versions.
 This should be considered the primary diagnostics disk for the Model II/12/16/16B/6000
 
+-----------------------------------------------------------------------------------
+
+AXX-2037.IMD
+TRS-80 Model II TRSDOS
+Version 2.0d, January 1, 1982
+
+This appears to be a copy of the official Tandy diagnostics suite.  Unknown if it is pristine.
+
+-----------------------------------------------------------------------------------
+
+AXX-2037-V3.IMD
+TRS-80 8" Systems Diagnostics Diskette
+Ver 3.0, June 10, 1983
+
+This appears to be a copy of the official Tandy diagnostics suite.  Unknown if it is pristine.
+
+-----------------------------------------------------------------------------------
+
+TD12DIAG1.IMD
+Model II TRSDOS 1.2
+
+This is an early diagnostics suite for Model II TRSDOS 1.2.
+
+-----------------------------------------------------------------------------------
+
+TD12DIAG2.IMD
+Model II TRSDOS 1.2
+
+This appears to be the same diagnostics suite in TD12DIAG1 but with additional utilities, 
+including a floppy disk drive exerciser program.
+
+-----------------------------------------------------------------------------------
 
 DIAGNOST.IMD
 Model II TRSDOS 2.0b
