@@ -1,22 +1,51 @@
 TRS8TEST.IMD
 Model II TRSDOS 2.0d
 
+AXX-2037
 Model II/12/16 Diagnostics
 12/03/86
 
-A suite of tests by Tandy.  Will autoboot.  Run MAIN to get back into test suite from DOS.  
+The official Tandy Radio Shack diagnostics suite for the Model II/12/16.    
+This is a working disk and will autoboot to the diagnostics menu.  Run MAIN to get back into test suite from DOS.  
 Contains many of the tests found on DIAGNOST.IMD some of which are updated versions.
-This should be considered the primary diagnostics disk for the Model II/12/16/16B/6000
+This is the latest AXX-2037 image available so should be considered the primary diagnostics disk for the Model II/12/16/16B/6000.
 
 -----------------------------------------------------------------------------------
 
-AXX-2037.IMD
-TRS-80 Model II TRSDOS
-Version 2.0d, January 1, 1982
+AXX-2037-051286
 
-This appears to be a copy of the official Tandy diagnostics suite.  Unknown if it is pristine.
+AXX-2037-051286-MASTER.IMD
+AXX-2037-051286-WORK.IMD
+TRS-80 Model II TRSDOS 2.0d
+
+AXX-2037
+Model II/12/16 Diagnostics
+05/12/1986
+
+The official Tandy Radio Shack diagnostics suite for the Model II/12/16.  
+MASTER is the master copy that forces you to create a working disk.  
+WORK is a fresh working copy ready for use.
 
 -----------------------------------------------------------------------------------
+
+AXX-2037-04161984
+
+AXX-2037-04161984-MASTER.IMD
+AXX-2037-04161984-WORK.IMD
+Model II TRSDOS 2.0d
+
+AXX-2037
+Model II/12/16 Diagnostics
+04/16/1984
+
+The official Tandy Radio Shack diagnostics suite for the Model II/12/16.  
+MASTER is the master copy that forces you to create a working disk.  
+WORK is a fresh working copy ready for use.
+Run MAIN to start.
+
+-----------------------------------------------------------------------------------
+
+AXX-2037-V3
 
 AXX-2037-V3.IMD
 TRS-80 8" Systems Diagnostics Diskette
@@ -26,12 +55,16 @@ This appears to be a copy of the official Tandy diagnostics suite.  Unknown if i
 
 -----------------------------------------------------------------------------------
 
+TD12DIAG1
+
 TD12DIAG1.IMD
 Model II TRSDOS 1.2
 
 This is an early diagnostics suite for Model II TRSDOS 1.2.
 
 -----------------------------------------------------------------------------------
+
+TD12DIAG2
 
 TD12DIAG2.IMD
 Model II TRSDOS 1.2
