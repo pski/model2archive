@@ -1,5 +1,5 @@
 Tandy 6000
-700-3039
+700-3031
 XENIX Multi-User Operating System
 v03.01.00
 Single-Sided
