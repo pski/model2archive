@@ -1,9 +1,10 @@
 TRS-80 Model 16
 700-2055 
 Accounts Payable
-Model 16 Upgrade from v2.0.0 to v3.0.0
 v03.00.00
 TRS-XENIX
+Model 16 Upgrade from v2.0.0 to v3.0.0
+
 
 700-2055.IMD
 Accounts Payable
