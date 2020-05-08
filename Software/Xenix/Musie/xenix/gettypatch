@@ -1,0 +1,8 @@
+Let's say you are running a bbs.  You want your first time users to know
+to login as guest.  How do you do it?  Below is the answer:
+
+To change the login message:
+
+Patch bytes 2004-201d in /etc/getty
+
+Steve Scrivano(sscrivan@nyx.cs.du.edu)

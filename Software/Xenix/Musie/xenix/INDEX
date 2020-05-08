@@ -1,0 +1,280 @@
+TANDY 16/6000 XENIX ARCHIVE
+
+Index of files at limpia.kjsl.com in /tandy/xenix for your
+convenience.  This index is updated periodically and supercedes all other
+indexes that may be have been distributed previously.  This index is
+maintained by Steve Scrivano (sscrivan@nyx.cs.du.edu).  Most files
+listed here will run on both Xenix 3.0 and 3.2 with certain memory
+requirements (like ispell which needs about 700k of memory for a process
+unless you reduce the dictionary size) or compression utilities that
+need 512k.  Use /etc/cfg on your system to increase your memory available.
+
+You can assume for the most part, that if you get the executable
+versions here, all of the documentation is also enclosed with it.
+In many cases, the tar files will even unpack into the correct directories
+making an easy installation (so be careful so you don't overwrite
+your own files).  Source code here is "makefile" ready so all you have to
+do is type "make" or "make something" (unless of course you have to 
+edit a configuration file for your own system like smail).  Be warned that
+some of the sources placed here will not compile on a stock "C" library
+xenix system since many were compiled on my own souped up system containing
+100's of added functions.  You will find the executables here anyway for
+those that can't compile the source code.  Some time in the near future,
+I will upload my upgraded C libraries so others will be able to compile
+just about anything on the net so keep your eyes open at this site!
+
+For 3.0 users trying to compile C code with long identifiers or 3.2
+Xenix users trying to decide when to use the "-+" "cc" option, 
+get the following files: clash.exe.tgz, hash8.shar.gz, and shortc.tar.gz
+
+"get" gunzip.exe first, so you can uncompress the files on you own machine.
+
+If you are going to transfer uuencoded files, get uu.exe.tar.gz.  This is
+by far the best package I have ever seen.  It is compatible with all other
+versions of uuencode/uudecode and at the same time, has it's own file
+splitting and reassembly feature, ignores mail headers, uses the alphabet
+consecutively at the end of every line to make "manual" assembly of split
+files much more accurate, and you DON'T have to do this to prepare
+a binary file:   uuencode file file > otherfile  just "uue file" will do.
+Those who are receiving split files created with "uue" that don't have this
+program on the other end, need only delete the table, headings and footings
+of each part before reassembly and before using the old "uudecode".
+
+Code Legend -- X = executable (package contains executables)
+               S = source     (package contains source code)
+               T = text       (package contains a text file)
+
+File                   Description                                     Code
+-------------------------------------------------------------------------------
+access.tar.gz     -    limit system usage by user/tty/time/shell       SX
+anagram.shr.gz    -    search dictionary for anagrams                  S
+anagrm.exe.tgz    -    search dictionary for anagrams                   X
+appledm.exe.gz    -    apple dot matrix printer font menu               X
+areacd.exe.gz     -    look up a region by areacode                     X
+areacode.c.gz     -    look up a region by areacode                    S
+ascgif.tar.gz     -    gif to ascii picture viewer                     SX
+basecon.exe.gz    -    Hex/decimal/binary converter                     X
+blackjack.tgz     -    a curses based blackjack game                   SX
+booz.tar.gz       -    barebones zoo extractor/lister                  SX 
+calc.exe.tgz      -    a command line calculator                        X
+calc.tar.gz       -    a command line calculator                       S
+calen.exe.tgz     -    Calendar program - one month per page            X
+calen.shar.gz     -    Calendar program - one month per page           S
+caps.exe.tgz      -    capitalize/uncap. the first words of sentences   X
+caps.lex.tgz      -    capitalize/uncap. the first words of sentences  S
+cchk.tar.gz       -    C program checker                               SX
+ccstrip.tar.gz    -    control character strip                         S 
+ccstrp.exe.tgz    -    control character strip                          X
+cdiff-v2.tgz      -    Public Domain cdiff (context diff) program      SX
+chess.tar.gz      -    Game of chess by John Stanback                  SX
+chown.tar.gz      -    recursively change ownership and group          SX
+chsh.exe.tgz      -    change login shell                               X
+chsh.shar.gz      -    change login shell                              S
+clash.exe.tgz     -    find indistinguishable or long identifiers       X
+clc.tar.gz        -    C line code calculator                          SX
+clear.exe.tgz     -    clear the terminal screen                        X
+clock.tar.gz      -    digital clock display                           SX
+cnews.exe.tgz     -    cnews internet news                              X
+cnewspart2.tgz    -    cnews internet news part 2                       X
+colm.tar.gz       -    columnate lines of text                         SX
+comp.exe.tgz      -    compression version 4.0                          X
+compress.tgz      -    compression version 4.0                         S
+conf1.0.tar.gz    -    conference with other users 1.0 version         S
+conf2.0.tar.gz    -    conference with other users 2.0 version         S
+conf20.exe.tgz    -    conference with other users 2.0 version          X
+config-hdr.tgz    -    Ansi standard float.h & limits.h for Xenix 3.2    T
+copt.tar.gz       -    libcset library                                 S
+count.tar.gz      -    count numbers from a start to a stop point      SX
+craps.exe.tgz     -    play the game of craps                           X
+craps.shar.gz     -    play the game of craps                          S
+cribbage.tgz      -    the game of cribbage                            SX
+ctrl.exe.tgz      -    control/esc/unesc/bell/beep character generator  X
+ctrl.shar.gz      -    control/esc/unesc/bell/beep character generator S
+cursiv.exe.tgz    -    print text in cursive script                     X
+custfont.tgz      _    additions to the DMP2100p custom font package   S
+cut-paste.tgz     -    cut & paste utilities for non-Dev. Sys. owners  SX
+cututils.tgz      -    vertical & horizontal cut shell utilities        X
+cxref.exe.tgz     -    cross reference C source files                   X
+cxref.tar.gz      -    cross reference C source files                  S
+deansi.tar.gz     -    de-ansify source code                           SX
+decodeq.sha.gz    -    decodeqwk packet reader for FIDONET qwk packets SX
+diskcpy.exe.gz    -    nice diskcopy shell utility for copying disks    X
+disp.exe.tgz      -    watch a command run in a curses window           X
+disp.shar.gz      -    watch a command run in a curses window          S
+dissect.tar.gz    -    break up an mbox by sender/count articles       SX
+dmproff.tar.gz    -    dot matrix printer runoff script                SX
+dmsh0.8.tar.gz    -    Dartmouth menu shell                            SX
+drtree.exe.tgz    -    Tree display parent/sub-directories shell        X
+duplex.exe.tgz    -    split files for odd/even page dble side print    X
+ediff.tar.gz      -    explain diff output in plain english            SX
+ee.exe.tar.gz     -    easy editor                                      X
+ee.tar.gz         -    easy editor                                     S
+eek.exe.tar.gz    -    decodes multiple files out of a single file      X
+eek.tar.gz        -    decodes multiple files out of a single file     S
+elm2.3.exe.tgz    -    elm mailer (supports internet addresses)         X
+elm2.3.tar.gz     -    elm mailer (not Tandy 16/6000 compile ready)    S
+emac38.exe.tgz    -    emacs 3.8 editor                                 X
+fcpio.tar.gz      -    a fast cpio for seekable devices                SX
+fig2.1.exe.tgz    -    print in many fonts using ascii                  X
+fig2.11.tar.gz    -    print in many fonts using ascii                 S
+fill.exe.tgz      -    a simple text formatter                          X
+fill.shar.gz      -    a simple text formatter                         S
+finance.exe.gz    -    a menu based mortgage and finance calculator     X
+fmt.exe.tar.gz    -    a simple text formatter (works in vi too!)       X
+fmtr.tar.gz       -    simple formatter for nroff files                SX
+ftimes.exe.tgz    -    display access/change/modify times of a file     X
+ftimes.tar.gz     -    display access/change/modify times of a file    S
+gdc.tar.gz        -    grand digital clock (curses)                    SX
+gettypatch.gz     -    patch /etc/getty to change the login message      T
+globe.exe.tgz     -    display the sunny side of the earth in ascii     X
+globe.gz          -    display the sunny side of the earth in ascii    S
+gmtdate.gz        -    print the Greenwich date script                  X
+gnuchess31.tgz    -    GNU chess version 3.1                           SX
+gnugo.tar.gz      -    the game of "go"                                SX
+gunzip.exe        -    (get this one so you can gunzip these files)     X
+gwynlb.shar.gz    -    Douglas Gwyn's directory libraries              S
+gzip1.2.3.tgz     -    gzip 1.2.3 compression package                  SX
+hardware.gz       -    Tandy 16/6000 hardware help file (usenet info)    T
+hash8.shar.gz     -    Xenix 3.0 "cc" users to convert long words      S
+hayes.txt.gz      -    complete Hayes modem technical reference guide    T
+hayes2400.gz      -    Hayes smartmodem 2400 command set                 T
+hdinfo.gz         -    excellent 132 column hard drive database          T 
+hex.exe.tar.gz    -    translates hexadecimal codes to ascii            X
+hiddengames.gz    -    where to find hidden games on 3.2 Xenix disks     T
+hp.exe.tar.gz     -    reverse Polish Notation calculator               X
+hp.shar.gz        -    reverse Polish Notation calculator              S
+ispell.exe.tgz    -    interactive speller (requires higher memory)     X
+ispell.tar.gz     -    interactive speller (requires higher memory)    S
+kerm19.exe.tgz    -    kermit 190 communications with support files     X
+kermit190.tgz     -    kermit 190 communications                       S
+keyboard.txt.gz   -    use a Model II/16 keyboard on a 12/16B/6000       T
+keypatch.gz       -    patch makekeyfile to handle more help pages       T
+kiss1.0.tar.gz    -    uudecode multiple part files                    S
+kiss10.exe.tgz    -    uudecode multiple part files                     X
+les205.exe.tgz    -    opposite of more 2.0.5 version                   X
+less-205.tgz      -    opposite of more 2.0.5 version                  S
+listuser.gz       -    list the users on your system script             X
+loan.tar.gz       -    loan calculator                                 SX
+lockit.exe.tgz    -    creates a lockfile                               X
+lockit.tar.gz     -    creates a lockfile                              S
+lotto.exe.tgz     -    Lotto random number drawing                      X
+lotto.shar.gz     -    Lotto random number drawing                     S
+makeusr.exe.gz    -    another makeuser program                         X
+makeusr.tar.gz    -    another makeuser program                        S
+metric.tar.gz     -    metric converter in philon compiled basic       SX
+mhz-megmods.gz    -    Tandy 16/6000 mhz and memory modifications        T
+mille.tar.gz      -    the game of mille                               SX
+mkfont.tar.gz     -    create/read ditroff font files                  SX
+mkobjs.shar.gz    -    script to manage your "C" libraries              X
+mmu.tar.gz        -    16B/6000 memory management modifications          T
+modem.utils.gz    -    some nice rz/sz modem shell utilities            X
+mshell.exe.tgz    -    menu shell (fantastic -- run a bbs with it)      X
+mshell.tar.gz     -    menu shell (fantastic -- run a bbs with it)     S
+new-cc-info.gz    -    a discussion about the 3.2 Xenix compiler         T
+nhack.exe.tgz     -    2.2 version game of nethack                      X
+nhack2.2.tgz      -    2.2 version games of nethack                    S
+obvious.tar.gz    -    an obvious password detector                    SX
+offset.exe.tgz    -    indent a file                                    X
+pac.tar.gz        -    the game of pacman                              SX
+patch1.3.tgz      -    apply a diff file to an original 1.3 version    SX
+patchify.gz       -    bootstrap a binary using only "cu"              S
+path.exe.tgz      -    pathalias mail routing tool (use with smail)     X
+pcomm.exe.tgz     -    pcomm 1.2.9 communication program                X
+pcomm1.2.9.tgz    -    pcomm 1.2.9 communication program               S
+phoon.tar.gz      -    show the phase of the moon with tws.a library   SX
+poker.tar.gz      -    excellent curses based 5 card draw poker game   SX
+poll.gz           -    excellent uucp polling script                    X
+print.exe.tgz     -    print all possible characters in a binary file   X
+printf.tar.gz     -    print a formatted string in shell               SX
+printpatch.gz     -    patch "lpd" to stop form feeds                    T
+pwgen.exe.tgz     -    random password generator                        X
+qterm.exe.tgz     -    query terminal type automatically 1.23 version   X
+qterm.shar.gz     -    query terminal type automatically 1.23 version  S
+qterm5.0.tgz      -    query terminal type automatically 5.0 version   SX
+rcat.exe.gz       -    cats a file in reverse                           X
+rcat.gz           -    cats a file in reverse                          S
+rmdups.exe.tgz    -    removes duplicate lines in a file shell          X
+rmline.exe.tgz    -    delete lines of text on start/stop patterns      X
+rot.tar.gz        -    rotate a file                                   SX
+rot13.tar.gz      -    13th character file rotation                    SX
+rzsz.exe.tgz      -    Chuck Forsberg's rz/sz zmodem utilities          X
+sc5.1.exe.tgz     -    Spread Sheet calculator version 5.1              X
+sc5.1.tar.gz      -    Spread Sheet calcular version 5.1               S
+scat.tar.gz       -    slow version of "cat"                           SX
+screens.tar.gz    -    random screen displayer                         SX
+sect.tar.gz       -    display a section of a file                     SX
+see.exe.tar.gz    -    display a file one character at a time shell     X
+shar-2.0.tgz      -    shell archive with uuencode ability             SX
+shortc.tar.gz     -    find/map C long names into unique short names   S
+slideshow.tgz     -    An ascii slideshow presentation using screens    X
+slowcat.tar.gz    -    cat a file slowly based on a speed value shell   X
+smail2.5.tgz      -    smart mailer handles uucp/internet addressing   S
+smile.exe.tgz     -    Simple MIni Line Editor  (good for a BBS)        X
+smile.shar.gz     -    Simple MIni Line Editor  (good for a BBS)       S
+spell_check.gz    -    a simple shell script spell checker             SX
+string.exe.tgz    -    Henry Spencer's string library (get this one!)   X
+stringlib.gz      -    Henry Spencer's string library                  S
+sush.shar.gz      -    access root via user id without typing a passwd S
+tarx.exe.tgz      -    recover files from damaged tar-format archives   X
+tarx.shar.gz      -    recover files from damaged tar-format archives  S
+telewords.tgz     -    convert telephone #s into words & vice versa    SX
+term.exe.tgz      -    lists terminals supported in termcap script      X
+torus.exe.tgz     -    an improved game of robots                       X
+torus.tar.gz      -    an improved game of robots                      S
+toscripsit.gz     -    script to convert dos/unix files to scripsit     X
+tpipe.exe.tgz     -    tee pipe output in two directions                X
+tpipe.shar.gz     -    tee pipe output in two directions               S
+trs-ibm.txt.gz    -    TRS-80 to IBM null modem schematic                T
+ttype.tar.gz      -    typing tutor  (Does timed typing tests)         SX
+umodem.exe.gz     -    umodem file transfer                             X
+umodem36.tgz      -    umodem file transfer                            S
+umoria.exe.tgz    -    the game of moria version 5.2                    X
+umoria52.tgz      -    the game of moria version 5.2                   S
+unacc.tar.gz      -    UNaXcess unix bulletin board                    S
+unaccess.tgz      -    UNaXcess unix bulletin board                     X
+unarj.exe.tgz     -    unarchives a pc arj file                         X
+unarj.tar.gz      -    unarchives a pc arj file                        S
+undos.tar.gz      -    prepare text files for different systems        SX
+unproto.tar.gz    -    C preprocessor to convert ANSI-C to old C       SX
+unshar-1.0.tgz    -    unshell archive a shar file                     SX
+unzip3.1.tgz      -    unzip 3.1 compression utilities                 SX
+unzip5.12.tgz     -    unzip 5.12 compression utilities (gunzips too!) S
+unzip51exe.tgz    -    unzip 5.12 compression utilities (gunzips too!)  X
+uroff.exe.tgz     -    printer underlining for nroff documents          X
+uroff.gz          -    printer underlining for nroff documents         S
+uu.exe.tar.gz     -    uud/uue decode/encode/split a binary file        X
+uu.tar.gz         -    uud/uue decode/encode/split a binary file       S
+uucheck.gz        -    check latest uucp log file entries script        X
+uucode.exe.tgz    -    standard unix uuencode/uudecode                  X
+uucpfix.gz        -    docs to fix uucp to go higher than 1200 baud      T
+uulook.gz         -    look in the uucp directory script                X
+vipw.exe.gz       -    edit the password file with file locking safety  X
+vspell.exe.tgz    -    visual speller shell script                      X
+vtem.exe.tgz      -    minimal vt100 emulator (pipe "cu" through it)    X
+vtem.shar.gz      -    minimal vt100 emulator (pipe "cu" through it)   S
+vtree.exe.tgz     -    print a visual tree of a directory structure     X
+vtree.shar.gz     -    print a visual tree of a directory structure    S
+vttest.exe.tgz    -    test a VT100-type terminal                       X
+vttest.tar.gz     -    test a VT100-type terminal                      S
+vu.tar.gz         -    a file viewer with delay ability                SX
+web2+.txt.tgz     -    Webster's 2nd dict plus totaling 234,936 words    T
+weekday.tar.gz    -    format the date in several ways                 SX
+wegrep.exe.tgz    -    window egrep shell script                        X
+whatis.gz         -    identify a program on your system script         X
+which4.tar.gz     -    find which directory a command is in            SX
+whichfiles.gz     -    script to find most files/programs in a binary   X
+whois.gz          -    identify a user by name script                   X
+xcmalt.exe.tgz    -    xmodem communication program (supercedes xcomm)  X
+xcmalt.tar.gz     -    xmodem communication program (supercedes xcomm) S
+xenix-poll.gz     -    uucp poll script (better than uunow)             X
+xenixconfig.gz    -    how to configure your xenix kernel                T
+xxu.tar.gz        -    DEC-20 or VAX/VMS to unix filename converter    SX
+yahtz.exe.tgz     -    The game of yahtzee                              X
+yahtz.shar.gz     -    The game of yahtzee                             S
+zap.tar.gz        -    binary inspect or modify files                  SX
+zip.1.0.tar.gz    -    zip 1.0 compression package                     S
+zip1.0.exe.tgz    -    zip 1.0 compression package                      X
+zipcodes.tgz      -    USA Zipcode database and lookup script           XT
+zmore-less.tgz    -    corrects the broken versions in gzip1.2.3       SX
+zoo.tar.gz        -    zoo archiver                                    SX
+

@@ -1,0 +1,5 @@
+-rwxr-xr-x 3/3          111884 Jul 14 10:52 1990 /usr/local/sc
+-rwxr-xr-x 3/3           12242 Aug  5 21:44 1990 /usr/local/psc
+-rw-r--r-- 0/0            4292 Apr 26 01:50 1995 /usr/local/lib/sc/tutorial.sc
+-rw-r--r-- 3/3           33921 Aug  4 14:54 1990 /usr/lib/Help/lib/L/sc
+-rw-r--r-- 3/3            3053 Aug  5 21:44 1990 /usr/lib/Help/lib/L/psc

@@ -1,0 +1,11 @@
+-rw-r--r-- 0/0            1802 May 23 00:17 1995 README
+-rw-r--r-- 0/0            2307 May 23 00:17 1995 abbrev.c
+-rw-r--r-- 0/0            1031 May 23 00:17 1995 copt.shar.hdr
+-rw-r--r-- 0/0            7127 May 23 00:17 1995 cset.c
+-rw-r--r-- 0/0            1152 May 23 00:17 1995 cset.d
+-rw-r--r-- 0/0            2973 May 23 00:17 1995 cset.h
+-rw-r--r-- 0/0            4076 May 23 00:17 1995 d_optable.c
+-rw-r--r-- 0/0            2952 May 23 00:17 1995 demo.c
+-rw-r--r-- 0/0             309 May 23 00:18 1995 makefile
+-rw-r--r-- 0/0            1201 May 23 00:17 1995 not_kwd.c
+-rw-r--r-- 0/0            3105 May 23 00:17 1995 numarg.c

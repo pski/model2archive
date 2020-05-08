@@ -1,0 +1,41 @@
+# !/bin/sh
+# toscripsit using Chuck Forsberg's "undos" program and "ccstrip"
+# Written by: Steve Scrivano (sscrivan@nyx.cs.du.edu)
+#
+# This program alters the original file (so copy it somewhere just in case)
+#
+# This is just an easy way to convert a dos, cpm, or unix file with hard 
+# carriage returns into a file with no carriage returns or control characters.  
+# Make sure you have linked "ln" undos to "unmac" and to "tomac"
+# "tomac" almost converts a  file to scripsit but not quite.  This script 
+# takes it the rest of the way converting an entire file into a single 
+# paragraph with continuous soft carriage return lines in Scripsit format.
+
+SWAPFILE=`echo /tmp/sw${$}`
+if [ "$1" = "" ]
+then
+echo "Usage: toscripsit filename"
+echo "Translate unix and dos files to scripsit"
+exit
+fi
+
+# First make sure the file is not already a macintosh file in case someone
+# runs it on the wrong file type (or some other non-conforming file).
+
+unmac -s $1
+
+# Next add a space at the end of every line to prevent words at the end of
+# a line from being joined with the next line when tomac runs and make sure
+# there is only one space between words.
+
+sed '/$/s// /g' $1|sed '/ * /s// /g' > $SWAPFILE
+
+# Join all lines
+
+tomac $SWAPFILE
+
+# Strip control characters leaving a plain file without carriage returns
+
+ccstrip < $SWAPFILE > $1
+rm $SWAPFILE
+echo "Now read `echo $1` into scripsit"

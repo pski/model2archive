@@ -1,0 +1,133 @@
+Path: xanth!nic.MR.NET!hal!ncoast!allbery
+From: rmb384@leah.albany.edu (Robert M. Bownes III)
+Newsgroups: comp.sources.misc
+Subject: v05i012: Script to poll other uucp sites
+Message-ID: <1163@leah.Albany.Edu>
+Date: 28 Oct 88 02:41:47 GMT
+Sender: allbery@ncoast.UUCP
+Reply-To: rmb384@leah.albany.edu (Robert M. Bownes III)
+Organization: Mush for Brains
+Lines: 121
+Approved: allbery@ncoast.UUCP
+
+Posting-number: Volume 5, Issue 12
+Submitted-by: "Robert M. Bownes III" <rmb384@leah.albany.edu>
+Archive-name: xenix-poll
+
+[Xenix specific.  Should work on *all* Xenixes except 2.x, though.  ++bsa]
+[dumb comment:  the "enable" bug is actually a v7 init "bug", caused by
+signal handling limitations.  It doesn't exist on Xenixes with System V
+init (/etc/inittab with run levels).  ++bsa]
+
+	Here's a shell script for polling other uucp sites on an 
+otherwise dialin line. It uses nothing other than enable/disable.
+No special getty or login required. It's currently in use on 
+a Tandy Sys III Xenix system. Best of luck, and send any bug fixes/reports
+to me please.
+
+Bob
+
+
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  poll
+# Wrapped by rmb384@leah.Albany.EDU on Tue Oct 25 15:42:09 1988
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f poll -a "${1}" != "-c" ; then 
+  echo shar: Will not over-write existing file \"poll\"
+else
+echo shar: Extracting \"poll\" \(1414 characters\)
+sed "s/^X//" >poll <<'END_OF_poll'
+X#!/bin/csh
+X#
+X#	useage:	poll sys [sys ...]
+X#
+X#		Poll systems given on the command line.
+X#				
+X#	History:	10/18/1988	Resurected off of a backup
+X#				 	and hacked to life.	
+X#					- R.M. Bownes III
+X#
+X
+Xecho $argv
+X
+X# Check for the presence of a LCK..poll file
+X
+Xif (-e /usr/spool/uucp/LCK..poll) then
+X
+X# Look for a currently executing poll.
+X
+X	if (`ps -elf | grep  -c poll` > 0 ) then
+X		echo "Already a poll in progress"
+X		exit 
+X	endif
+X
+X# Look for a currently running uucp.
+X
+X	if (`ps -elf | grep  -c uucico` > 0 ) then
+X		echo "Already a uucp in progress"
+X		sleep 300
+X		exec /usr/lib/uucp/poll
+X	endif
+X
+X# Guess it didnt exist, LCK..poll must be from before the crash...
+X
+X	rm /usr/spool/uucp/LCK..poll
+X	rm /usr/spool/uucp/STST*
+Xendif
+X
+X# Look for a user logged in.
+X
+Xif (`who | grep  -c tty01` > 0 ) then
+X	echo `who | grep tty01 | awk -e '{print $1}'` is on tty01
+X	sleep 300
+X	exec /usr/lib/uucp/poll
+Xendif
+X
+X# Look for some other uucico going on.
+X
+X#if (`ps -elf | grep -c uucico` > 0 ) then
+X#	echo `ps -elf | grep uucico ` is currently in progress.
+X#	sleep 300
+X#	exec /usr/lib/uucp/poll
+X#endif
+X
+X# Get ready to dial out.
+X
+Xtouch /usr/spool/uucp/LCK..poll
+Xdisable /dev/tty01
+X
+X# Do the actual uucp
+X
+Xwhile ($1 != "") 
+X	echo Polling $1
+X	/usr/lib/uucp/uucico -r1 -s$1
+X	shift
+Xend
+X
+X# Done with all the uucps, get around the Xenix enable/disable bug.
+X
+Xsleep 60
+Xenable tty01
+X
+X# clean up and let us outa here.
+X
+Xrm /usr/spool/uucp/LCK..poll
+END_OF_poll
+if test 1414 -ne `wc -c <poll`; then
+    echo shar: \"poll\" unpacked with wrong size!
+fi
+# end of overwriting check
+fi
+echo shar: End of shell archive.
+exit 0
+-- 
+Bob Bownes, Aka Keptin Comrade Dr Bobwrench III	|  If I didn't say it, It
+bownesrm@beowulf.uucp  (518)-482-8798		|  must be true.
+{steinmetz,brspyr1,sun!sunbow}!beowulf!bownesrm	|	- me, tonite -
+"If I'd known it was harmless, I'd have killed it myself" Phillip K. Dick.

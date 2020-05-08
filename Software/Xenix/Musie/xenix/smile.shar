@@ -1,0 +1,1305 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  Makefile README Tandy6000 bsd_tty.h smile.c smile.h
+#   smile.man smile.patch smile_main.c suntty.c
+# Wrapped by root@coupon on Sun Oct 16 17:11:10 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'Makefile' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Makefile'\"
+else
+echo shar: Extracting \"'Makefile'\" \(440 characters\)
+sed "s/^X//" >'Makefile' <<'END_OF_FILE'
+X# Primitive Makefile. Not that great but helps!
+X
+Xsmile: smile.o smile_main.o suntty.o
+X	cc -O smile.o smile_main.o suntty.o -o smile
+X
+Xsmile.o: smile.c smile.h bsd_tty.h
+X	cc -c -O smile.c
+X
+Xsmile_main.o: smile_main.c smile.h
+X	cc -c -O smile_main.c
+X
+Xsuntty.o: suntty.c
+X	cc -c -O suntty.c
+X
+Xlint:
+X	lint smile.c smile_main.c suntty.c
+X
+Xshar:
+X	shar -c -p X smile.c bsd_tty.h smile.h smile_main.c suntty.c \
+X	Makefile README smile.man > smile.shar 
+X
+END_OF_FILE
+if test 440 -ne `wc -c <'Makefile'`; then
+    echo shar: \"'Makefile'\" unpacked with wrong size!
+fi
+# end of 'Makefile'
+fi
+if test -f 'README' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'README'\"
+else
+echo shar: Extracting \"'README'\" \(869 characters\)
+sed "s/^X//" >'README' <<'END_OF_FILE'
+XSMiLE -- Simple MIni Line Editor
+X--------------------------------
+X
+XThis program was originally intended to be used in a BBS program, but
+XI got lazy and didn't write the BBS.  The idea of this program is to
+Xprovide a very easy to use and rather "powerful" Line Editor with very
+Xlittle terminal support.  This program was orginially written for a
+XCommodore 64, so it should be rather easy to port to other system.
+XThis current version is a Unix BSD type system.  (Actually Sun OS
+X4.0.?).  I haven't tested if it compiles on other system, but It
+XSHOULD!
+X
+XYou can include this program in your programs as long as you give me
+Xcredit and send me a E-mail postcard!   And you can hack it as much as
+Xyou like provide it you keep the copyright notice and redistribut it
+Xunmodified (You can distribute your changes in a DIFF file though!)
+X
+X			Alejandro Liu <acliu@skat.usc.edu>
+X
+END_OF_FILE
+if test 869 -ne `wc -c <'README'`; then
+    echo shar: \"'README'\" unpacked with wrong size!
+fi
+# end of 'README'
+fi
+if test -f 'Tandy6000' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Tandy6000'\"
+else
+echo shar: Extracting \"'Tandy6000'\" \(822 characters\)
+sed "s/^X//" >'Tandy6000' <<'END_OF_FILE'
+XBefore you attempt to do anything with this package, apply the smile.patch
+Xto the sources with Larry Wall's "patch" program as follows:
+X
+Xpatch < smile.patch
+X
+XThe original version of this program had a very poor screen display I thought.
+XThings didn't clear in the right places, and some functions like the spell
+Xchecker were never finished so I removed them and added other functions to
+Xthe menus that you would normally see in a bbs editor.  "smile" does not
+Xsupport termcap and is done with little terminal support so I decided it
+Xwould be a good idea to hard code some screen clearing codes in the program
+Xin the right places so that those with the right terminal would get the
+Xbetter screen display.  If you got control character messages when you 
+Xunshared this, that is why.
+X
+Xsscrivan@nyx.cs.du.edu (Steve Scrivano)
+END_OF_FILE
+if test 822 -ne `wc -c <'Tandy6000'`; then
+    echo shar: \"'Tandy6000'\" unpacked with wrong size!
+fi
+# end of 'Tandy6000'
+fi
+if test -f 'bsd_tty.h' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'bsd_tty.h'\"
+else
+echo shar: Extracting \"'bsd_tty.h'\" \(370 characters\)
+sed "s/^X//" >'bsd_tty.h' <<'END_OF_FILE'
+X/* SMiLE -- Simple MIni Line Editor
+X   Copyright (C) 1989 By Alejandro Liu
+X   You are given permission to Freely Copy and distribute this program
+X   in its unmodifed form provided that this copyright notice is included.
+X */
+X
+X#define prtchr(dta)	putchar(dta)
+X#define NEWLIN		'\n'
+X#define beep()		prtchr(7)
+X#define prtstr(string)	printf(string)
+X#define getkey()	getchar()
+END_OF_FILE
+if test 370 -ne `wc -c <'bsd_tty.h'`; then
+    echo shar: \"'bsd_tty.h'\" unpacked with wrong size!
+fi
+# end of 'bsd_tty.h'
+fi
+if test -f 'smile.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'smile.c'\"
+else
+echo shar: Extracting \"'smile.c'\" \(10091 characters\)
+sed "s/^X//" >'smile.c' <<'END_OF_FILE'
+X/* SMiLE -- Simple MIni Line Editor
+X   Copyright (C) 1989 By Alejandro Liu
+X   You are given permission to Freely Copy and distribute this program
+X   in its unmodifed form provided that this copyright notice is included.
+X */
+X
+X#include "smile.h"
+X#include "bsd_tty.h"
+X#include <ctype.h>
+X#include <stdio.h>
+X#include <strings.h>
+X
+X#define TRUE       1
+X#define FALSE      0
+X#define TSTR     100
+X
+Xmakebar(width)
+Xchar width;
+X{
+X  int i;
+X  for (i = 0;i<width;i++) {
+X    if (i%8)
+X      prtchr('-');
+X    else
+X      prtchr('!');
+X  };
+X  if ((width-1)%8)
+X    prtchr('!');
+X  prtchr(NEWLIN);
+X}
+X
+Xsmile_intro(width)
+Xint width;
+X{
+X  prtstr("\n");
+X  prtstr("SMiLE -- Simple MIni Line Editor        (C) By Alejandro Liu Aug 1989\n");
+X  prtstr("Press ESC (CTRL+[) for menu.            CTRL+X to exit SMiLE\n");
+X  prtstr("   ");
+X  makebar(width);
+X}
+X
+Xint smile(head,wwrap,width)
+Xed_line *head;
+Xchar wwrap,width;
+X{
+X  ed_line *current, *temp;
+X  char c_buf[TSTR], c_lin, c_col, key, i, j;
+X  extern char smile_menu();
+X
+X  c_col = 0;
+X  c_lin = 1;
+X  current = head;
+X  smile_intro(width);
+X  pull(&c_col, c_buf, current);
+X  showlin(c_lin,c_buf,c_col);
+X
+X  for (;;) {
+X    key = 127 & getkey();
+X    switch (key) {
+X      case PREV_L:
+X        if (c_lin-1) {
+X          c_lin--;
+X          push(c_buf,current);
+X          temp = current->previous;
+X	  current = temp;
+X          if (current == NULL) current = head;
+X          pull(&c_col, c_buf, current);
+X          prtchr(NEWLIN);
+X          showlin(c_lin,c_buf, c_col);
+X        }
+X        else
+X          beep();
+X        break;
+X      case NEXT_L:
+X        if (current->next == NULL)
+X          beep();
+X        else {
+X          c_lin++;
+X          push(c_buf, current);
+X          temp = current->next;
+X	  current = temp;
+X          pull(&c_col, c_buf, current);
+X          prtchr(NEWLIN);
+X          showlin(c_lin,c_buf,c_col);
+X        }
+X        break;
+X      case INSER_L:
+X      case INSERT_L:
+X        insertl(current);
+X        push(c_buf,current);
+X        temp = current->next;
+X	current = temp;
+X        current->len = 0;
+X        c_col = 0;
+X        c_lin++;
+X        c_buf[0] = 0;
+X        prtchr(NEWLIN);
+X        showlin(c_lin,c_buf,c_col);
+X        break;
+X      case LEFT_C:
+X        if (c_col) {
+X          c_col--;
+X          backspace(1);
+X        }
+X        else
+X          beep();
+X        break;
+X      case RIGHT_C:
+X        if (c_col == current->len)
+X          beep();
+X        else {
+X          putchar(c_buf[c_col]);
+X          c_col++;
+X        }
+X        break;
+X      case DEL_00:
+X      case DEL_01:
+X      case DEL_02:
+X        if (c_col) {
+X          if (c_col == current->len) {
+X            delete(1);
+X            c_buf[c_col--] = 0;
+X            (current->len)--;
+X          }
+X          else {
+X            delete(1);
+X            for (i = c_col; i<=current->len;i++) {
+X              c_buf[i-1] = c_buf[i];
+X              if (c_buf[i])
+X                prtchr(c_buf[i]);
+X              else
+X                prtchr(' ');
+X            }
+X	    backspace((current->len) - c_col + 1);
+X            c_col--;
+X            current->len--;
+X          }
+X        }
+X        else
+X          beep();
+X        break;
+X      case KILL_L:
+X        if (c_col == current->len) {
+X          if (current->next) {
+X	    char *mirage;
+X	    temp = current->next;
+X	    delete(c_col + 3);
+X	    c_col = strlen(c_buf) + strlen(temp->data);
+X	    mirage = (char *)malloc(c_col + 1);
+X	    strcpy(mirage,c_buf);
+X	    strcat(mirage,temp->data);
+X            current->next = temp->next;
+X            free(temp->data);
+X            free(temp);
+X            if (temp = current->next)
+X	      temp->previous = current;
+X	    if (c_col >= width) {
+X	      c_col = width -1;
+X	      mirage[c_col] = 0;
+X	    }
+X	    current->len = c_col;
+X	    strcpy(c_buf,mirage);
+X	    free(mirage);
+X            showlin(c_lin, c_buf, c_col);
+X	  }
+X          else
+X	    beep();
+X        }
+X        else {
+X          for (i=c_col;i<current->len;i++)
+X            prtchr(' ');
+X          backspace(current->len - c_col);
+X          c_buf[current->len = c_col] = 0;
+X        }
+X        break;
+X      case MSG_LST:
+X        push(c_buf,current);
+X        listmsg(width, head);
+X        showlin(c_lin, c_buf, c_col);
+X        break;
+X      case PREVIEW:
+X        push(c_buf,current);
+X        preview(width, head);
+X        showlin(c_lin, c_buf, c_col);
+X        break;
+X      case EXIT:
+X        push(c_buf, current);
+X        return(NORMAL_SAVE);
+X      case MENU:
+X        push(c_buf,current);
+X        if (i = smile_menu(head,FULL_MENU, &wwrap, &width, MENU))
+X          if ((i == NORMAL_SAVE) || (i == QUICK_SAVE) || (i == ABORT)) {
+X            push(c_buf,current);
+X            return(i);
+X          }
+X        showlin(c_lin,c_buf,c_col);
+X        break;
+X      case DOTKEY0:
+X      case DOTKEY1:
+X        if (c_col == 0) {
+X          push(c_buf,current);
+X          if (i = smile_menu(head,DOT_MENU, &wwrap, &width, key)) {
+X            switch (i) {
+X              case NORMAL_SAVE:
+X              case QUICK_SAVE:
+X              case ABORT:
+X                push(c_buf,current);
+X                return(i);
+X              case DOTKEY0:
+X              case DOTKEY1:
+X                insertc(c_buf, &c_col, &(current->len), i);
+X		delete(1);
+X                break;
+X            }
+X          }
+X          showlin(c_lin,c_buf,c_col);
+X	  break;
+X        }
+X      default:
+X        if ((31<key)&&(key<127)) {
+X          if (c_col == width) {
+X            if (wwrap) {
+X              i = c_col;
+X              while (i&&(c_buf[i--]!=32));
+X              if (i) {
+X		if ((c_col-i-1)>0)
+X		  delete(c_col-i-1);
+X                c_buf[++i] = 0;
+X                insertl(current);
+X                push(c_buf,current);
+X                current = current->next;
+X                c_lin++;
+X                push(&c_buf[i+1], current);
+X                pull(&c_col, c_buf, current);
+X                c_col = current->len;
+X                prtchr(NEWLIN);
+X                showlin(c_lin,c_buf,c_col);
+X              }
+X              else {
+X                insertl(current);
+X                push(c_buf, current);
+X                current = current->next;
+X                current->len = 0;
+X                c_col = 0;
+X                c_lin++;
+X                c_buf[0]= 0;
+X                prtchr(NEWLIN);
+X                showlin(c_lin,c_buf,c_col);
+X              }
+X              insertc(c_buf,&c_col, &(current->len),key);
+X            }
+X            else
+X              beep();
+X          }
+X          else
+X            insertc(c_buf, &c_col, &(current->len),key);
+X        }
+X        else
+X          beep();
+X    }
+X  }
+X}
+X
+Xinsertc(buffer, col, len, key)
+Xchar buffer[], *col, *len, key;
+X{
+X  buffer[*col] = key;
+X  if ((*col)++ == (*len))
+X    buffer[++(*len)] = 0;
+X  prtchr(key);
+X}
+X
+Xbackspace(rept)
+Xchar rept;
+X{
+X  while (rept--)
+X    prtchr(8);
+X}
+X
+Xdelete(rept)
+Xchar rept;
+X{
+X  while (rept--) {
+X    prtchr(8);
+X    prtchr(' ');
+X    prtchr(8);
+X  }
+X}
+X
+Xshowlin(line,buffer,column)
+Xchar line, column, *buffer;
+X{
+X  char leng;
+X  printf("%2d>",line);
+X  prtstr(buffer);
+X  leng = strlen(buffer);
+X  if (leng != column)
+X    backspace(leng-column);
+X}
+X
+X
+Xchar smile_menu(head,type, wrap, width, nkey)
+Xed_line *head;
+Xchar type, *wrap, *width, nkey;
+X{
+X  char key, *jet;
+X  extern char *getstr();
+X  if (type == FULL_MENU) {
+X    prtstr("\nSMiLE -- Simple MIni Line Editor MENU   (C) Aug 1989 Alejandro Liu\n\n");
+X    prtstr("S - Quick Save      A - Abort Editor    L - List Text       V - Preview Text\n");
+X    prtstr("W - Wrd Wrp Toggle  N - Screen Width    H - Help Screen     C - Check Spelling\n");
+X    prtstr("Command -->");
+X  }
+X  else
+X    prtstr("Command: ");
+X  key = getkey();
+X  if (isupper(key))
+X    key = tolower(key);
+X  switch(key) {
+X    case DOTSAV:
+X      prtstr("Save Message\n");
+X      return(QUICK_SAVE);
+X    case DOTHLP:
+X      smile_help(*wrap,*width);
+X      break;
+X    case DOTABT:
+X      prtstr("Abort Message\n");
+X      return(ABORT);
+X    case DOTLST:
+X      prtstr("List Message\n");
+X      listmsg(*width,head);
+X      break;
+X    case DOTPVW:
+X      prtstr("Preview Message\n");
+X      preview(*width,head);
+X      break;
+X    case DOTWRW:
+X      if (*wrap) {
+X        *wrap = FALSE;
+X        prtstr("Word Wrap Is Off\n");
+X      }
+X      else {
+X        *wrap = TRUE;
+X        prtstr("Word Wrap Is On\n");
+X      }
+X      break;
+X    case DOTFNY:
+X      prtstr("Funny Command\n");
+X      prtstr("A Funny thing happened to me on my way  to the forum... \n");
+X      prtstr("I Got there! hahahaha\n");
+X      break;
+X    case DOTSPC:
+X      prtstr("Check Spelling\n");
+X      prtstr("SMiLE Spell Checker\n");
+X      prtstr("Sorry, the dictionary has been erased\n");
+X      break;
+X    case DOTCWD:
+X      prtstr("Max Col? --> ");
+X      jet = getstr();
+X      *width = atoi(jet);
+X      prtstr("\nScreen Width Set to = ");
+X      printf("%d",*width);
+X      prtchr(NEWLIN);
+X      break;
+X    default:
+X      if ((type != FULL_MENU)&&(nkey == key)) {
+X        delete(13);
+X        return(key);
+X      }
+X      else {
+X        beep();
+X        prtstr("Unrecognized Command\n");
+X      }
+X  }
+X  return(0);
+X}
+X
+Xlistmsg(width,head)
+Xchar width;
+Xed_line *head;
+X{
+X  char cnt = 1;
+X  prtstr("SMiLE File Lister\n   ");
+X  makebar(width);
+X  while (head) {
+X    if (((2+cnt)%24)==0)
+X      pause();
+X    printf("%2d>",cnt++);
+X    prtstr(head->data);
+X    prtchr(NEWLIN);
+X    head = head->next;
+X  }
+X  prtchr(NEWLIN);
+X}
+X
+Xpreview(width,head)
+Xchar width;
+Xed_line *head;
+X{
+X  char cnt = 3;
+X  prtstr("SMiLE File Previewer\n");
+X  makebar(width);
+X  while (head) {
+X    if (((cnt++)%24)==0)
+X      pause();
+X    prtstr(head->data);
+X    prtchr(NEWLIN);
+X    head = head->next;
+X  }
+X  prtchr(NEWLIN);
+X}
+X
+Xinsertl(ptr)
+Xed_line *ptr;
+X{
+X  ed_line *tmp, *tmp2, bogus;
+X  tmp = (ed_line *)malloc(sizeof(bogus));
+X  tmp->previous = ptr;
+X  tmp2 = tmp->next = ptr->next;
+X  ptr->next = tmp;
+X  if (tmp2)
+X    tmp2->previous = tmp;
+X  tmp->data = (char *)malloc(2);
+X  tmp->len = 0;
+X  *(tmp->data) = 0;
+X}
+X
+Xpull(col,buf,cur)
+Xchar *col, *buf;
+Xed_line *cur;
+X{
+X  strcpy(buf,cur->data);
+X  cur->len = strlen(buf);
+X  if (*col>(cur->len))
+X    *col = cur->len;
+X}
+X
+Xpush(buf,cur)
+Xchar *buf;
+Xed_line *cur;
+X{
+X  free(cur->data);
+X  cur->len = strlen(buf);
+X  cur->data = (char *)malloc((cur->len) + 1);
+X  strcpy(cur->data,buf);
+X}
+X
+Xpause()
+X{
+X  prtstr("* MORE *");
+X  beep();
+X  getkey();
+X  delete(8);
+X}
+END_OF_FILE
+if test 10091 -ne `wc -c <'smile.c'`; then
+    echo shar: \"'smile.c'\" unpacked with wrong size!
+fi
+# end of 'smile.c'
+fi
+if test -f 'smile.h' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'smile.h'\"
+else
+echo shar: Extracting \"'smile.h'\" \(1175 characters\)
+sed "s/^X//" >'smile.h' <<'END_OF_FILE'
+X/* SMiLE -- Simple MIni Line Editor
+X   Copyright (C) 1989 By Alejandro Liu
+X   You are given permission to Freely Copy and distribute this program
+X   in its unmodifed form provided that this copyright notice is included.
+X */
+X
+X#define PREV_L          16
+X#define NEXT_L          14
+X#define INSER_L         13
+X#define INSERT_L        10
+X#define LEFT_C           2
+X#define RIGHT_C          6
+X#define DEL_00           8
+X#define DEL_01         127
+X#define DEL_02          20
+X#define KILL_L          11
+X#define MSG_LST         12
+X#define PREVIEW         22
+X#define EXIT            24
+X#define MENU            27
+X#define DOTKEY0         '.'
+X#define DOTKEY1         '/'
+X#define DOTSAV          's'
+X#define DOTHLP          'h'
+X#define DOTABT          'a'
+X#define DOTLST          'l'
+X#define DOTPVW          'v'
+X#define DOTWRW          'w'
+X#define DOTFNY          'f'
+X#define DOTSPC          'c'
+X#define DOTCWD          'n'
+X
+Xstruct ED_line {
+X  struct ED_line *previous;
+X  struct ED_line *next;
+X  char len;
+X  char *data;
+X};
+X
+Xtypedef struct ED_line ed_line;
+X
+X#define FULL_MENU       0
+X#define DOT_MENU        1
+X
+X#define NORMAL_SAVE     1
+X#define QUICK_SAVE      2
+X#define ABORT           3
+END_OF_FILE
+if test 1175 -ne `wc -c <'smile.h'`; then
+    echo shar: \"'smile.h'\" unpacked with wrong size!
+fi
+# end of 'smile.h'
+fi
+if test -f 'smile.man' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'smile.man'\"
+else
+echo shar: Extracting \"'smile.man'\" \(2091 characters\)
+sed "s/^X//" >'smile.man' <<'END_OF_FILE'
+X.TH SMILE L
+X.SH NAME
+XSMiLE \- Simple MIni Line Editor
+X.SH SYNTAX
+X.B smile 
+X.I 
+Xfilename [screen width]
+X.SH DESCRIPTION
+XThis program is a very simple line editor that doesn't use the TermCap
+Xor Curses library to do its editing.  It provides "advanced" features
+Xlike auto word wrap, and Full line editing.  The main advantage of
+X.I smile
+Xis that it can be used in almost any CRT terminal, regardless of its
+Xtype, as long as it supports the almost universal convention of using
+X^H (ASCII 8) as non destructive backspace.
+X.SH OPERATION
+X.I smile
+Xis entered from UNIX by typing the command line followed by a filename
+Xand an optional Screen width.  The default is specified during
+Xcompilation time and varies from site to site.
+X.PP
+X.I smile
+Xis advertised to be very easy to use, and it has a built in help (sort
+Xof) that can be displayed any time.  The commands to know are:
+X.br
+X.sp
+X.nf
+Xkey		function
+X---		--------
+X^N		Next Line
+X^P		Previous Line
+X^F		Forward Character
+X^B		Backward Character
+X^K		Kill line
+X^A		Previews text
+X^L		List Text
+XESC		SMILE menu
+X.sp
+X.fi
+X.PP
+XAlso,
+X.I smile
+Xsupports the use of "dot" or "slash" command that are very common on
+Xsome BBS programs line editors.  Basicly what they do is at the first
+Xcolumn of any line if you press any of those keys you will be prompted
+Xfor a menu option.  Pressing "." or "/" again will put a "." or "/" in
+Xthe text.
+X.PP
+XOptions in
+X.I smile
+Xmenu:
+X.br
+X.sp
+X.nf
+XOption		function
+X------		--------
+X  S		Saves the file
+X  A		Abort Editor and discards changes
+X  W		Word Wrap Togle
+X  N		New Screen Width
+X  H		Help Screen
+X  C		Check Spelling
+X  P		Preview Text
+X  L		List Text
+X.sp
+X.fi
+X.SH AUTHOR
+XAlejandro Liu
+X.SH "SEE ALSO"
+Xemacs(1), vi(1), ed(1)
+X.SH BUGS
+X.I Smile
+Xdoesn't support terminals that don't use ^H as  backspace. Also, the
+Xprogram will perform strangely of terminals that the ^H performs a
+Xdestructive backspace.
+X.PP
+XThe Spell checker doesn't work.
+X.PP
+X.I Smile
+Xkeeps with the UNIX tradition of optimism by doing very little error
+Xchecking!
+X.PP
+X.I Smile
+Xwas originally written for the C-64 (Serious Bug here!) for use in a
+XBBS program.
+X.br
+X 
+END_OF_FILE
+if test 2091 -ne `wc -c <'smile.man'`; then
+    echo shar: \"'smile.man'\" unpacked with wrong size!
+fi
+# end of 'smile.man'
+fi
+if test -f 'smile.patch' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'smile.patch'\"
+else
+echo shar: Extracting \"'smile.patch'\" \(9112 characters\)
+sed "s/^X//" >'smile.patch' <<'END_OF_FILE'
+X*** Makefile	Sun Oct 16 15:38:02 1994
+X--- /usr/tmp/smile/Makefile	Sun Oct 16 17:06:31 1994
+X***************
+X*** 16,21 ****
+X  	lint smile.c smile_main.c suntty.c
+X  
+X  shar:
+X! 	shar -c -p X smile.c bsd_tty.h smile.h smile_main.c suntty.c \
+X! 	Makefile README smile.man > smile.shar 
+X  
+X--- 16,21 ----
+X  	lint smile.c smile_main.c suntty.c
+X  
+X  shar:
+X! 	shar smile.c bsd_tty.h smile.h smile_main.c suntty.c \
+X! 	Tandy6000 smile.patch Makefile README smile.man > smile.shar 
+X  
+X*** README	Sun Oct 16 15:38:03 1994
+X--- /usr/tmp/smile/README	Sun Oct 16 15:37:05 1994
+X*** bsd_tty.h	Sun Oct 16 15:37:53 1994
+X--- /usr/tmp/smile/bsd_tty.h	Sun Oct 16 15:37:06 1994
+X*** smile.c	Sun Oct 16 15:37:50 1994
+X--- /usr/tmp/smile/smile.c	Sun Oct 16 15:37:12 1994
+X***************
+X*** 8,14 ****
+X  #include "bsd_tty.h"
+X  #include <ctype.h>
+X  #include <stdio.h>
+X! #include <strings.h>
+X  
+X  #define TRUE       1
+X  #define FALSE      0
+X--- 8,14 ----
+X  #include "bsd_tty.h"
+X  #include <ctype.h>
+X  #include <stdio.h>
+X! #include <string.h>
+X  
+X  #define TRUE       1
+X  #define FALSE      0
+X***************
+X*** 32,38 ****
+X  smile_intro(width)
+X  int width;
+X  {
+X!   prtstr("\n");
+X    prtstr("SMiLE -- Simple MIni Line Editor        (C) By Alejandro Liu Aug 1989\n");
+X    prtstr("Press ESC (CTRL+[) for menu.            CTRL+X to exit SMiLE\n");
+X    prtstr("   ");
+X--- 32,38 ----
+X  smile_intro(width)
+X  int width;
+X  {
+X!   prtstr("[;H[2J\f");
+X    prtstr("SMiLE -- Simple MIni Line Editor        (C) By Alejandro Liu Aug 1989\n");
+X    prtstr("Press ESC (CTRL+[) for menu.            CTRL+X to exit SMiLE\n");
+X    prtstr("   ");
+X***************
+X*** 40,46 ****
+X  }
+X  
+X  int smile(head,wwrap,width)
+X! ed_line *head;
+X  char wwrap,width;
+X  {
+X    ed_line *current, *temp;
+X--- 40,46 ----
+X  }
+X  
+X  int smile(head,wwrap,width)
+X!   ed_line *head;
+X  char wwrap,width;
+X  {
+X    ed_line *current, *temp;
+X***************
+X*** 308,314 ****
+X    if (type == FULL_MENU) {
+X      prtstr("\nSMiLE -- Simple MIni Line Editor MENU   (C) Aug 1989 Alejandro Liu\n\n");
+X      prtstr("S - Quick Save      A - Abort Editor    L - List Text       V - Preview Text\n");
+X!     prtstr("W - Wrd Wrp Toggle  N - Screen Width    H - Help Screen     C - Check Spelling\n");
+X      prtstr("Command -->");
+X    }
+X    else
+X--- 308,314 ----
+X    if (type == FULL_MENU) {
+X      prtstr("\nSMiLE -- Simple MIni Line Editor MENU   (C) Aug 1989 Alejandro Liu\n\n");
+X      prtstr("S - Quick Save      A - Abort Editor    L - List Text       V - Preview Text\n");
+X!     prtstr("W - Wrd Wrp Toggle  N - Screen Width    H - Help Screen     C - Continue Edit\n");
+X      prtstr("Command -->");
+X    }
+X    else
+X***************
+X*** 322,327 ****
+X--- 322,329 ----
+X        return(QUICK_SAVE);
+X      case DOTHLP:
+X        smile_help(*wrap,*width);
+X+         dowait();
+X+         smile_intro(*width);
+X        break;
+X      case DOTABT:
+X        prtstr("Abort Message\n");
+X***************
+X*** 338,347 ****
+X--- 340,353 ----
+X        if (*wrap) {
+X          *wrap = FALSE;
+X          prtstr("Word Wrap Is Off\n");
+X+         dowait();
+X+         smile_intro(*width);
+X        }
+X        else {
+X          *wrap = TRUE;
+X          prtstr("Word Wrap Is On\n");
+X+         dowait();
+X+         smile_intro(*width);
+X        }
+X        break;
+X      case DOTFNY:
+X***************
+X*** 350,358 ****
+X        prtstr("I Got there! hahahaha\n");
+X        break;
+X      case DOTSPC:
+X!       prtstr("Check Spelling\n");
+X!       prtstr("SMiLE Spell Checker\n");
+X!       prtstr("Sorry, the dictionary has been erased\n");
+X        break;
+X      case DOTCWD:
+X        prtstr("Max Col? --> ");
+X--- 356,362 ----
+X        prtstr("I Got there! hahahaha\n");
+X        break;
+X      case DOTSPC:
+X!     smile_intro(*width);
+X        break;
+X      case DOTCWD:
+X        prtstr("Max Col? --> ");
+X***************
+X*** 361,366 ****
+X--- 365,372 ----
+X        prtstr("\nScreen Width Set to = ");
+X        printf("%d",*width);
+X        prtchr(NEWLIN);
+X+         dowait();
+X+         smile_intro(*width);
+X        break;
+X      default:
+X        if ((type != FULL_MENU)&&(nkey == key)) {
+X***************
+X*** 380,386 ****
+X  ed_line *head;
+X  {
+X    char cnt = 1;
+X!   prtstr("SMiLE File Lister\n   ");
+X    makebar(width);
+X    while (head) {
+X      if (((2+cnt)%24)==0)
+X--- 386,392 ----
+X  ed_line *head;
+X  {
+X    char cnt = 1;
+X!   prtstr("[;H[2J\fSMiLE File Lister\n   ");
+X    makebar(width);
+X    while (head) {
+X      if (((2+cnt)%24)==0)
+X***************
+X*** 397,408 ****
+X  char width;
+X  ed_line *head;
+X  {
+X!   char cnt = 3;
+X!   prtstr("SMiLE File Previewer\n");
+X    makebar(width);
+X    while (head) {
+X!     if (((cnt++)%24)==0)
+X        pause();
+X      prtstr(head->data);
+X      prtchr(NEWLIN);
+X      head = head->next;
+X--- 403,415 ----
+X  char width;
+X  ed_line *head;
+X  {
+X!   char cnt = 1;
+X!   prtstr("[;H[2J\fSMiLE File Previewer\n   ");
+X    makebar(width);
+X    while (head) {
+X!     if (((2+cnt)%24)==0)
+X        pause();
+X+     printf("   ",cnt++);
+X      prtstr(head->data);
+X      prtchr(NEWLIN);
+X      head = head->next;
+X***************
+X*** 448,453 ****
+X--- 455,467 ----
+X  pause()
+X  {
+X    prtstr("* MORE *");
+X+   beep();
+X+   getkey();
+X+   delete(8);
+X+ }
+X+ dowait()
+X+ {
+X+   prtstr("Press any key to Continue");
+X    beep();
+X    getkey();
+X    delete(8);
+X*** smile.h	Sun Oct 16 15:37:55 1994
+X--- /usr/tmp/smile/smile.h	Sun Oct 16 15:37:15 1994
+X*** smile_main.c	Sun Oct 16 15:37:58 1994
+X--- /usr/tmp/smile/smile_main.c	Sun Oct 16 16:52:37 1994
+X***************
+X*** 20,30 ****
+X  
+X    init_tty();
+X    if ((argc < 2)||(argc > 3)) {
+X!     fprintf(stderr, "Usage: %s file [line lenght]\n",argv[0]);
+X      restore_tty();
+X      exit(1);
+X    }
+X!   width = 35;
+X    if (argc == 3)
+X      width = atoi(argv[2]);
+X    if ((ants = fopen(argv[1],"r")) == NULL) {
+X--- 20,30 ----
+X  
+X    init_tty();
+X    if ((argc < 2)||(argc > 3)) {
+X!     fprintf(stderr, "Usage: %s file [line length]\n",argv[0]);
+X      restore_tty();
+X      exit(1);
+X    }
+X!   width = 72;
+X    if (argc == 3)
+X      width = atoi(argv[2]);
+X    if ((ants = fopen(argv[1],"r")) == NULL) {
+X***************
+X*** 76,82 ****
+X  smile_help(wwst,width)
+X  char wwst,width;
+X  {
+X!   prtstr("SMiLE Help SubSystem\n\n");
+X    prtstr("Current Screen Width = ");
+X    printf("%2d",width);
+X    prtstr("  Word Wrap is ");
+X--- 76,82 ----
+X  smile_help(wwst,width)
+X  char wwst,width;
+X  {
+X!   prtstr("[;H[2J\fSMiLE Help SubSystem\n\n");
+X    prtstr("Current Screen Width = ");
+X    printf("%2d",width);
+X    prtstr("  Word Wrap is ");
+X***************
+X*** 92,104 ****
+X    prtstr("command or slash command set.\n");
+X    prtstr("The Slash and  Command Set of C-Net and Color BBS is  not completely  supported\n");
+X    prtstr("except for the most common commands.\n");
+X-   pause();
+X    prtstr("The  New  SMiLE commands that allow all the powerful SMiLE features are:\n");
+X    prtstr("CTRL + N   Next Line                    CTRL + P   Previous Line\n");
+X    prtstr("CTRL + B   Backward Char                CTRL + F   Forward Char\n");
+X    prtstr("CTRL + K   Kill Line                    CTRL + L   List The Text\n");
+X!   prtstr("CTRL + A   Previews Text                CTRL + [   ESC Key, invokes SMiLE Menu\n");
+X!   prtstr("Typing   . or / at   the beggining of a Line enters  the QUICK Menu Mode.  i.e.\n");
+X    prtstr("you will be prompted for a  option from the SMiLE  menu, but   no menu will  be\n");
+X    prtstr("displayed.     (C-Net/Color         BBS Compatibility command)\n");
+X  }
+X--- 92,104 ----
+X    prtstr("command or slash command set.\n");
+X    prtstr("The Slash and  Command Set of C-Net and Color BBS is  not completely  supported\n");
+X    prtstr("except for the most common commands.\n");
+X    prtstr("The  New  SMiLE commands that allow all the powerful SMiLE features are:\n");
+X    prtstr("CTRL + N   Next Line                    CTRL + P   Previous Line\n");
+X    prtstr("CTRL + B   Backward Char                CTRL + F   Forward Char\n");
+X    prtstr("CTRL + K   Kill Line                    CTRL + L   List The Text\n");
+X!   prtstr("CTRL + V   Previews Text                CTRL + [   ESC Key, invokes SMiLE Menu\n");
+X!   prtstr("Enter/Return   Inserts a new line after the current line #\n");
+X!   prtstr("Typing   . or / at   the beginning of a Line enters  the QUICK Menu Mode.  i.e.\n");
+X    prtstr("you will be prompted for a  option from the SMiLE  menu, but   no menu will  be\n");
+X    prtstr("displayed.     (C-Net/Color         BBS Compatibility command)\n");
+X  }
+X*** suntty.c	Sun Oct 16 15:38:00 1994
+X--- /usr/tmp/smile/suntty.c	Sun Oct 16 17:00:14 1994
+X***************
+X*** 7,12 ****
+X--- 7,14 ----
+X  #include <stdio.h>
+X  #include <sys/ioctl.h>
+X  #include "bsd_tty.h"
+X+ #include <sgtty.h>
+X+ #include <signal.h>
+X  #define DEL_00		127
+X  #define DEL_01		 20
+X  #define DEL_02		  8
+X***************
+X*** 25,31 ****
+X--- 27,35 ----
+X  
+X  init_tty()
+X  {
+X+ 
+X    struct sgttyb new;
+X+   signal(SIGINT, SIG_IGN);
+X    if (ioctl(STDIN, TIOCGETP, &old) == ERROR) {
+X      perror("Can not get Terminal parameters -- ioctl");
+X      exit(1);
+X***************
+X*** 41,46 ****
+X--- 45,51 ----
+X  
+X  restore_tty()
+X  {
+X+   signal(SIGINT, SIG_IGN);
+X    if (ioctl(STDIN, TIOCSETN, &old) == ERROR) {
+X      perror("Can not restore Terminal Characteristics -- ioctl");
+X      exit(1);
+END_OF_FILE
+echo shar: 8 control characters may be missing from \"'smile.patch'\"
+if test 9112 -ne `wc -c <'smile.patch'`; then
+    echo shar: \"'smile.patch'\" unpacked with wrong size!
+fi
+# end of 'smile.patch'
+fi
+if test -f 'smile_main.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'smile_main.c'\"
+else
+echo shar: Extracting \"'smile_main.c'\" \(3320 characters\)
+sed "s/^X//" >'smile_main.c' <<'END_OF_FILE'
+X/* SMiLE -- Simple MIni Line Editor
+X   Copyright (C) 1989 By Alejandro Liu
+X   You are given permission to Freely Copy and distribute this program
+X   in its unmodifed form provided that this copyright notice is included.
+X */
+X
+X#include "bsd_tty.h"
+X#include "smile.h"
+X#include <stdio.h>
+X
+Xmain(argc,argv)
+Xint argc;
+Xchar *argv[];
+X{
+X  int x;
+X  extern int smile();
+X  ed_line head, *basura;
+X  char width, tk[256];
+X  FILE *ants;
+X
+X  init_tty();
+X  if ((argc < 2)||(argc > 3)) {
+X    fprintf(stderr, "Usage: %s file [line lenght]\n",argv[0]);
+X    restore_tty();
+X    exit(1);
+X  }
+X  width = 35;
+X  if (argc == 3)
+X    width = atoi(argv[2]);
+X  if ((ants = fopen(argv[1],"r")) == NULL) {
+X    head.previous = head.next = NULL;
+X    head.data = (char *)malloc(2);
+X    head.len = *(head.data) = 0;
+X  }
+X  else {
+X    head.previous = NULL;
+X    basura = &head;
+X  loop:
+X    if (fgets(tk, width, ants)) {
+X      basura->len = strlen(tk);
+X      tk[--(basura->len)] = 0;
+X      basura->data = (char *)malloc(basura->len + 1);
+X      strcpy(basura->data,tk);
+X      basura->next = (ed_line *)malloc(sizeof(head));
+X      (basura->next)->previous = basura;
+X      basura = basura->next;
+X      goto loop;
+X    }
+X    else {
+X      basura->next = NULL;
+X      basura->len = 0;
+X      basura->data = (char *)malloc(2);
+X      *(basura->data) = 0;
+X    }
+X    fclose(ants);
+X  }
+X  x = smile(&head, 1, width);
+X  if (x == ABORT) {
+X    prtstr("SMiLE Aborted... Changes Discarded\n");
+X  }
+X  else {
+X    prtstr("SMiLE saving File\n");
+X    if (ants = fopen(argv[1],"w")) {
+X      basura = &head;
+X      while (basura) {
+X	fprintf(ants,"%s\n",basura->data);
+X	basura = basura->next;
+X      }
+X      fclose(ants);
+X    }
+X    else
+X      fprintf(stderr,"%s: can not write to file %s\n",argv[0],argv[1]);
+X  }
+X  restore_tty();
+X}
+Xsmile_help(wwst,width)
+Xchar wwst,width;
+X{
+X  prtstr("SMiLE Help SubSystem\n\n");
+X  prtstr("Current Screen Width = ");
+X  printf("%2d",width);
+X  prtstr("  Word Wrap is ");
+X  if (wwst)
+X    prtstr("enabled\n");
+X  else
+X    prtstr("disabled\n");
+X  prtstr("SMiLE -- Simple MIni Line Editor\n\n");
+X  prtstr("This   is a  simple   mini line editor, suitable for editing  messages for mail\n");
+X  prtstr("or BBS  posts.  It  has  two integrated command  sets for maximum compatibilty.\n");
+X  prtstr("First  Command set is the SMiLE command set,  that   supports  Easy Multi  line\n");
+X  prtstr("editing  with easy cursor control,  and the other is a C-Net or Color  BBS, dot\n");
+X  prtstr("command or slash command set.\n");
+X  prtstr("The Slash and  Command Set of C-Net and Color BBS is  not completely  supported\n");
+X  prtstr("except for the most common commands.\n");
+X  pause();
+X  prtstr("The  New  SMiLE commands that allow all the powerful SMiLE features are:\n");
+X  prtstr("CTRL + N   Next Line                    CTRL + P   Previous Line\n");
+X  prtstr("CTRL + B   Backward Char                CTRL + F   Forward Char\n");
+X  prtstr("CTRL + K   Kill Line                    CTRL + L   List The Text\n");
+X  prtstr("CTRL + A   Previews Text                CTRL + [   ESC Key, invokes SMiLE Menu\n");
+X  prtstr("Typing   . or / at   the beggining of a Line enters  the QUICK Menu Mode.  i.e.\n");
+X  prtstr("you will be prompted for a  option from the SMiLE  menu, but   no menu will  be\n");
+X  prtstr("displayed.     (C-Net/Color         BBS Compatibility command)\n");
+X}
+END_OF_FILE
+if test 3320 -ne `wc -c <'smile_main.c'`; then
+    echo shar: \"'smile_main.c'\" unpacked with wrong size!
+fi
+# end of 'smile_main.c'
+fi
+if test -f 'suntty.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'suntty.c'\"
+else
+echo shar: Extracting \"'suntty.c'\" \(1864 characters\)
+sed "s/^X//" >'suntty.c' <<'END_OF_FILE'
+X/* SMiLE -- Simple MIni Line Editor
+X   Copyright (C) 1989 By Alejandro Liu
+X   You are given permission to Freely Copy and distribute this program
+X   in its unmodifed form provided that this copyright notice is included.
+X */
+X
+X#include <stdio.h>
+X#include <sys/ioctl.h>
+X#include "bsd_tty.h"
+X#define DEL_00		127
+X#define DEL_01		 20
+X#define DEL_02		  8
+X#define LEFT_C		  2
+X#define RIGHT_C		  6
+X#define DONE0		 13
+X#define DONE1		 10
+X
+X#define STDIN   0
+X#define STDOUT  1
+X#define STDERR  2
+X#define ERROR	-1
+X#define TSTR	300
+X
+Xstruct sgttyb old;
+X
+Xinit_tty()
+X{
+X  struct sgttyb new;
+X  if (ioctl(STDIN, TIOCGETP, &old) == ERROR) {
+X    perror("Can not get Terminal parameters -- ioctl");
+X    exit(1);
+X  }
+X  new.sg_ospeed = old.sg_ospeed;
+X  new.sg_ispeed = old.sg_ispeed;
+X  new.sg_flags  = ((old.sg_flags | CBREAK) & ~ECHO) & ~TANDEM;
+X  if (ioctl(STDIN, TIOCSETN, &new) == ERROR) {
+X    perror("Can not set Terminal Characteristics -- ioctl");
+X    exit(1);
+X  }
+X}
+X
+Xrestore_tty()
+X{
+X  if (ioctl(STDIN, TIOCSETN, &old) == ERROR) {
+X    perror("Can not restore Terminal Characteristics -- ioctl");
+X    exit(1);
+X  }
+X}
+X
+Xchar *getstr()
+X{
+X  char *tmp1, *tmp2;
+X  char key;
+X
+X  tmp1 = tmp2 = (char *)malloc(TSTR);
+X  *(tmp1) = 0;
+X  for (;;) {
+X    key = 127 & getkey();
+X    switch (key) {
+X      case DEL_00:
+X      case DEL_01:
+X      case DEL_02:
+X        if (tmp1 == tmp2)
+X	  beep();
+X	else {
+X	  delete(1);
+X	  *(--tmp1) = 0;
+X	}
+X	break;
+X      case LEFT_C:
+X	if (tmp1 == tmp2)
+X	  beep();
+X	else {
+X	  backspace(1);
+X	  --tmp1;
+X	}
+X	break;
+X      case RIGHT_C:
+X	if (*tmp1)
+X	  prtchr(*(tmp1++));
+X	else
+X	  beep();
+X	break;
+X      case DONE0:
+X      case DONE1:
+X	key = strlen(tmp2) + 1;
+X	tmp1 = (char *)malloc(key);
+X	strcpy(tmp1,tmp2);
+X	free(tmp2);
+X	return(tmp1);
+X      default:
+X	if ((31<key)&&(key<127)) {
+X	  if (!(*tmp1))
+X	    *(tmp1+1) = 0;
+X	  *(tmp1++) = key;
+X	  prtchr(key);
+X	}
+X	else
+X	  beep();
+X    }
+X  }
+X}
+END_OF_FILE
+if test 1864 -ne `wc -c <'suntty.c'`; then
+    echo shar: \"'suntty.c'\" unpacked with wrong size!
+fi
+# end of 'suntty.c'
+fi
+echo shar: End of shell archive.
+exit 0

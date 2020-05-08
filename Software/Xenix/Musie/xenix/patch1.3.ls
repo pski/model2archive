@@ -1,0 +1,5 @@
+-rw-r--r-- 0/0             335 Oct 30 00:08 1994 Makefile
+-rw-r--r-- 0/0            9470 Oct 29 23:46 1994 patch.1
+-rw-r--r-- 0/0           40707 Oct 30 00:05 1994 patch.c
+-rwxr-xr-x 0/0           34508 Oct 30 00:13 1994 patch.exe
+-rw-r--r-- 0/0           10918 Oct 30 00:01 1994 patch.man

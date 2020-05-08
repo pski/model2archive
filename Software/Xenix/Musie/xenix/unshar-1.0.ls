@@ -1,0 +1,6 @@
+-rw-r--r-- 12221/10      13638 Dec 17 20:33 1991 unshar/unshar.c
+-rw-r--r-- 12221/10        989 May  5 12:34 1995 unshar/unshar.1
+-rw-r--r-- 12221/10        131 May  5 12:12 1995 unshar/Makefile
+-rw-r--r-- 12221/10        190 Dec 20 05:14 1991 unshar/unshar.h
+-rwxr-xr-x 0/0           15384 May  5 12:13 1995 unshar/unshar
+-rw-r--r-- 0/0            1693 May  5 12:35 1995 unshar/unshar.man

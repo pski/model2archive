@@ -1,0 +1,15 @@
+-rw-r--r-- 0/0            2129 May 29 23:24 1995 Makefile
+-rw-r--r-- 0/0            2200 Jan  7 22:19 1995 README
+-rw-r--r-- 0/0             443 May 29 23:57 1995 TANDY6000
+-rw-r--r-- 0/0            7378 May 29 23:01 1995 options.3
+-rw-r--r-- 0/0           10901 Jan  7 22:19 1995 options.c
+-rw-r--r-- 0/0            2588 May 29 21:54 1995 options.h
+-rwxr-xr-x 0/0           34073 May 30 00:05 1995 qterm
+-rw-r--r-- 0/0            5814 May 29 23:56 1995 qterm.1
+-rw-r--r-- 0/0           24777 May 29 23:28 1995 qterm.c
+-rw-r--r-- 0/0            3281 Jan  7 22:20 1995 qterm.h
+-rw-r--r-- 0/0            9454 May 29 23:58 1995 qterm.man
+-rw-r--r-- 0/0            3311 Jan  7 22:20 1995 qtermtab
+-rw-r--r-- 0/0             731 May 29 23:17 1995 strncmp.c
+-rw-r--r-- 0/0             211 May 29 21:54 1995 strtol.c
+-rw-r--r-- 0/0            3262 May 29 23:54 1995 tandypatch

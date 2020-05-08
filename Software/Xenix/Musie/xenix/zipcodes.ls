@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3            1773 Sep 21 01:07 1993 /usr/local/zipcodes
+-rw-r--r-- 3/3          663304 Sep  7 23:45 1993 /usr/local/zipcodes.text

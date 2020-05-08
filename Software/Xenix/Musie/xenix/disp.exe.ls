@@ -1,0 +1,2 @@
+-rw-r--r-- 3/3            1859 Aug 16 02:07 1994 /usr/lib/Help/lib/L/display
+-rwxr-xr-x 3/3           25576 Aug 16 01:22 1994 /usr/local/display

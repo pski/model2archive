@@ -1,0 +1,90 @@
+This directory is for 3.2 Xenix source and binaries running on Tandy
+16/6000 type machines, however, many will also run under 3.0 Xenix.  
+Most of the files here are level 9 gzipped and it can take one hour or 
+longer to gunzip some of them.
+
+This file and the advice posted herein, has been provided by
+Stephen Scrivano (sscrivan@nyx.cs.du.edu) so that users will have
+an easier time porting software found here and elsewhere.  Feel
+free to e-mail me if you have any difficulties in matters concerning
+these machines.  Files here with the extension ".gz" or ".tgz/tar.gz"
+are "gzipped" or "tar gzipped".  Get gunzip.exe first so you
+can take the files directly to your 16/6000 machine for unpacking.
+Please make note that when using many of the compression/decompression
+utilities (gzip/gunzip included), you must have higher memory on your
+system and Xenix 3.2 with /etc/cfg maxmem=512k (or about).  Anytime
+you use "cfg", remember to reboot your system so the patch will take
+affect on your xenix kernel.  If you ever get a message that says
+"killed" you know that your maxmem is not high enough.  Ispell is 
+another program that is memory intensive.
+
+3.0 Xenix users have no way of reconfiguring the kernel for higher
+memory without the configuration kit from Tandy mentioned below.
+
+For 3.0 Xenix users without the configuration kit, you will have gunzip these 
+files on some other machine before downloading them to your own machine.  
+
+If you have no communication software (cu, cu.s3 will not transfer binaries and
+is not reliable even for uuencoded files), feel free to contact me so I can 
+arrange to get you communication software on disk.
+
+Source deposited here should be compile ready, which means the makefile is 
+ready to go when present and all source is correct or appropriate files and 
+patches are provided to make it compilable.  When possible, for the benefit of 
+Xenix users that don't have the development system containing a C compiler, 
+please enclose the binaries in the source packages too or upload them in a 
+separate file with the extension ".exe" so they can be easily found.  Always
+include complete support files and documentation for anything you upload.
+
+Before you do any compiling, it is important that you first update your 
+libraries since many packages here depend on it. You will find several object 
+libraries posted here for updating your libraries called "stringlib" and 
+"gwynlib".  Compile these two packages and use "ar r *.o /lib/libc.a" to 
+install ONLY the following objects and run ranlib on /lib/libc.a when you are 
+done):
+
+bcmp.o		getdents.o	memcmp.o	readdir.o	strerror.o
+bcopy.o		index.o		memcpy.o	rewinddir.o	strstr.o
+bzero.o		memccpy.o	memset.o	rindex.o	telldir.o
+closedir.o	memchr.o	opendir.o	seekdir.o
+
+The installation of the "stringlib" package makes porting software upward
+compatible since "b!!" functions map to "mem" functions and "rindex/index"
+functions map to "strchr/strrchr" without having to define this in your
+makefiles.
+
+DO NOT INSTALL ANY OTHER STRING FUNCTIONS found in "stringlib" only strerror
+and strstr.  Do install the /usr/include header files in these packages. I
+also recommend that you obtain the C-news package (from another site if not
+here) and pick through it.  This package contains a wealth of source code
+and fakes that you can use to update your libraries.  I advise
+creating a /lib/libn.a with the C-news package and install some of the
+/usr/include header files in it like stddef.h and stdlib.h.  My /lib/libn.a
+contains these object files made from the C-news package and some others:
+
+              dogets.o      fgetmfs.o     getindate.o   qmktime.o
+cfgetln.o     efopen.o      fopenexcl.o   hash.o        split.o
+closeall.o    emalloc.o     fsync.o       hdbm.o        stdfdopen.o
+clsexec.o     error.o       getabsdate.o  mkdir.o       symlink.o
+dateconv.o    fgetfln.o     getdate.o     nfclose.o     timestamp.o
+datetok.o     fgetline.o    gethostname.o putenv.o      warning.o
+
+Once you update your libraries, things will be much easier.  Xenix was
+missing just enough object files as to make life miserable.
+
+For the benefit of those who are interested in obtaining Xenix packages
+from Tandy Software Assembly, the following stock #'s and descriptions
+are provided below so you can upgrade your systems.  Through you local
+Radio Shack store, any sales representative can order these packages
+from Tandy Software Assembly for about $7.50 per disk and if you want
+manuals, cost of reproduction is extra.
+
+26-6402 03.00.00 Development system.  14 ss disks.  Full distribution.
+700-3040 03.02.00 Development system upgrade.  2 ds disks.  Upgrade.
+700-3033 03.01.00 Xenix 6000 Configuration Kit.	 Linkable objects for the
+kernel.  Information on getting through the z80 is NOT provided, but you
+possibly could do a ram-disk driver or pseudo-ttys with the kit.
+700-3043 03.02.01 Xenix 6000 Configuration Kit.	 Same as above, but for
+03.02.01.  Documentation explains some procedures for kernel tuning. The need
+to re-link the kernel is largely replaced by use of /etc/cfg.
+700-3039 03.02.00 Most recent Xenix core system

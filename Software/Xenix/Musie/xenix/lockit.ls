@@ -1,0 +1,2 @@
+-rw-r--r-- 0/0             895 Oct 11 23:15 1994 lockit.man
+-rw-r--r-- 0/0            4683 Sep 26 23:29 1994 lockit.c

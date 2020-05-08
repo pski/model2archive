@@ -1,0 +1,4 @@
+-rw-r--r-- 0/0             127 Oct 12 15:18 1995 README
+-rwxr-xr-x 0/0           18071 Oct 12 03:32 1995 chown
+-rw-r--r-- 3/3            4827 Oct 12 01:43 1995 chown.c
+-rw-r--r-- 0/0             597 Oct 12 15:16 1995 chown.man

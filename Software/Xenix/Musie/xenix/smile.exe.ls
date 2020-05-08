@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3           19437 Oct 16 18:00 1994 /usr/local/smile
+-rw-r--r-- 3/3            3148 Jul  1 20:57 1994 /usr/lib/Help/lib/L/smile

@@ -1,0 +1,624 @@
+Subject:  v24i045:  Reverse polish notation calculator
+Newsgroups: comp.sources.unix
+Approved: rsalz@uunet.UU.NET
+X-Checksum-Snefru: 4c44080e 76e021ce 14016090 f4a6a0ff
+
+Submitted-by: Arnold Robbins <arnold@audiofax.com>
+Posting-number: Volume 24, Issue 45
+Archive-name: hp
+
+#! /bin/sh
+# This is a shell archive, meaning:
+# 1. Remove everything above the #! /bin/sh line.
+# 2. Save the resulting text in a file.
+# 3. Execute the file with /bin/sh (not csh) to create:
+#	README
+#	hp.1
+#	Makefile
+#	hp.gram.y
+#	hp.scan.l
+#	hp.h
+#	hp.c
+# This archive created: Wed Jan 23 17:27:04 1991
+export PATH; PATH=/bin:/usr/bin:$PATH
+echo shar: "extracting 'README'" '(499 characters)'
+if test -f 'README'
+then
+	echo shar: "will not over-write existing file 'README'"
+else
+cat << \SHAR_EOF > 'README'
+Wed Jan 23 17:23:32 EST 1991
+
+The 'hp' program implements a reverse polish notation calculator.
+I've had this little program for over five years, and finally decided
+to clean it up a little bit and post it.
+
+Enjoy,
+
+Arnold Robbinÿÿ“4	AudioFAX, Inc. | Laundry increases
+2000 Powers Ferry Road, #200 / Marietta, GA. 30067     | exponentially in the
+INTERNET: arnold@audiofax.com Phone:   +1 404 933 7612 | number of children.
+UUCP:	  emory!audfax!arnold Fax-box: +1 404 618 4581 |   -- Miriam Robbins
+SHAR_EOF
+fi
+echo shar: "extracting 'hp.1'" '(3480 characters)'
+if test -f 'hp.1'
+then
+	echo shar: "will not over-write existing file 'hp.1'"
+else
+cat << \SHAR_EOF > 'hp.1'
+.if n .ds lq ""
+.if n .ds rq ""
+.if t .ds lq ``
+.if t .ds rq ''
+.de QU
+\&\\*(lq\\$1\\*(rq\\$2
+..
+.TH HP 1
+.SH NAME
+hp \- Reverse Polish Notation calculator
+.SH SYNOPSIS
+.B hp
+[
+.I "expression elements"
+]
+.SH DESCRIPTION
+.I Hp
+is a desk calculator program using the Reverse Polish Notation
+familiar to all stack machine aficionados and users of
+Hewlett-Packard calculators.
+It accepts expressions composed of operands and operators from
+either its argument list or standard input and evaluates them.
+.PP
+If the expressions to be evaluated are given on the command line,
+.I hp
+prints the resulting value automatically;
+otherwise, the user must request printing with the
+.QU "p"
+or
+.QU "P"
+commands.
+.PP
+An acceptable expression consists of a sequence of
+.QU "constants"
+and
+.QU "commands."
+Constants are numeric constants written in the style of FORTRAN,
+and are stored internally as double precision floating-point values.
+Commands are single characters that request an arithmetic, stack
+control, or control flow operation.
+The following commands are currently implemented:
+.TP
+.B p
+print the value on the top of the stack.
+.TP
+.B P
+print all the values currently on the stack.
+.TP
+.B d
+delete the top value on the stack (throw it away).
+.TP
+.B D
+empty the stack completely (throw all stacked data away).
+.TP
+.B +
+add top two items on the stack, place sum on the stack.
+.TP
+.B \-
+subtract top of stack from next to top, place difference on the stack.
+.TP
+.BR * " or " x " or " X
+multiply top two items on the stack, place product on the stack.
+Since
+.QU "*"
+is usually expanded by the shell,
+.I hp
+allows
+.QU x
+or
+.QU X
+as synonyms for
+.QU * .
+(The idea is that
+.QU x
+is hopefully reminiscent of the grade-school notation used for multiplication.)
+.TP
+.B /
+divide next to top of stack by top of stack, place quotient on the stack.
+.TP
+.B %
+divide next to top of stack by top of stack, place remainder on the stack.
+.TP
+.BR ^ " or " :
+evaluate (next to top of stack) to the (top of stack) power, place
+result on the stack.
+The
+.QU : ,
+while not very mnemonic, is not special to the Bourne shell
+.RI ( sh (1)),
+and so can be used
+on the command line.
+.TP
+.B <
+if next to top of stack is less than top of stack, place a 1 on the
+stack; otherwise, place a 0 on the stack.
+.TP
+.B =
+if next to top of stack equals top of stack, place a 1 on the stack;
+otherwise, place a 0 on the stack.
+.TP
+.B >
+if next to top of stack is greater than top of stack, place a 1 on the
+stack; otherwise, place a 0 on the stack.
+.TP
+.B &
+if next to top of stack is nonzero and top of stack is nonzero, place
+a 1 on the stack; otherwise, place a 0 on the stack.
+.TP
+.B |
+if next to top of stack is nonzero or top of stack is nonzero,
+place a 1 on the stack; otherwise, place a 0 on the stack.
+.TP
+.B !
+if top of stack is nonzero, replace it with a 0; if it is zero,
+replace it with a 1 (logical negation).
+.TP
+.BR q " or " Q
+exit.
+.I Hp
+will also exit when it sees an end-of-file (usually control-D).
+.SH EXAMPLES
+.nf
+hp 32.75 4.5 '*'
+hp
+1 2 3 4 5 6 7P++++++pd
+3.1416 2.7183^ 2.7183 3.1416^>p
+.fi
+.SH SEE ALSO
+.IR eval (1),
+.IR lex (1),
+.IR yacc (1)
+.SH DIAGNOSTICS
+.TP
+stack overflow
+if an attempt is made to push too many items on the stack.
+The stack size is currently limited to about 100.
+.TP
+stack underflow
+if an attempt is made to perform an operation
+with insufficient operands on the stack.
+.TP
+<char>: unrecognized command
+if a character not corresponding to
+any command appears in an expression.
+SHAR_EOF
+fi
+echo shar: "extracting 'Makefile'" '(558 characters)'
+if test -f 'Makefile'
+then
+	echo shar: "will not over-write existing file 'Makefile'"
+else
+cat << \SHAR_EOF > 'Makefile'
+# makefile for 'hp' --- reverse polish notation calculator
+
+CFLAGS= -O
+YFLAGS= -d
+DESTDIR=/usr/local/bin
+MANSEC=l
+CP= cp
+
+OBJS = hp.o hp.gram.o hp.scan.o
+
+hp: $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -lm -ll -o hp
+
+hp.scan.o : y.tab.h
+	lex hp.scan.l
+	cc -O -c lex.yy.c
+	rm lex.yy.c
+	mv lex.yy.o hp.scan.o
+
+hp.gram.o y.tab.h : hp.gram.y
+
+install: hp hp.1
+	$(CP) hp $(DESTDIR)
+	$(CP) hp.1 /usr/man/man$(MANSEC)/hp.$(MANSEC)
+
+print:
+	pr hp.gram.y hp.scan.l hp.h hp.c | lpr
+	nroff -man hp.1 | col | lpr
+
+clean:
+	rm -f $(OBJS) hp.gram.c y.tab.h
+
+clobber: clean
+	rm -f hp
+SHAR_EOF
+fi
+echo shar: "extracting 'hp.gram.y'" '(2209 characters)'
+if test -f 'hp.gram.y'
+then
+	echo shar: "will not over-write existing file 'hp.gram.y'"
+else
+cat << \SHAR_EOF > 'hp.gram.y'
+/* yacc grammar for hp reverse polish calculator */
+
+%{
+#include "y.tab.h"
+
+#include "hp.h"
+
+int i;
+extern int sound();
+extern double ctod(), pow(), fmod();
+%}
+
+%start expression
+%term DOT DIGIT BIGP LITTLEP PLUS MINUS STAR SLASH PERCENT POW
+%term AND OR NOT EQ LT GT LE GE BIGD LITTLED QUIT
+
+%%
+expression : constant_or_command_list
+	|
+	;
+
+constant_or_command_list : constant_or_command_list constant_or_command
+	| constant_or_command
+	;
+
+constant_or_command : constant
+	| command
+	;
+
+constant : DOT	{ push(ctod(line, & scanptr)); scanptr--; }
+	| DIGIT	{ push(ctod(line, & scanptr)); scanptr--; }
+	;
+
+command : LITTLEP	{ if (sound(1)) printf("%lf\n", stack[sp]); }
+
+	| BIGP	{
+			for (i = 1; i < sp; i++)
+				printf("%lf\n", stack[i]);
+		}
+
+	| PLUS	{
+			if (sound(2)) {
+				stack[sp - 1] += stack[sp];
+				sp--;
+			}
+		}
+
+	| MINUS	{
+			if (sound(2)) {
+				stack[sp - 1] -= stack[sp];
+				sp--;
+			}
+		}
+
+	| STAR	{
+			if (sound(2)) {
+				stack[sp - 1] *= stack[sp];
+				sp--;
+			}
+		}
+
+	| SLASH	{
+			if (sound(2)) {
+				stack[sp - 1] /= stack[sp];
+				sp--;
+			}
+		}
+
+	| PERCENT	{
+				if (sound(2)) {
+					stack[sp - 1] = fmod(stack[sp - 1], stack[sp]);
+					sp--;
+				}
+			}
+
+	| POW	{
+			if (sound(2)) {
+				stack[sp - 1] = pow(stack[sp - 1], stack[sp]);
+				sp--;
+			}
+		}
+
+	| LITTLED	{ if (sound(1)) sp--; }
+
+	| BIGD		{ sp = 0; }
+
+	| LT	{
+			if (sound(2)) {
+				if (stack[sp - 1] < stack[sp])
+					stack[sp - 1] = 1.0;
+				else
+					stack[sp - 1] = 0.0;
+				sp--;
+			}
+		}
+
+	| EQ	{
+			if (sound(2)) {
+				if (stack[sp - 1] == stack[sp])
+					stack[sp - 1] = 1.0;
+				else
+					stack[sp - 1] = 0;
+				sp--;
+			}
+		}
+
+	| GT	{
+			if (sound(2)) {
+				if (stack[sp - 1] > stack[sp])
+					stack[sp - 1] = 1.0;
+				else
+					stack[sp - 1] = 0.0;
+				sp--;
+			}
+		}
+
+	| AND	{
+			if (sound(2)) {
+				if (stack[sp - 1] != 0.0 && stack[sp] != 0.0)
+					stack[sp - 1] = 1.0;
+				else
+					stack[sp - 1] = 0.0;
+				sp--;
+			}
+		}
+
+	| OR	{
+			if (sound(2)) {
+				if (stack[sp - 1] != 0.0 || stack[sp] != 0.0)
+					stack[sp - 1] = 1.0;
+				else
+					stack[sp - 1] = 0.0;
+				sp--;
+			}
+		}
+
+	| NOT	{
+			if (sound(1)) if (stack[sp] != 0.0)
+					stack[sp] = 0.0;
+				else
+					stack[sp] = 1.0;
+		}
+
+	| QUIT	{ exit (0); }
+	;
+SHAR_EOF
+fi
+echo shar: "extracting 'hp.scan.l'" '(572 characters)'
+if test -f 'hp.scan.l'
+then
+	echo shar: "will not over-write existing file 'hp.scan.l'"
+else
+cat << \SHAR_EOF > 'hp.scan.l'
+%{
+/* hp.scan.l --- lex scanner for hp calculator */
+
+#include "y.tab.h"
+#undef input
+#undef unput
+%}
+
+%%
+"."	return (DOT);
+[0-9]	return (DIGIT);
+"P"	return (BIGP);
+"p"	return (LITTLEP);
+"+"	return (PLUS);
+"-"	return (MINUS);
+[Xx*]	return (STAR);
+"/"	return (SLASH);
+"%"	return (PERCENT);
+[:^]	return (POW);
+"&"	return (AND);
+"|"	return (OR);
+"!"	return (NOT);
+"="	return (EQ);
+"<"	return (LT);
+">"	return (GT);
+"<="	return (LE);
+">="	return (GE);
+"D"	return (BIGD);
+"d"	return (LITTLED);
+[Qq]	return (QUIT);
+[ \t\n]	;
+.	fprintf(stderr, "%s: unknown command.\n", yytext);
+SHAR_EOF
+fi
+echo shar: "extracting 'hp.h'" '(123 characters)'
+if test -f 'hp.h'
+then
+	echo shar: "will not over-write existing file 'hp.h'"
+else
+cat << \SHAR_EOF > 'hp.h'
+/* hp.h --- external declarations for hp */
+
+extern double stack[];
+extern int scanptr;
+extern int sp;
+extern char line[];
+SHAR_EOF
+fi
+echo shar: "extracting 'hp.c'" '(2416 characters)'
+if test -f 'hp.c'
+then
+	echo shar: "will not over-write existing file 'hp.c'"
+else
+cat << \SHAR_EOF > 'hp.c'
+/* hp --- reverse Polish notation calculator program */
+
+#include <stdio.h>
+#include <ctype.h>
+
+#define MAXSTACK	100
+#define TRUE		1
+#define FALSE		0
+
+double stack[MAXSTACK + 1];
+int scanptr = -1;
+int sp = 0;
+char line[BUFSIZ*4];
+
+extern char *strcpy();
+
+main(argc, argv)
+int argc;
+char **argv;
+{
+	int i, l;
+	int sound();
+
+	if (argc > 1) {
+		l = 0;
+		/* concatenate args into one line for input() to use... */
+		for (i = 1; argv[i] != NULL; i++) {
+			(void) strcpy(& line[l], argv[i]);
+			l += strlen(argv[i]);
+			line[l] = ' ';
+			l++;
+		}
+		line[l] = '\0';
+		scanptr = -1;
+		yyparse();
+		if (sound(1))
+			printf("%1.3lf\n", stack[sp]);
+	} else
+		while (fgets(line, sizeof line, stdin) != NULL) {
+			scanptr = -1;
+			yyparse();
+		}
+	
+	exit(0);
+}
+
+/* ctod --- do atof, but increment pointer into the line buffer */
+
+double ctod(text, indx)
+char text[];
+int *indx;
+{
+	double result, atof();
+	char buf[BUFSIZ];
+	int i = 0;
+
+	while (isdigit(text[*indx])) {
+		buf[i++] = text[*indx];
+		(*indx)++;
+	}
+
+	if (text[*indx] == '.') {
+		buf[i++] = '.';
+		(*indx)++;
+	}
+	
+	while (isdigit(text[*indx])) {
+		buf[i++] = text[*indx];
+		(*indx)++;
+	}
+
+	if (text[*indx] == 'e' ||  text[*indx] == 'E') {
+		buf[i++] = text[*indx];
+		(*indx)++;
+	
+		if (text[*indx] == '-' || text[*indx] == '+') {
+			buf[i++] = text[*indx];
+			(*indx)++;
+		}
+
+		while (isdigit(text[*indx])) {
+			buf[i++] = text[*indx];
+			(*indx)++;
+		}
+	}
+
+	buf[i] = '\0';
+
+	result = atof(buf);
+	return result;
+}
+
+/* fmod --- do floating modulus */
+
+double fmod(x, y)
+double x, y;
+{
+	extern double modf();
+	extern double fabs();
+	double f;
+	int flag = 0;
+	double ipart;
+
+	if (y == 0.0)
+		return x;
+
+	flag = (x < 0.0);
+	x = fabs(x);
+	y = fabs(y);
+	(void) modf(x / y, & ipart);
+	f = x - y * ipart;
+	return (flag ? -f : f);
+}
+
+/* push --- push one item onto the stack */
+
+push(stuff)
+double stuff;
+{
+	if (sp > MAXSTACK)
+		fprintf(stderr, "stack overflow\n");
+	else {
+		sp++;
+		stack[sp] = stuff;
+	}
+}
+
+
+
+/* sound --- sound out the depth of the stack */
+
+int sound(depth)
+int depth;
+{
+	if (sp < depth) {
+		fprintf(stderr, "stack underflow\n");
+		return FALSE;
+	} else
+		return TRUE;
+}
+
+int input()
+{
+	register int c;
+
+again:
+	scanptr++;
+	if ((c = line[scanptr]) == '\0') {
+		scanptr = -1;
+		return 0;
+	} else if (isspace(c))
+		goto again;
+	else {
+		return c;
+	}
+}
+
+int unput(c)
+int c;
+{
+	line[--scanptr] = c;
+}
+
+int yyerror(s)
+char *s;
+{
+	fprintf(stderr, "hp: %s\n", s);
+}
+SHAR_EOF
+fi
+exit 0
+#	End of shell archive
+
+exit 0 # Just in case...

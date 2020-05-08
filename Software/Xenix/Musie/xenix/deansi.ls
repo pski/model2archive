@@ -1,0 +1,6 @@
+-rw-r--r-- 0/0             374 May 15 23:00 1995 Makefile
+-rw-r--r-- 0/0             577 May 15 23:01 1995 README
+-rwxr-xr-x 0/0           12842 May 15 22:59 1995 deansi
+-rw-r--r-- 0/0            1165 May 15 19:22 1995 deansi.hdr
+-rw-r--r-- 0/0            2666 May 15 19:22 1995 deansi.l
+-rw-r--r-- 0/0             404 May 15 19:22 1995 tst.c

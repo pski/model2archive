@@ -1,0 +1,1243 @@
+
+
+
+                                                         South Texas BBS I
+  Listing as of 09/23/89                                Hard Drive Listing
+                                                           713-894-5636
+
+
+ Well here is the listing we all have been waiting for.   I now have over 800 drives listed and am waiting for more.
+ I have included in this new issue a preliminary program to view the list and will be upgrading it soon to have more
+ features, including search and printing lists.      I am also working on a full tech program to help setting up new
+ machines by reading the ROM and allowing the user to do the setup to the proper drive configuration.
+
+ I was asked (told) to put this message in first instead of last so here goes...
+ This list has been compiled over a period of several years of experience, from several lists that are available
+ from different drive manufacturers, and from a couple of lists that have been passed along from BBS to BBS. I have
+ spent may hours of work and I am giving this list free for all to use as a look up table. You may pass this list to
+ whomever you want, all I ask is that my BBS system & number not be removed so that the next person down the line can
+ know where to get upgrades.
+ I am including a program to view, change, or add drives and AT ROM BIOS drive types. This program is copyrighted by
+ me and is going to be issued as shareware. You may pass the associated program and databases along to anyone as long
+ as the databases have not been modified or at least until the new listings have been passed on to me to include in
+ the new issues. I will be offering an update module to add more drives to everyone who registers the program, this
+ will add the new drives without changing the complete list. Also for registered users I will mail a disk to them for
+ all new upgrades of both the program and associated databases. I am asking for $15 to register the program and $1 for
+ shipping on new upgrades, for $20 you will get the registration, plus the upgrades for a year free (sorta free anyway).
+
+  Usefull Info....
+
+ Drive size can be calculated by using the following formula... (((<heads>*<cylinders>)*512)*<sectors>) = size in bytes
+  Example.. Let's take a Seagate ST-225 hard drive and figure how big it really is...
+            The ST-225 has 4 heads and 615 cylinders so if we connect it to a standard MFM controller,then we figure...
+
+                         (((4*615)*512)*17) = 21,411,840 or 21.4 meg
+
+
+            But what if we want to put a new Perstor controller in to increase the drive size, amd display megs not bytes.
+
+                             ((((4*615)*512)*31)/1000 = 39 meg
+
+ Sector list
+  MFM  = 17              This a list of sectors per track available using the different controllers but there are
+  RLL  = 26              exceptions, such as the Konan controllers offer the user 18 sectors per track giving approx.
+  ARLL = 31              500k more disk space per 10 meg of hard drive space. I have noticed that both EDSI & SCSI
+  EDSI = 17 to 72        drives & controllers vary from 17 to over 51 sectors per track depending on the drive and
+  SCSI = 17 to 72        who makes it.  It appears to me that the better the drive the more sectors you can get on it.
+
+
+
+     Thanks,
+
+     Ray Martin, sysop
+     South Texas BBS I                 156 meg online using the Perstor controller & 2 Seagate ST-252-1 drives.
+     713-894-5636  24hrs               RBBS 17.2a with dBASE/Clipper/FoxBASE, Clipper, Amiga, Atari, Games, and
+     300/1200/2400 8,N,1               Programming conferences. 2000+ files online.
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ ALPS ELECTRIC    DRND-10A           2      615      616     616           60.0     17     3.5    M /
+                  DRND-20A           4      615      616     616           60.0     17     3.5    M /
+                  DRPO-20D           2      615      616     616           60.0     26     3.5    R /
+                  RPO-20A            2      615      616     616           60.0     26     3.5    R /
+ AMPEX            PYXIS-13           4      320      132     132           90.0     17     5.25   M /
+                  PYXIS-20           6      320      132     132           90.0     17     5.25   M /
+                  PYXIS-27           8      320      132     132           90.0     17     5.25   M /
+                  PYXIS-7            2      320      132     132           90.0     17     5.25   M /
+ ATASI            3020               3      645      320    none     7      0.0     17     5.25   M /
+                  3033               5      645      320    none     7      0.0     17     5.25   M /
+                  3046               7      645      320    none     7      0.0     17     5.25   M /
+                  3051               7      704      350    none     7      0.0     17     5.25   M /
+                  3051+              7      733      368                    0.0     17     5.25   M /
+                  3053               7      733      365    none     7      0.0     17     5.25   M /
+                  3058               8     1024     none    none     7      0.0     17     5.25   M /
+                  3075               8     1024     1024    none     7      0.0     17     5.25   M /
+                  3085               8     1024      512    none     7      0.0     17     5.25   M /
+ BASF             6185               6      440      220     220            0.0     17     5.25   M /
+                  6186               4      440      220     220            0.0     17     5.25   M /
+                  6187               2      440      220     220            0.0     17     5.25   M /
+                  6188-R1            2      612                             0.0     17     5.25   M /
+                  6188-R3            4      612                             0.0     17     5.25   M /
+ BRAND TECH       BT8085             8     1024                             0.0                   ? /
+                  BT8128             8     1024                             0.0                   ? /
+                  BT8170             8     1024                             0.0                   ? /
+ BULL             D 530              3      987     none    none            0.0     17     5.25   M /
+                  D 550              5      987     none    none            0.0     17     5.25   M /
+                  D 570              7      987     none    none            0.0     17     5.25   M /
+                  D 585              7     1166     none                    0.0     17     5.25   M /
+ C. ITOH          YD-3530            5      731      732                    0.0     17     5.25   M /
+                  YD-3540            7      731      732                   26.0     17     5.25   M /
+                  YD-3042            4      788      789                   26.0            5.25   S / SCSI
+                  YD-3082            8      788      789                   26.0            5.25   S / SCSI
+ CARDIFF          F-3053             5     1024     none    none           20.0     17     3.5    M /
+                  F-3080             5     1024     none    none           20.0     26     3.5    S / SCSI/ECSI
+                  F-3127             5     1024     none    none           20.0     35     3.5    S / SCSI/ECSI
+ CDC              94156-48           5      925     none    none     7     28.0                   E / ESDI
+                  94156-67           6      925     none    none     7      0.0                   E / ESDI
+                  94156-86           9      925     none    none     7      0.0                   E / ESDI
+                  94166-101          5      969     none    none     7     16.5            5.25   E / ESDI
+                  94166-141          7      969     none    none     7     16.5            5.25   E / ESDI
+                  94166-182          9      969     none    none     7     16.5            5.25   E / ESDI
+                  94186-383         13     1412     none    none     7     19.5            5.25   E / ESDI
+                  94186-383-H       15     1224     none    none     7     14.5            5.25   E / ESDI
+                  94186-442         15     1412     none    none     7     16.0            5.25   E / ESDI
+                  94216-106          5     1024     none    none     7     16.5            5.25   E / ESDI
+                  94354-126          7     1072     none    none            0.0     29            E / ESDI
+                  94354-160          9     1072     none    none            0.0     29            E / ESDI
+                  94354-200          9     1072     none    none            0.0     36            E / ESDI
+                  94354-230          9     1272     none    none            0.0     36            E / ESDI
+                  94356-111          5     1072     none    none                    34     3.5    E / ESDI
+                  94356-155          7     1072     none    none           15.0     34     3.5    E / ESDI
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ CDC              94356-200          9     1272     none    none     7     18.0     34     3.5    E / ESDI
+                  WREN III           5      969                            18.0            5.25   E / ESDI
+                  94155-120          8      960        0    none     7     28.0     17     5.25   M / FH
+                  94155-120P         8      960        0    none     7     28.0     17     5.25   M / FH
+                  94155-135P         9      960        0    none     7     28.0     17     5.25   M / FH
+                  94155-19           3      697      128    none     7      0.0                   M /
+                  94155-21           3      697      128    none     7     28.0     17     5.25   M / FH
+                  94155-25           4      615      128                            17            M /
+                  94155-25AT         4      697      128    none     7      0.0                   M /
+                  94155-28           4      697      128    none     7      0.0     17            M /
+                  94155-36           5      697      128    none     7     28.0     17     5.25   M / FH
+                  94155-38           5      733      128    none     7      0.0     17            M /
+                  94155-48           5      925      128    none     7     28.0     17     5.25   M / FH
+                  94155-57           6      925      128    none     7     28.0     17     5.25   M / FH
+                  94155-67           7      925      128    none     7     28.0     17     5.25   M / FH
+                  94155-77           8      925      128    none     7      0.0     17            M /
+                  94155-85           8     1024        0    none     7     28.0     17     5.25   M / FH
+                  94155-85P          8     1024        0    none     7     28.0     17     5.25   M / FH
+                  94155-86           9      925      128    none     7     28.0     17     5.25   M / FH
+                  94155-96           9     1024        0    none     7     28.0     17     5.25   M / FH
+                  94155-96P          9     1024        0    none     7     28.0     17     5.25   M / FH
+                  94156-72           9      925      128                                          M /
+                  94204-65           8      941        0    none     7     28.0     17     5.25   M / FH
+                  94204-71           8     1024        0    none     7     28.0     17     5.25   M / FH
+                  94205-30           3      989      128                                          M /
+                  94205-51           5      989      128    none     7     32.0     17     5.25   M / HH
+                  94295-51           5      989      990    none     7     28.0     17            M /
+                  94335-100          9     1072     none    none     7     15.0     17     3.5    M /
+                  94335-100          9     1072     none    none     7     25.0     17     3.5    M /
+                  94335-55           5     1072     none    none     7     16.5     17     3.5    M /
+                  94335-55           5     1072     none    none     7     25.0     17     3.5    M /
+                  BJ7D5A             4      671              128                    17     5.25   M / FH  77731614 5.25
+                  BJ7D5A             5      671              128                    17     5.25   M / FH  77731608 5.25
+                  BJ7D5A             5      734              128                    17            M /     77731613
+                  9720-1230         15     1635                            16.0                   O / 8" Drive 1056 meg  SABRE
+                  9720-368          10     1217                            18.0                   O / 8" Drive 316 meg   SABRE
+                  9720-500          10     1217                            18.0                   O / 8" Drive 427 meg   SABRE
+                  9720-736          15     1635                            16.0                   O / 8" Drive 637 meg   SABRE
+                  9720-850          15     1381                            16.0                   O / 8" Drive 727 meg   SABRE
+                  SABRE 1230        15     1635                            16.0                   O / 8" Drive 1236 meg
+                  SABRE 368         10     1217                            18.0                   O / 8" Drive 368 meg
+                  SABRE 500         10     1217                            18.0                   O / 8" Drive 500 meg
+                  SABRE 736         15     1635                            16.0                   O / 8" Drive 741 meg
+                  SABRE 850         15     1381                            16.0                   O / 8" Drive 851 meg
+                  94155-135          9      960     none    none     7     28.0     26     5.25   R / RLL HH
+                  94205-77           5      989     none    none     7     28.0     26     5.25   R / RLL HH
+                  94335-150          9     1072     none    none     7     25.0     26     3.5    R / RLL
+                  94335-150          9     1072     none    none     7     15.0     28     3.5    R / RLL
+                  94161-121          0      969     none    none     7     16.5            5.25   S / SCSIFH
+                  94161-86           0      969     none    none     7     16.5            5.25   S / SCSIFH
+                  94171-300          9     1365     none    none     7     16.5            5.25   S / SCSIFH
+                  94171-344          9     1549     none    none     7     17.5            5.25   S / SCSIFH
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ CDC              94181-385H        15                                     10.7            5.25   S / SCSI RUNNER  FH
+                  94181-574         15     1549     none    none     7     16.0            5.25   S / SCSIFH
+                  94211-106          5     1024                            18.0            5.25   S / SCSI WREN-3  HH
+                  94211-209          5     1547                            18.0            5.25   S / SCSI WREN V  HH
+                  94211-91           0      969     none    none     7     16.5            5.25   S / SCSIFH
+                  94221-190          5     1547     none    none     7      8.3            5.25   S / SCSIHH
+                  94351-128          7     1068                                     36     3.5    S / SCSI SWIFT ASYNC
+                  94351-134          7                                     15.0            3.5    S / SCSI SWIFT
+                  94351-160          9     1068                                     36     3.5    S / SCSI SWIFT ASYNC
+                  94351-172          9        0     none    none     7     16.5            3.5    S / SCSI
+                  94351-200          9     1068                                     36     3.5    S / SCSI SWIFT ASYNC
+                  94351-200S         9     1068                                     36     3.5    S / SCSI SWIFT SYNC
+                  94351-230S         9     1272                                     36     3.5    S / SCSI SWIFT SYNC
+ CENTURY DATA     CAST-10203E        3     1050     1051                   28.0     35     5.25   E /  FH    55
+                  CAST-10304         4     1050     1051                   28.0     35     5.25   E /  FH    75
+                  CAST-10305         5     1050     1051                   28.0     35     5.25   E /  FH    94
+                  CAST-14404         4     1590     1591                   25.0     35     5.25   E /  HH    114
+                  CAST-14405         5     1590     1591                   25.0     35     5.25   E /  HH    140
+                  CAST-14406         6     1590     1591                   25.0     35     5.25   E /  HH    170
+                  CAST-24509         9     1599     1600                   18.0     35     5.25   E /  FH    258
+                  CAST-24611        11     1599     1600                   18.0     35     5.25   E /  FH    315
+                  CAST-24713        13     1599     1600                   18.0     35     5.25   E /  FH    372
+                  CAST-10203S        3     1050     1051                   28.0     35     5.25   S /  FH    55
+                  CAST-10304S        4     1050     1051                   28.0     35     5.25   S /  FH    75
+                  CAST-10305S        5     1050     1051                   28.0     35     5.25   S /  FH    94
+                  CAST-14404S        4     1590     1591                   25.0     35     5.25   S /  HH    114
+                  CAST-14405S        5     1590     1591                   25.0     35     5.25   S /  HH    140
+                  CAST-14406S        6     1590     1591                   25.0     35     5.25   S /  HH    170
+                  CAST-24509S        9     1599     1600                   18.0     35     5.25   S /  FH    258
+                  CAST-24611S       11     1599     1600                   18.0     35     5.25   S /  FH    315
+                  CAST-24713S       13     1599     1600                   18.0     35     5.25   S /  FH    372
+ CMI              CM 3206            4      306                             0.0                   M /
+                  CM 3426            4      612      256    none            0.0     17            M /
+                  CM 5205            2      256      128     128     7      0.0     17            M /
+                  CM 5206            2      306      128    none     7      0.0     17            M /
+                  CM 5410            4      256      128     128     7      0.0     17            M /
+                  CM 5412            4      306      128    none     7      0.0     17            M /
+                  CM 5616            6      256      128     128     7      0.0     17            M /
+                  CM 5619            6      306      128    none     7      0.0     17            M /
+                  CM 5826            8      306                             0.0                   M /
+                  CM 6213            2      640      256    none     7      0.0     17            M /
+                  CM 6426            4      615      256    none     7      0.0     17            M /
+                  CM 6426S           4      640      300                    0.0                   M /
+                  CM 6626            4      640      256    none     7      0.0     17            M /
+                  CM 6640            6      640      256    none     7      0.0     17            M /
+                  CM 7660            6      960      512    none     7      0.0     17            M /
+                  CM 7880            8      960      512    none     7      0.0     17            M /
+ COGITO           CG 906             2      306      128     128            0.0                   M /
+                  CG 912             4      306      128     128            0.0                   M /
+                  CG 925             4      612      128     128            0.0                   M /
+                  PT 912             2      612      307     307            0.0                   M /
+                  PT 925             4      612      307     307            0.0                   M /
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ CONNER PERIPHER  CP-3022            2      636                            26.0     27     3.5    R / AT-BUS 16-BIT
+                  CP-3102A           8      776                            26.0     25     3.5    R / AT-BUS 16-BIT
+                  CP-3102B           8      772                            26.0     25     3.5    R / AT-BUS 16-BIT
+                  CP-342             4      805                            26.0     29     3.5    R / AT-BUS 16-BIT
+                  CP-3100            8      776                            29.0     29     3.5    S / SCSI
+                  CP-340             4      788                            29.0     29     3.5    S / SCSI
+ CORE INTNL       HC 150             9      564                            16.0     35     5.25   E /  FH
+                  HC 260            12     1212                            25.0     35     5.25   E /  FH
+                  HC 310            12     1582                            16.0     35     5.25   E /  FH
+                  HC 40              4      564                            10.0     35     5.25   E /  HH
+                  HC 90              5      969                            16.0     35     5.25   E /  HH
+                  AT 30              5      733                            26.0     17     5.25   M /  FH
+                  AT 32              5      733                            21.0     17     5.25   M /  HH
+                  AT 40              5      924                            26.0     17     5.25   M /  FH
+                  AT 63              5      988                            26.0     26     5.25   M /  FH
+                  AT 72              9      924                            26.0     17     5.25   M /  FH
+                  OPTIMA 30          5      733                            21.0     17     5.25   M /  HH
+                  OPTIMA 40          5      963                            26.0     17     5.25   M /  HH
+                  OPTIMA 70          9      918                            26.0     17     5.25   M /  FH
+                  AT 30              5      733                            26.0     26     5.25   R /  FH
+                  AT 32              5      733                            21.0     26     5.25   R /  HH
+                  AT 40              5      924                            26.0     26     5.25   R /  FH
+                  AT 63              5      988                            26.0     26     5.25   R /  FH
+                  AT 72              9      924                            26.0     26     5.25   R /  FH
+                  OPTIMA 30          5      733                            21.0     26     5.25   R /  HH
+                  OPTIMA 40          5      963                            26.0     26     5.25   R /  HH
+                  OPTIMA 70          9      918                            26.0     26     5.25   R /  FH
+ CYNTHIA          D520               4      640     none    none     0      0.0                   M /
+ DISCTRON         D-503              2      153        -                            17            M /
+                  D-504              2      215        -                            17            M /
+                  D-506              4      153        -                            17            M /
+                  D-507              2      306      128                            17            M /
+                  D-509              4      215      128                            17            M /
+                  D-512              8      153        -                            17            M /
+                  D-513              6      215      128                            17            M /
+                  D-514              4      306      128                            17            M /
+                  D-518              8      215      128                            17            M /
+                  D-519              6      306      128                            17            M /
+                  D-526              8      306      128     128     0              17            M /
+ DMA              360/306            2      612      400    none     7      0.0     17            M /  REMOVABLE
+ DTM              853                8      640                             0.0                   M /
+                  885                5     1024                             0.0                   M /
+                  885                8     1024                             0.0                   M /
+ ELCOH            DISCACHE10         4      320                                     17            M /
+                  DISCACHE20         8      320                                     17            M /
+ EPSON            HD 850             4      306                             0.0     17            M /
+                  HD 860             4      612                             0.0     17            M /
+ FUJI             FK301              4      306      128     307                    17            M /
+                  FK302-13           2      612      307     613                    17            M /
+                  FK302-26           4      612      307     613                    17            M /
+                  FK302-39           6      612      307     613                    17            M /
+                  FK303-52           8      615      616       -           50.0     17     3.5    M /
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ FUJI             FK305-26           4      615      616       -           80.0     17     3.5    M /
+                  FK305-39           6      615      616       -           80.0     17     3.5    M /
+                  FK309-26           4      615      616       -           80.0     17     3.5    M /
+                  FK305-39R          4      615                            50.0     26     3.5    R /    32
+                  FK305-58R          6      615                            50.0     26     3.5    R /    49
+                  FK309-39R          4      615                             0.0     26            R /    32
+                  FK308S-39R         4      615                            50.0            3.5    S /    32
+                  FK308S-58R         6      615                            50.0            3.5    S /    45
+                  FK309S-50R         4      615                            50.0            3.5    S /    41
+ FUJITSU          M 2227D            0        0                             0.0                   ? /
+                  2244E              5      823                            25.0     35     5.25   E /  FH
+                  2245E              7      823                            25.0     35     5.25   E /  FH
+                  M 2246E           10      823                            25.0     35     5.25   E / ESDI
+                  M 2247E            7     1243                            25.0     35     5.25   E / ESDI
+                  M 2248E           11     1243                            25.0     35     5.25   E / ESDI
+                  M 2249            15     1243                            18.0                   E /  ESDI or SCSI
+                  M 2249E           15     1243                            25.0     35     5.25   E / ESDI
+                  2230 AS            2      320                                     17            M /
+                  2233 AS            4      320                                     17            M /
+                  2234 AS            6      320                                     17            M /
+                  2235 AS            8      320                                     17            M /
+                  2241 AS            4      754                                     17            M /
+                  M 2226D2           6      615                            35.0     17     3.5    M /
+                  M 2227D2           8      615                            35.0     17     3.5    M /
+                  M 2230AS           2      306                             0.0     17            M /
+                  M 2230AT           2      306                                     17            M /
+                  M 2231             2      306                             0.0                   M /
+                  M 2233AS           4      306                             0.0                   M /
+                  M 2233AT           4      306                                     17            M /
+                  M 2234AS           6      306                             0.0                   M /
+                  M 2235AS           8      306                             0.0                   M /
+                  M 2241AS           3      754      375                    0.0                   M /
+                  M 2242AS           7      754      375                    0.0                   M /
+                  M 2242AS2          7      754                            30.0     17     5.25   M /
+                  M 2243AS          11      754      375                    0.0                   M /
+                  M 2243AS2         11      754                            30.0     17     5.25   M /
+                  M 2243T            7     1186                            25.0     17     5.25   M /
+                  M 2225D            4      615                            35.0     26     3.5    R /
+                  M 2225DR           4      615                            35.0     26     3.5    R /
+                  M 2226DR           6      615                            35.0     26     3.5    R /
+                  M 2227DR           8      615                            35.0     26     3.5    R /
+                  M 2243R            7     1186                            25.0     26     5.25   R /
+                  2244SA             5      823                            25.0     35            S /
+                  M 2245SA           7      823                            25.0     35            S /
+                  M 2246SA          10      823                            25.0     35            S /
+                  M 2344KS          27      624                            16.0                   S /
+ HITACHI          DK512-12           7      823                            23.0            5.25   E /  FH
+                  DK512-17          10      823                            23.0            5.25   E /  FH
+                  DK512-8            5      823                            23.0            5.25   E /  FH
+                  DK514-38          14      903                            16.0     51     5.25   E /  FH
+                  DK522-10           6      823                            25.0     36     5.25   E /  HH
+                  DK 301-1           4      306                            85.0     17     3.5    M /
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ HITACHI          DK 301-2           6      306                            85.0     17     3.5    M /
+                  DK 511-3           5      699      300                   30.0     17     5.25   M / FH
+                  DK 511-5           7      699      300                   30.0     17     5.25   M / FH
+                  DK 511-8          10      823      400                   23.0     17     5.25   M / FH
+                  DK 521-5           6      823      400                   25.0     17     5.25   M / HH
+                  DK512C-12          7      823                            23.0            5.25   S /  FH
+                  DK512C-17         10      819                            23.0     35     5.25   S /  FH
+                  DK512C-8           5      823                            23.0            5.25   S /  FH
+                  DK522C-10          6      819                            25.0     35     5.25   S /  HH
+ IMI              5006               2      306      214    none     0      0.0     17            M /
+                  5012               4      306      214    none     0      0.0     17            M /
+                  5018               6      306      214    none     0      0.0     17            M /
+ IMPRIMIS         9415-519           3      697                                                   ? /
+                  9415-536           5      697                                                   ? /
+                  9415-538           5      733                                                   ? /
+                  94155-120          8      960                                                   ? /
+                  94155-120P         8      960                                                   ? /
+                  94155-135          9      960                                                   ? /
+                  94155-135P         9      960                                                   ? /
+                  94155-48           5      925                                                   ? /
+                  94155-56           9      925                                                   ? /
+                  94155-57           6      925                                                   ? /
+                  94155-67           7      925                                                   ? /
+                  94155-77           8      925                                                   ? /
+                  94155-85           8     1024                                                   ? /
+                  94155-85P          8     1024                                                   ? /
+                  94155-86           9      925                                                   ? /
+                  94155-96           9     1024                                                   ? /
+                  94155-96P          9     1024                                                   ? /
+                  94156-48           5      925                                                   ? /
+                  94156-67           7      925                                                   ? /
+                  94156-86           9      925                                                   ? /
+                  94166-101          5      969                                                   ? /
+                  94166-141          7      969                                                   ? /
+                  94166-182          9      969                                                   ? /
+                  94186-383         13     1412                                                   ? /
+                  94186-383H        15     1224                                                   ? /
+                  94186-442H        15     1412                                                   ? /
+                  94196-766         15     1632                                                   ? /
+                  94204-65           8      941                                                   ? /
+                  94204-71           8     1024                                                   ? /
+                  94205-51           5      989                                                   ? /
+                  94205-77           5      989                                                   ? /
+                  94216-106          5     1024                                                   ? /
+                  94246-383          7     1747                                                   ? /
+                  94354-135          9     1072                                                   ? /
+                  94354-160          9     1072                                                   ? /
+                  94354-172          9     1072                                                   ? /
+                  94354-200          9     1072                                                   ? /
+                  94355-100          9     1072                                                   ? /
+                  94355-150          9     1072                                                   ? /
+                  94356-111          5     1072                                                   ? /
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ IMPRIMIS         94356-155          7     1072                                                   ? /
+                  94356-200          9     1072                                                   ? /
+ JCT              100                0        0                           110.0            5.25   M /  HH  5 MEG
+                  1000               0        0                                                   M /  COMMODORE 5 MEG
+                  1005               0        0                                                   M /  COMMODORE 7 MEG
+                  1010               0        0                                                   M /  COMMODORE 14 MEG
+                  105                0        0                           110.0            5.25   M /  HH 7
+                  110                0        0                           110.0            5.25   M /  HH 14
+                  120                0        0                           110.0            5.25   M /  HH 20
+ KALOK CORP.      KL332              4      615                            48.0     30            E / 30
+                  KL343              4      644                            25.0     30            E / 30
+                  KL320              4      615                            48.0     17     3.5    M / 17
+                  KL330              4      615                            48.0     26            R / 26
+                  KL341              4      644                            25.0     30            S / 30
+ KYOCERA          KC20A              4      615                            65.0     17     3.5    M / 3.5"
+                  KC20B              4      615                            65.0     17     3.5    M /
+                  KC30A              4      615                            65.0     26     3.5    R /
+                  KC30B              4      615                            65.0     26     3.5    R /
+ LAPINE           3062               4      306        0    none     7      0.0     17            M /
+                  3512               4      306        0    none     7      0.0     17            M /
+                  3522               4      306        0    none     7      0.0     17     3.5    M / 3.5"
+                  LT 200             4      615        0    none     7     61.0     17     3.5    M /
+                  LT 2000            4      615        0    none     7     61.0     17     3.5    M /
+                  T-10               2      615        0    none     7      0.0     17     3.5    M / 3.5"
+                  T-20               4      615        0    none     7     61.0     17     3.5    M / 3.5" 61.5ms  Model 3532
+                  T-30               4      615        0    none     7     61.0     27     3.5    R / RLL  3.5" 61.5ms
+                  T-300              4      615        0    none     7     61.0     27     3.5    R / RLL  3.5" 61.5ms
+ MAXTOR           RXT-800S           2                                                     5.25   ? / FH WORM OPTICAL
+                  TAHITI             2                                                     5.25   ? / FH ERASABLE OPTICAL 650meg
+                  XT-4170E           7     1224                            14.0     35     5.25   E /  FH
+                  XT-4175            7     1224                            27.0            5.25   E /  FH
+                  XT-4280E          11     1224                            27.0     36     5.25   E /  FH
+                  XT-4380E          15     1224                            16.0     36     5.25   E /
+                  XT-8380E           8     1632                            14.5     54     5.25   E /  FH
+                  XT-8760E          15     1632                            16.5     54     5.25   E /  FH
+                  XT-1065            7      918     none    none     7     28.0     17     5.25   M /  FH
+                  XT-1085            8     1024     none    none     7     28.0     17     5.25   M /  FH
+                  XT-1105           11      918     none    none     7     27.0     17     5.25   M /  FH
+                  XT-1140           15      918     none    none     7     27.0     17     5.25   M /  FH
+                  XT-1140           15     1024     none    none     7     27.0     17     5.25   M /
+                  XT-2085            7     1224     none                   30.0     17     5.25   M /  FH
+                  XT-2085-           7     1024     none                    0.0                   M /
+                  XT-2140           11     1224     none                   30.0     17     5.25   M /  FH
+                  XT-2140-          11     1024     none                    0.0                   M /
+                  XT-2190           15     1224     none    none     7     29.0     17     5.25   M /  FH
+                  XT-2190-          15     1024     none                    0.0                   M /
+                  XT-4380           15     1224                            16.0     17     5.25   M /  FH
+                  XT-8760           15     1632                            16.5     17     5.25   M /  FH
+                  XT-1120R           8     1024                            27.0     26     5.25   R /  FH
+                  XT-1240R          15     1024                            27.0     26     5.25   R /  FH
+                  LXT-100            8                                     27.0            3.5    S /
+                  LXT-200            7                                     15.0            3.5    S /
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ MAXTOR           XT-3170            9     1224                            30.0     48     5.25   S / SCSI interface
+                  XT-3280           15     1224                            30.0                   S / SCSI interface
+                  XT-3380           15        0                            27.0            5.25   S /  FH
+                  XT-4170S           7     1224                            14.0     36     5.25   S /  FH
+                  XT-4280S          11     1224                            27.0     36     5.25   S /  FH
+                  XT-4380S          15     1224                            16.0     36     5.25   S /  FH
+                  XT-8380S           8     1632                            14.5     54     5.25   S /  FH
+                  XT-8760S          15     1632                            16.5     54     5.25   S /  FH
+ MEMOREX          321                2      320      128    none     0      0.0     17            M /
+                  322                4      320      128    none     0      0.0     17            M /
+                  323                6      320      128    none     7      0.0     17            M /
+                  324                8      320      128    none     7      0.0     17            M /
+                  450                2      612      350    none     7      0.0     17            M /
+                  512                3      961      480    none     7      0.0     17            M /
+                  513                5      961      480    none     7      0.0     17            M /
+                  514                6      961      480    none     7      0.0     17            M /
+ MICRO STORAGE    MS 212             0        0                             0.0                   ? /
+ MICROPOLIS       1352               2     1024                            23.0     36     5.25   E /
+                  1352A              3     1024                            23.0     36     5.25   E /
+                  1353               4     1024                            23.0     36     5.25   E /  FH
+                  1353A              5     1024                            23.0     36     5.25   E /  FH
+                  1354               6     1024                            23.0     36     5.25   E /  FH
+                  1354A              7     1024                            23.0     36     5.25   E /  FH
+                  1355               8     1024                            23.0     36     5.25   E / ESDI
+                  1516-10S          10     1840                            13.5     72     5.25   E /  FH
+                  1517-13           13     1925                            14.0     72     5.25   E /  FH
+                  1518-14           14     1925                            14.0     72     5.25   E /  FH
+                  1518-15           15     1925                            14.0     72     5.25   E /  FH
+                  1556-11           11     1224                            18.0     36     5.25   E /  FH
+                  1557-12           12     1224                            18.0     36     5.25   E /  FH
+                  1557-13           13     1224                            18.0     36     5.25   E /  FH
+                  1557-14           14     1224                            18.0     36     5.25   E /  FH
+                  1557-15           15     1224                            18.0     36     5.25   E /  FH
+                  1566-11           11     1632                            16.0     54     5.25   E /  FH
+                  1567-12           12     1632                            16.0     54     5.25   E /  FH
+                  1567-13           13     1632                            16.0     54     5.25   E /  FH
+                  1568-14           14     1632                            16.0     54     5.25   E /  FH
+                  1568-15           15     1632                            16.0     54     5.25   E /  FH
+                  1653-4             4     1249                            16.0     36     5.25   E /  HH
+                  1653-5             5     1249                            16.0     36     5.25   E /  HH
+                  1654-6             6     1249                            16.0     36     5.25   E /  HH
+                  1654-7             7     1249                            16.0     36     5.25   E /  FH
+                  1663-4             4     1781                            14.0            5.25   E /  HH
+                  1663-5             5     1781                            14.0            5.25   E /  HH
+                  1664-6             6     1781                            14.0            5.25   E /  HH
+                  1664-7             7     1781                            14.0            5.25   E /  FH
+                  1743-5             5     1140                            15.0     48     3.5    E /     28-48 SPT
+                  1744-6             6     1140                            15.0     48     3.5    E /     28-48 SPT
+                  1744-7             7     1140                            15.0     48     3.5    E /     28-48 SPT
+                  1745-8             8     1140                            15.0     48     3.5    E /     28-48 SPT
+                  1745-9             9     1140                            15.0     48     3.5    E /     28-48 SPT
+                  1302               3      830      400                    0.0     17     5.25   M /  FH
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ MICROPOLIS       1303               5      830      400    none     7      0.0     17     5.25   M /  FH
+                  1304               6      830      400    none     7      0.0     17     5.25   M /  FH
+                  1323               4     1024     none    none     7     28.0     17     5.25   M /  FH
+                  1324               6     1024     none    none     7     28.0     17     5.25   M /  FH
+                  1325               8     1024     none    none     7     28.0     17     5.25   M /  FH
+                  1333               4     1024     none    none     7     28.0     17     5.25   M /  FH
+                  1334               6     1024     none    none     7     30.0     17     5.25   M /  FH
+                  1335               8     1024     none    none     7     30.0     17     5.25   M /  FH
+                  1353               4     1024     none    none     7     28.0     17     5.25   M /  FH
+                  1354               6     1024     none    none     7     30.0     17     5.25   M /  FH
+                  1355               8     1024     none    none     7     30.0     17     5.25   M /  FH
+                  1551               7     1024     none    none     7     30.0     17     5.25   M /  FH
+                  1554              11     1224     none    none     7     30.0     17     5.25   M /  FH
+                  1555              12     1224     none    none     7     30.0     17     5.25   M /  FH
+                  1556              13     1224     none    none     7     30.0     17     5.25   M /  FH
+                  1557              14     1224     none    none     7     30.0     17     5.25   M /  FH
+                  1558              15     1224     none    none     7     30.0     17     5.25   M /  FH
+                  1323A              5     1024     none    none     7     28.0     26     5.25   R /  FH RLL
+                  1324A              7     1024     none    none     7     28.0     26     5.25   R /  FH RLL
+                  1333A              5     1024     none    none     7     28.0     26     5.25   R /  FH RLL
+                  1334A              7     1024     none    none     7     28.0     26     5.25   R /  FH RLL
+                  1353A              5     1024     none    none     7     28.0     26     5.25   R /  FH RLL
+                  1354A              7     1024     none    none     7     28.0     26     5.25   R /  FH RLL
+                  1373               4     1024                            23.0     36     5.25   S /  FH
+                  1373A              5     1024                            23.0     36     5.25   S /  FH
+                  1374               6     1024                            23.0     36     5.25   S /  FH
+                  1374A              7     1024                            23.0     36     5.25   S /  FH
+                  1375               8     1024                            23.0     36     5.25   S /  FH
+                  1576-11           11     1220                            18.0     36     5.25   S /  FH
+                  1577-12           12     1220                            18.0     36     5.25   S /  FH
+                  1577-13           13     1220                            18.0     36     5.25   S /  FH
+                  1578-14           14     1220                            18.0     36     5.25   S /  FH
+                  1578-15           15     1220                            18.0     36     5.25   S /  FH
+                  1586-11           11     1628                            16.0     54     5.25   S /  FH
+                  1587-12           12     1628                            16.0     54     5.25   S /  FH
+                  1587-13           13     1628                            16.0     54     5.25   S /  FH
+                  1588-14           14     1628                            16.0     54     5.25   S /  FH
+                  1588-15           15     1628                            16.0     54     5.25   S /  FH
+                  1597-10S          10     1834                            13.5     54     5.25   S /  FH
+                  1597-13           13     1919                            14.0     54     5.25   S /  FH
+                  1598-14           14     1919                            14.0     54     5.25   S /  FH
+                  1598-15           15     1919                            14.0     54     5.25   S /  FH
+                  1673-4             4     1249                            16.0            5.25   S /  HH
+                  1673-5             5     1249                            16.0            5.25   S /  HH
+                  1674-6             6     1249                            16.0            5.25   S /  HH
+                  1674-7             7     1249                            16.0            5.25   S /  HH
+                  1683-4             4     1776                            14.0     54     5.25   S /  HH
+                  1683-5             5     1776                            14.0     54     5.25   S /  HH
+                  1684-6             6     1776                            14.0     54     5.25   S /  HH
+                  1684-7             7     1776                            14.0     54     5.25   S /  HH
+                  1773-5             5     1140                            15.0     48     3.5    S /  HH 28-48
+                  1774-6             6     1140                            15.0     48     3.5    S /  HH 28-48
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ MICROPOLIS       1774-7             7     1140                            15.0     48     3.5    S /  HH 28-48
+                  1775-8             8     1140                            15.0     48     3.5    S /  HH 28-48
+                  1775-9             9     1140                            15.0     48     3.5    S /  HH 28-48
+ MICROSCIENCE     5100               7      855                            18.0     36     3.5    E /  HH
+                  7040               3      855                            18.0     36     3.5    E /  HH
+                  7100               7      855                            18.0     36     3.5    E /  HH
+                  HH 2085            0        0                                                   E /
+                  HH-2012            4      306                             0.0                   E /
+                  HH-2120            7     1024                            28.0     33     5.25   E /  HH
+                  HH-1050            5     1024     none    none     0     28.0     17     5.25   M /  HH
+                  HH-1075            7     1024                            28.0     17     5.25   M /  HH
+                  HH-1090            7     1314                            28.0     17     5.25   M /  HH
+                  HH-2160            7     1276                            18.0     17     3.5    M /  HH
+                  HH-312             4      306     none    none     0      0.0     17            M /
+                  HH-315             2      612     none    none     0      0.0     17            M /
+                  HH-325             4      612     none    none     0     80.0     17            M /
+                  HH-4050            5     1024                            18.0     17     3.5    M /  HH
+                  HH-4060            5     1024                            18.0     17     3.5    M /  HH
+                  HH-4070            7     1024                            18.0     17     3.5    M /  HH
+                  HH-4090            7     1024                            18.0     17     3.5    M /  HH
+                  HH-612             4      306     none    none     0      0.0     17            M /
+                  HH-625             4      612                                     17            M /
+                  HH-712             2      612     none    none     0    105.0     17     5.25   M /  HH
+                  HH-712A            2      612                             0.0                   M /
+                  HH-725             4      612     none    none     0    105.0     17     5.25   M / *DTC:Revision C can use RLL.
+                  HH-825             4      612                            65.0     17     5.25   M /  HH
+                  HH-1060            5     1024                            28.0     26     5.25   R /  HH
+                  HH-1095            7     1024                            28.0     26     5.25   R /  HH
+                  HH-1120            7     1314                            28.0     26     5.25   R /  HH
+                  HH-330             4      612                             0.0     26            R /
+                  HH-738             4      612                           105.0     26     5.25   R /  HH
+                  HH-830             4      615                            65.0     26     5.25   R /  HH
+                  6100               7      855                            18.0     36     3.5    S /  HH
+                  HH-1080            0        0                                                   S /
+                  HH-3120            7     1314                            28.0            5.25   S /  HH
+ MINISCRIBE       1302               0        0                             0.0                   ? /
+                  3312               0        0                             0.0                   ? /
+                  3085E              3     1270                            17.0            5.25   E /  HH
+                  3130E              5     1250                            17.0            5.25   E /  HH
+                  3180E              7     1254                            17.0            5.25   E /  HH   ESDI/SCSI
+                  8051AT             4      745                            28.0     28     3.5    E / AT BUS
+                  8225AT             2      745                            28.0     28     3.5    E /  FH   ESDI/SCSI
+                  8450AT             4      745                            40.0     28     3.5    E /  FH   ESDI/SCSI
+                  9230               9     1224                            16.0            5.25   E /  FH   ESDI/SCSI
+                  9230E              9     1224                            17.0            5.25   E /  FH   ESDI/SCSI
+                  9380              15     1224                            16.0            5.25   E /  FH   ESDI/SCSI
+                  9380E             15     1224                            17.0            5.25   E /  FH   ESDI/SCSI
+                  9424E              8     1661                            17.0            5.25   E /  FH   ESDI/SCSI
+                  9780E             15     1661                            17.0            5.25   E /  FH   ESDI/SCSI
+                  1006               2      153      128                            17            M /
+                  1012               4      153      128                            17            M /
+                  2006               2      307      128                            17            M /
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ MINISCRIBE       2006               8      512                             0.0                   M /
+                  2012               4      306      128                    0.0     17            M /
+                  3006               2      306                             0.0                   M /
+                  3012               2      612                             0.0                   M /
+                  3053               5     1024                            25.0     17     5.25   M /  HH
+                  3053II             5     1024                            25.0     17     5.25   M /  HH
+                  3085               7     1170      512     off     7     20.0     17     5.25   M /  HH
+                  3130               5     1250                            17.0     17     5.25   M /  HH
+                  3180               7     1250                            17.0     17     5.25   M /  HH   ESDI/SCSI
+                  3212               2      612      128                   85.0     17     5.25   M /  HH
+                  3212               2      615        0     off     7      0.0                   M /
+                  3212 PLUS          2      612      128                   53.0     17     5.25   M /  HH
+                  3412               4      306      128                    0.0     17            M /
+                  3425               4      612        0     off     7     85.0     17     5.25   M /  HH
+                  3425 PLUS          4      612              306           53.0     17     5.25   M /  HH
+                  3650               6      809        0     off     7     61.0     17     5.25   M /  HH
+                  3650F              6      809        0     off     7     46.0     17     5.25   M /  HH
+                  3675               6      809        0     off     7     61.0     17     5.25   M /  HH
+                  4010               2      480      128                            17            M /
+                  4020               4      480      128                            17            M /
+                  5330               6      480      128                            17            M /
+                  5338               6      612      306                            17            M /
+                  5440               8      480      128                            17            M /
+                  5451               8      612      306                            17            M /
+                  6032               3     1024      512     off     7     28.0     17     5.25   M /
+                  6053               5     1024      512     off     7     28.0     17     5.25   M /  FH
+                  6074               7     1024      512                   28.0     17     5.25   M /  FH
+                  6085               8     1024      512     off     7     28.0     17     5.25   M /  FH
+                  6212               2      615        0     off     7      0.0     17            M /
+                  7426               4      612      613                            17            M /
+                  8212               2      615      128     off     7      0.0     17            M /
+                  8412               4      306        0     off     7      0.0     17            M /
+                  8425               4      615        0     off     7     68.0     17     3.5    M /
+                  8425F              4      615        0     off     7     40.0     17     3.5    M / RLL
+                  8425XT             4      615                            61.0     17     3.5    M /
+                  8438XT             4      615                            61.0     17     3.5    M /
+                  3438               4      613                            85.0     26     5.25   R /  HH
+                  3438 PLUS          4      613                            53.0     26     5.25   R /  HH
+                  3675               6      809                            61.0     26     5.25   R /  HH
+                  6079               5     1024      512     off     7     28.0     26     5.25   R /  FH
+                  6128               8     1024        0     off     7     28.0     26     5.25   R /
+                  8051               5      981                                     26     3.5    R /
+                  8225               2      771                                     26     3.5    R /
+                  8225XT             4      615                            68.0     26     3.5    R /
+                  8434F              4      615                            40.0     26     3.5    R /
+                  8438               4      615      128     off     7     68.0     26     3.5    R /
+                  8438F              4      615      128     off     7     40.0     26     3.5    R / RLL
+                  8450               4      771                                     26     3.5    R /
+                  8450XT             4      805                            45.0     26     3.5    R /
+                  3085S              3     1255                            17.0            5.25   S /
+                  3130S              5     1255                            17.0            5.25   S /
+                  3180S              7     1255                            17.0            5.25   S /
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ MINISCRIBE       8051S              4      745                            28.0     28     3.5    S /
+                  8425S              4      615                            68.0            3.5    S /
+                  9380S             15     1224                            16.0            5.25   S /
+                  9424S              8     1661                            17.0            5.25   S /
+                  9780S             15     1661                            17.0            5.25   S /
+ MITSUBISHI       MR 5310E           5      977     none                   28.0     17     5.25   E /  HH
+                  MR 521             2      612                            85.0     17     5.25   M /  HH
+                  MR 522             4      612      300                   85.0     17     5.25   M /  HH
+                  MR 533             3      971     none                    0.0     17     5.25   M /  HH
+                  MR 535             5      971     none                   28.0     17     5.25   M /  HH
+                  MR 535             5      971     none                   28.0     26     5.25   R /  HH
+ MMI              312                4      306      128    none     7      0.0                   M /
+                  M 106              2      306      128    none     7     75.0     17     3.5    M /
+                  M 112              4      306      128    none     7     75.0     17     3.5    M /
+                  M 125              8      306      128    none     7     75.0     17     3.5    M /
+                  M 206              2      306      128    none     7      0.0                   M /
+                  M 212              4      306      128    none     7     70.0     17     5.25   M /
+                  M 225              8      306      128    none     7     75.0     17     5.25   M /
+                  M 306              2      306      128    none     7     75.0     17     3.5    M /
+                  M 312              4      306      128    none     7     75.0     17     5.25   M /
+                  M 325              8      306      128    none     7     75.0     17     5.25   M /
+ NEC              D 3142             8      642                                                   ? /
+                  D 3146H            8      615                                                   ? /
+                  D 3661             7      915                                                   ? /
+                  D 5127H            4      615                                                   ? /
+                  D 5452            10      823                                                   ? /
+                  D 5655             7     1224                                                   ? /
+                  D 5662            15     1224                                                   ? /
+                  D 5682            15     1633                                                   ? /
+                  D 5652            10      823                            23.0     17     5.25   E /  HH
+                  D 3126             4      615      256    none     7     85.0     17     3.5    M /
+                  D 5114             2      306                            85.0     17            M /
+                  D 5124             4      306     none                   85.0     17     5.25   M /  HH
+                  D 5126             4      615      128    none     7     85.0     17     5.25   M /  HH
+                  D 5126H            4      615      128    none     7     40.0     17     5.25   M /  HH
+                  D 5127             4      615      128    none     7      0.0     17     5.25   M /  HH
+                  D 5146             8      615      128    none     7     85.0     17     5.25   M /  HH
+                  D 5146H            8      615      128    none     7     40.0     17     5.25   M /  HH    RLL
+                  D 5147             8      615      128    none     7      0.0     17     5.25   M /  HH
+                  D 5147H            8      615      128    none     7      0.0     17     5.25   M /  HH
+ NEI              RD 3127            2      612                             0.0                   M /
+                  RD 3255            4      612                             0.0                   M /
+                  RD 4127            4      306                             0.0     17            M /
+                  RD 4255            8      306                             0.0                   M /
+ NEWBURY DATA     NDR 2190          15     1224                                                   ? /
+                  NDR 4170           7     1224                                                   ? /
+                  NDR 4380          15     1224                                                   ? /
+                  NDR 4175           7     1224     none                   28.0     36     5.25   E /  FH
+                  NDR 4380          15     1224     none                   28.0     36     5.25   E /  FH
+                  1065               7      918                            25.0     17     5.25   M /  FH
+                  1085               8     1025     none                   26.0     17     5.25   M /  FH
+                  1105              11      918     none                   25.0     17     5.25   M /  FH
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ NEWBURY DATA     1140              15      918     none                   25.0     17     5.25   M /  FH
+                  1140-             15     1024                            25.0     17     5.25   M /  FH
+                  2190-             15     1024     none                   28.0     17     5.25   M /  FH
+                  NDR 340            8      615     none                   40.0     17     3.5    M /
+                  NDR 360            8      615                                                   M /
+                  2190              15      918     none                    0.0     17     5.25   N /  FH
+                  320                4      615     none                    0.0                   N /
+                  NDR 3170S          9     1224     none                   28.0     26     5.25   S /  FH
+                  NDR 3280S         15     1224     none                   28.0     26     5.25   S /  FH
+                  NDR 4380S         15     1224     none                   28.0     34     5.25   S /  FH
+ NPL              NP 03-6            2      306                             0.0                   M /
+                  NP 03-13           4      306                             0.0                   R / 315 RLL
+                  NP 02-26S          4      640                             0.0                   S /
+ OKIDATA          OD 526             4      615                             0.0     26            R /
+                  OD 540             6      615                             0.0     26            R /
+ OLIVETTI         HD662/11           2      612                                     17            M /
+                  HD662/12           4      612                                     17            M /
+ OTARI            C 214              4      306      128     128                    17            M /
+                  C 519              6      306      128     128                    17            M /
+                  C 526              8      306      128     128                    17            M /
+ PANASONIC        JU-116             4      615                            85.0     17     3.5    M /
+                  JU-128             7      733                            35.0     17     3.5    M /
+ PRIAM            617               11      752                                                   ? /
+                  623               15      752                                                   ? /
+                  630               15     1224                                                   ? /
+                  617                7     1225                            20.0            5.25   E /  FH
+                  628               11     1225                            20.0            5.25   E /  FH
+                  638               15     1225                            20.0     34     5.25   E /  FH
+                  502                7      755                                     17            M /
+                  504                7      755                                     17            M /
+                  514               11     1224                            22.0     17     5.25   M /  FH
+                  519               15     1224     none                   22.0     17     5.25   M /  FH
+                  ID 130            15     1224     none    none     7      0.0                   M /
+                  S 14              11     1224     none    none     7      0.0                   M /
+                  S 19              15     1224     none    none     7      0.0                   M /
+                  V 150              5      987     none    none     7      0.0     17            M /
+                  V 160              5     1166     none                    0.0     17            M /
+                  V 170              7      987     none    none     7      0.0     17            M /
+                  V 185              7     1166     none                    0.0     17            M /
+                  V 130              3      987     none    none     7      0.0     26            R /
+                  V 160              5     1166     none    none     7      0.0     17            R /
+                  V 170              7      987     none    none     7      0.0     26            R /
+                  717                7     1225                            20.0            5.25   S /  FH
+                  728               11     1225                            20.0            5.25   S /  FH
+                  738               15     1225                            20.0            5.25   S /  FH
+ PTI              PT-325R            0        0                             0.0                   ? /
+                  PT-225             4      615      300    none     7      0.0     17            M /
+                  PT-234             4      820                            35.0     17            M /
+                  PT-338             6      615     none    none     7      0.0     17            M /
+                  PT-351             6      820                            35.0     17     3.5    M /
+                  PT-238A            4      615                            35.0     26            R /  FOR AT BUS
+                  PT-238R            4      615      300    none     7      0.0     26            R / RLL
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ PTI              PT-251A            4      820                            35.0     26            R /  FOR AT BUS
+                  PT-251R            4      820                            35.0     26            R /
+                  PT-338R            6      615     none    none     7      0.0     26            R / RLL
+                  PT-357A            6      615                            35.0     26            R /  FOR AT BUS
+                  PT-357R            6      615     none    none     7      0.0     26            R / RLL
+                  PT-376A            6      820                            35.0     26            R /  FOR AT BUS
+                  PT-376R            6      820                            35.0     26            R /
+                  PT-4102R           8      820                                     26            R /
+                  PT-238S            4      615                            35.0                   S /
+                  PT-251S            4      820                            35.0                   S /
+                  PT-357S            6      615                            35.0                   S /
+                  PT-376S            6      820                            35.0                   S /
+ QUANTUM          PRO100             0        0                            19.0            3.5    E /
+                  PRO145             0        0                            19.0            3.5    E /
+                  Q 510              2      512      256    none     7     17.0                   M /
+                  Q 520              4      512      256    none     7     17.0                   M /
+                  Q 530              6      512      256    none     7     17.0                   M /
+                  Q 540              8      512      256    none     7     17.0                   M /
+                  PRO120             0        0                            19.0            3.5    R /   AT BUS
+                  PRO170             0        0                            19.0            3.5    R /   AT BUS
+                  PRO40              0        0                            19.0            3.5    R /   AT BUS
+                  PRO80              0        0                            19.0            3.5    R /   AT BUS
+                  PRO120             0        0                            19.0            3.5    S /  120
+                  PRO170             0        0                            19.0            3.5    S /  168
+                  PRO40              0        0                            19.0            3.5    S /  42
+                  PRO80              0        0                            19.0            3.5    S /  84
+                  Q-160             12        0                            26.0            5.25   S /  HH
+                  Q-250              4      823                            26.0            5.25   S /  HH
+                  Q-280              6      823                            26.0            5.25   S /  HH
+ QUME             R 200              0        0                             0.0                   ? /
+                  R 300              0        0                             0.0                   ? /
+ RICOH            5130               2      612      400    none     7     85.0     17            M /
+                  RH-5260            2      615                            85.0     17            M /  REMOV.
+                  RH-5261            2      612                            85.0                   S /  REMOV.
+ RMS              RMS 503            2      153       77      77     0      0.0                   M /
+                  RMS 506            4      153       77      77     0      0.0                   M /
+                  RMS 512            8      153       77      77     0      0.0                   M /
+ RODIME           RO 206             0        0                             0.0                   ? /
+                  RO 101             2      192        0      96     7      0.0     17     5.25   M /  FH
+                  RO 102             4      192        0      96     7      0.0     17     5.25   M /  FH
+                  RO 103             6      192        0      96     7     55.0     17     5.25   M /  FH
+                  RO 104             8      192        0      96     7      0.0     17     5.25   M /  FH
+                  RO 201             2      321        0     132     7     85.0     17     5.25   M /  FH
+                  RO 201E            2      640        0    none     7     55.0     17     5.25   M /  FH
+                  RO 202             4      321        0     132     7     85.0     17     5.25   M /  HH
+                  RO 202E            4      640        0    none     7     55.0     17     5.25   M /  FH
+                  RO 203             6      321        0     132     7     85.0     17     5.25   M /  HH
+                  RO 2031            6      320                                                   M /
+                  RO 203E            6      640        0    none     7     55.0     17     5.25   M /  FH
+                  RO 204             8      321        0     132     7     85.0     17     5.25   M /  FH
+                  RO 204E            8      640        0    none     7     55.0     17     5.25   M /  FH
+                  RO 251             2      306                            85.0     17     5.25   M /  HH
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ RODIME           RO 252             4      306      128      64           85.0     17     5.25   M /  HH
+                  RO 252F            4      306                             0.0                   M /
+                  RO 3000A-XLAT      5      992                                     17            M /
+                  RO 3045            5      872        0    none     7     28.0     17            M /
+                  RO 3055            6      872        0    none     7     28.0     17            M /
+                  RO 3065            7      872                            28.0     17            M /
+                  RO 351             2      306                            85.0     17            M /
+                  RO 365             4      612                                     17     3.5    M /
+                  RO 5065            5        0                            28.0     17     5.25   M /  HH
+                  RO 5065            5     1224                                     17            M /
+                  RO 5090            7     1224                            28.0     17     5.25   M /  HH
+                  RO 3000A-NAT       5      625                                     27            R /
+                  RO 3060R           5      750                                     26            R /
+                  RO 3075R           6      750                                     26            R /
+                  RO 3085R           7      750                                     26            R /
+                  RO 352             4      306      128      64     7     85.0     17     3.5    R /  HH
+                  RO 5090R           7     1224                                     26            R /
+                  RO 3057S           5      680                            28.0                   S /
+                  RO 3070S           0        0                            28.0                   S /
+                  RO 3085S           7      750                            28.0                   S /
+                  RO 5040            3     1224                            28.0                   S /
+                  RO 5075S           0        0                            28.0            5.25   S /  HH
+                  RO 5125S           5     1219                            28.0            5.25   S /  HH
+                  RO 5180S           7     1219                            28.0            5.25   S /  HH
+                  RO 652A            0        0                            85.0                   S /
+                  RO 652B            4      306                            85.0                   S /
+                  RO 752A            0        0                            85.0            5.25   S /  HH
+ SEAGATE          ST-112             0        0                             0.0                   ? /
+                  ST-4192E           8     1147                      7     17.0     36     5.25   E / SCSI interface
+                  ST-125             4      615     none    none     7     40.0     17     3.5    M /  Old designation 28 ms
+                  ST-125-1           4      615     none    none     7     28.0     17     3.5    M /
+                  ST-125A            4      404     none    none     7     28.0     26     3.5    M / RLL AT 16 bit
+                  ST-125A-1          4      404     none    none     7     28.0     26     3.5    M / RLL AT 16 bit
+                  ST-138             6      615     none    none     7     40.0     17     3.5    M /  Old designation 28 ms
+                  ST-138-1           6      615     none    none     7     28.0     17     3.5    M /
+                  ST-151             5      977     none    none     7     23.0     17     3.5    M / 23ms 3.5"
+                  ST-206             2      306      128                            17     5.25   M /  FH
+                  ST-212             4      306      128     128     7      0.0     17     5.25   M /  FH
+                  ST-213             2      615      300    none     7      0.0     17     5.25   M /  FH
+                  ST-225             4      615      300    none     7     65.0     17     5.25   M /  HH
+                  ST-251             6      820     none    none     7     40.0     17     5.25   M /  HH
+                  ST-251-1           6      820     none    none     7     28.0     17     5.25   M /  HH
+                  ST-4026            4      615      300    none     5      0.0     17     5.25   M /  FH
+                  ST-4030            5      733              354                                  M /
+                  ST-4038            5      733      300    none     7     40.0     17     5.25   M /  FH
+                  ST-4038M           5      733     none                   40.0                   M /
+                  ST-4051            5      977     none    none     7     40.0     17     5.25   M /  FH
+                  ST-4053            5     1024     none                   28.0     17     5.25   M /  FH
+                  ST-406             2      306      128     128     7      0.0     17     5.25   M /  FH
+                  ST-4096            9     1024     none    none     7     28.0     17     5.25   M /  FH
+                  ST-412             4      306      128     128     7      0.0     17     5.25   M /  FH
+                  ST-419             6      306      128     128     7      0.0     17     5.25   M /  FH
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ SEAGATE          ST-425             8      306                             0.0     17     5.25   M /  FH
+                  ST-506             4      153      128     128     0      0.0     17     5.25   M /  FH
+                  ST-706             2      306      128                            17     5.25   M /  FH
+                  ST-138A            4      604     none    none     7     40.0     26     3.5    R / RLL AT 16 bit
+                  ST-138A-1          4      604     none    none     7     28.0     26     3.5    R / RLL AT 16 bit
+                  ST-138R            4      615     none    none     7     40.0     26     3.5    R / RLL
+                  ST-138R-1          4      615     none    none     7     28.0     26     3.5    R / RLL  Old designation 28 ms
+                  ST-157A            6      539     none    none     7     40.0     26     3.5    R / RLL  AT 16 bit
+                  ST-157A-1          6      539     none    none     7     28.0     26     3.5    R / RLL  AT 16 bit
+                  ST-157R            6      615     none    none     7     40.0     26     3.5    R / RLL
+                  ST-157R-1          6      615     none    none     7     28.0     26     3.5    R / RLL  Old designation 28 ms
+                  ST-225R            2      667     none    none     7     70.0     31     5.25   R / RLL/ARLL
+                  ST-238R            4      615      300    none     7     65.0     17     5.25   R /  HH
+                  ST-250R            4      667     none    none     7     70.0     31     5.25   R / RLL/ARLL
+                  ST-251R            6      820     none    none     7     40.0     26     5.25   R / RLL
+                  ST-277R            6      820     none    none     7     40.0     26     5.25   R / RLL
+                  ST-277R-1          6      820     none    none     7     28.0     26     5.25   R / RLL  3.5"
+                  ST-4077R           5     1024     none    none     7     28.0     26     5.25   R / RLL
+                  ST-4144R           9     1024     none    none     7     28.0     26     5.25   R /
+                  ST-1096N           7      906     none    none     7     24.0            3.5    S / SCSI
+                  ST-125N            4      407     none    none     7     40.0     35     3.5    S / SCSI
+                  ST-125N-1          4      407     none    none     7     28.0     35     3.5    S / SCSI
+                  ST-138N            4      613     none    none     7     40.0     35     3.5    S / SCSI  Old designation 28 ms
+                  ST-138N-1          4      613     none    none     7     28.0     35     3.5    S / SCSI
+                  ST-157N            6      613     none    none     7     40.0     26     3.5    S / SCSI  Old designation 28 ms
+                  ST-157N-1          6      613     none    none     7     28.0     26     3.5    S / SCSI
+                  ST-177N            5      921     none    none     7     24.0     26     3.5    S / SCSI  Old designation 28 ms
+                  ST-225N            4      615      300    none     7     65.0     17     5.25   S / SCSI
+                  ST-251N            4      818     none    none     7     40.0     26     5.25   S / SCSI
+                  ST-251N-1          4      818     none    none     7     28.0     26     5.25   S / SCSI
+                  ST-277N            6      820     none    none     7     40.0     26     5.25   S / SCSI
+                  ST-277N-1          6      628     none    none     7     28.0     26     5.25   S / SCSI
+                  ST-296N            6      818                            28.0     34     5.25   S /  HH
+                  ST-4051N           5      977              n/a                                  S /
+                  ST-4077N           5     1024     none    none     7     28.0     34     5.25   S / SCSI
+                  ST-4096N           8     1147     none    none     7     28.0            5.25   S / SCSI
+                  ST-4144N           9     1024     none    none     7     28.0            5.25   S / SCSI
+                  ST-4192N           8     1147                      7     17.0     36     5.25   S / SCSI
+ SHUGART          SA 724             0        0                             0.0     17            ? /
+                  SA 604             4      159      128     128     0      0.0     17            M /
+                  SA 606             6      159      128     128     0      0.0     17            M /
+                  SA 607             2      306      128                    0.0     17            M /
+                  SA 612             4      311      128    none     0      0.0     17            M /
+                  SA 706             2      306      128                    0.0     17            M /
+                  SA 712             4      306      128                    0.0     17            M /
+ SIEMENS          1200               8     1216                            25.0            5.25   E /  FH
+                  1300              12     1216                            25.0            5.25   E /  FH
+                  2200               8     1216                            25.0            5.25   E /  FH
+                  2300              12     1216                            25.0            5.25   E /  FH
+                  5710              15        0                            16.0                   E /
+                  5720              15        0                            16.0                   S /
+ SYQUEST          SQ 306R            2      306                             0.0     17            M / Removable cartridge
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ SYQUEST          SQ 306RD           4      306     none    none     7      0.0     17            M / Removable cartridge
+                  SQ 312             2      615                             0.0     17            M /
+                  SQ 312RD           2      615     none    none     7      0.0     17            M / Removeable
+                  SQ 315F            4      612     none    none     7      0.0     17            M /
+                  SQ 319             2      612                             0.0     17            M /
+                  SQ 325             4      612                             0.0     17            M /
+                  SQ 325F            4      615     none    none     7      0.0     17            M /
+                  SQ 338F            6      615     none    none     7      0.0     17            M /
+                  SQ 340AF           6      640                                     17            M /
+ T.I.                                4      153       64      64                    17     5.25   M /  FH
+ TANDON           TM 251             2      306                             0.0                   M /
+                  TM 252             4      306     none    none     7      0.0     17            M /
+                  TM 261             2      612                             0.0     17            M /
+                  TM 262             4      615     none    none     7      0.0     17            M /
+                  TM 3085            8     1024                            37.0     17            M /
+                  TM 353             4      306                                     17            M /
+                  TM 361             2      612                             0.0     17            M /
+                  TM 362             4      615     none    none     7      0.0     17            M /
+                  TM 501             2      306      153     128     0      0.0     17            M /
+                  TM 502             4      306      153     128     0      0.0     17            M /
+                  TM 503             6      306      153     128     0      0.0     17            M /
+                  TM 6025            4      153     none     128     0      0.0     17            M /
+                  TM 602S            4      153     none     128     0      0.0     17            M /
+                  TM 6035            6      153     none     128     0      0.0     17            M /
+                  TM 6035E           6      230      128     128     0      0.0     17            M /
+                  TM 603S            6      153     none     128     0      0.0     17            M /
+                  TM 603SE           6      230      128     128     0      0.0     17            M /
+                  TM 703             5      733     none    none     7      0.0     17            M /
+                  TM 705             5      962     none                    0.0                   M /
+                  TM 755             5      981     none    none     7     37.0     17     3.5    M /
+                  TM 244             4      782                            37.0     26            R /
+                  TM 246             6      782                            37.0     26            R /
+                  TM 262R            2      782                                     26     3.5    R /  186364-408
+                  TM 264             4      782                            85.0     26     3.5    R /
+                  TM 3085            8     1024                            37.0     26            R /
+                  TM 344             4      782                            37.0     26     3.5    R /
+                  TM 346             6      782                            37.0     26     3.5    R /
+                  TM 362R            2      782                            85.0     26     3.5    R /
+                  TM 364             4      782                            85.0     26     3.5    R /  186364-102
+                  TM 702             4      615     none    none     7      0.0     26            R /
+                  TM 702AT           4      615     none                    0.0     26            R /
+                  TM 703AT           5      733     none                    0.0     26            R /
+                  TM 2085            9     1004                            25.0                   S /
+                  TM 2128            9     1004                            25.0                   S /
+                  TM 2170            9     1344                            25.0                   S /
+ TEAC             SD-540             0        0                             0.0                   ? /
+                  SD-150             4      306                             0.0                   M /
+                  SD-510             4      306      128     128     7      0.0     17            M /
+                  SD-520             4      615      128     128     7      0.0     17            M /
+ TOKICO           DK 503-2           4      306                             0.0                   M /
+ TOSHIBA          MK 153FA           5      831                            23.0     35     5.25   E /  FH
+                  MK 154FA           7      831                            23.0     35     5.25   E /  FH
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+                                                         South Texas BBS I
+                                                            HD Listing
+                                                           713-894-5636
+
+                                                  Write    Reduce  Step  Access  Recom'd          Controller
+ Manufacturer     Model            Hds   Cylndrs  PreComp  Write   Rate  Time    Sec/trk  Dimsn   Type*/Comment
+ ===============  ===============  ====  =======  =======  ======  ====  ======  =======  ======  ================================
+ TOSHIBA          MK 156FB          10      831                            23.0     35     5.25   E /  FH
+                  MK 250F           10     1224                            18.0     35     5.25   E /  FH EDSI/SCSI
+                  MK 134FA           7      733                            25.0     17     3.5    M /
+                  MK 53F             5      830      512                   30.0     17     5.25   M /  FH
+                  MK 53FA            5      830      512    none     7     30.0     17     5.25   M /  FH
+                  MK 54F             7      830      512                   30.0     17     5.25   M /  FH
+                  MK 54FA            7      830      512    none     7     30.0     17     5.25   M /  FH
+                  MK 56F            10      830      512                   30.0     17     5.25   M /  FH
+                  MK 56FA           10      830      512    none     7     30.0     17     5.25   M /  FH
+                  MK 53FB            5      830      512    none     7     23.0     26     5.25   R /  FH
+                  MK 54FB            7      830      512    none     7     25.0     26     5.25   R /  FH
+                  MK 56FB           10      830      512    none     7     25.0     26     5.25   R /  FH
+                  MK-53F-R           5      830                                                   R /
+                  MK-54F-R           7      830                                                   R /
+                  MK-56F-R          10      830                                                   R /
+                  MK153FB            5      830                            23.0     35     5.25   S /  FH
+                  MK154FB            7      830                            23.0     35     5.25   S /  FH
+                  MK156FA           10      830                            23.0     35     5.25   S /  FH
+ TULLIN           TL 213             2      612                             0.0     17            M /
+                  TL 226             4      640     none    none     7      0.0     17            M /
+                  TL 238             4      640     none                    0.0     17            M /
+                  TL 240             6      640     none    none     7      0.0     17            M /
+                  TL 258             6      640     none                    0.0     17            M /
+                  TL 326             4      640     none    none     7      0.0     17            M /
+                  TL 340             6      640     none    none     7      0.0     17            M /
+ VERTEX           V130               3      987                                     17            M /
+                  V150               5      987                                     17            M /
+                  V170               7      987                                     17            M /
+                  V185               7     1166                                     17            M /
+ WESTERN DIGITAL  WD 262             4      615                            80.0     17     3.5    M /  to 5.25 HH
+                  WD 362             4      615                            80.0     17     3.5    M /
+                  WD 344R            4      782                            40.0     26     3.5    R /
+                  WD 382R TM262R     2      782                            85.0     26     3.5    R /
+                  WD 383R            4      615                            85.0     26     3.5    R /  HH
+                  WD 384R TM364      4      782                            85.0     26     3.5    R /
+                  WD 544R            4      782                            40.0     26     3.5    R /  5.25 HH  BRKT
+                  WD 582R            2      782                            85.0     26     3.5    R /  to 5.25 HH  BRKT
+                  WD 583R            4      615                            85.0     26     3.5    R /  HH  BRKT
+                  WD 584R            4      782                            85.0     26     3.5    R /  5.25 HH  BRKT
+                  WD93028-A          2      782                            80.0     27     3.5    R /
+                  WD93028-X          2      782                            80.0     27     3.5    R /
+                  WD93038-X          3      782                            80.0     27     3.5    R /
+                  WD93048-A          4      782                            80.0     27     5.3    R /
+                  WD93048-X          4      782                            80.0     27     3.5    R /
+                  WD95028-A          2      782                            80.0     27     5.25   R /  HH
+                  WD95028-X          2      782                            80.0     27     5.25   R /  HH
+                  WD95038-X          3      782                            80.0     27     5.25   R /  HH
+                  WD95048-A          4      782                            80.0     27     5.25   R /  HH
+                  WD95048-X          4      782                            80.0     27     5.25   R /  HH
+ WESTERN DYNEX    WD 505             2      310     none    none     7                            M /
+ XEBEC            OWL I              4        0                            55.0            5.25   M /  HH
+                  OWL II             4        0                            40.0            5.25   M /  HH
+                  OWL III            4        0                            38.0            5.25   M /  HH
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                      * Controller Type - M = MFM  R = RLL  E = EDSI  S = SCSI  O = Other  ? = N/A
+
+
+

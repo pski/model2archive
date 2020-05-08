@@ -1,0 +1,6 @@
+-rw-rw---- 0/0             739 Apr  8 16:25 1995 obvious/obvdemo.c
+-rw-rw---- 0/0           12771 Apr  8 16:02 1995 obvious/obvious.c
+-rw-rw---- 0/0            4728 Feb 17 21:17 1990 obvious/obvious.doc
+-rw-r--r-- 0/0             152 Apr  8 16:06 1995 obvious/Makefile
+-rwxr-xr-x 0/0            8798 Apr  8 16:25 1995 obvious/obvious
+-rw-rw---- 0/0            4825 Apr  8 16:33 1995 obvious/obvious.man

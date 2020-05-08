@@ -1,0 +1,8 @@
+-rw-r--r-- 0/0            2236 May  6 03:45 1995 Makefile
+-rw-r--r-- 0/0            1765 May  5 14:43 1995 README
+-rw-r--r-- 0/0             315 May  6 03:46 1995 Tandy6000
+-rwxr-xr-x 0/0           17212 May  6 03:49 1995 access
+-rw-r--r-- 0/0           19185 May  6 03:25 1995 access.c
+-rw-r--r-- 0/0            7491 May  6 03:48 1995 access.cat
+-rw-r--r-- 0/0            5296 May  5 15:06 1995 access.man
+-rwxr-xr-x 0/0           19284 May  5 15:32 1995 accessdebug

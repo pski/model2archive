@@ -1,0 +1,272 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  README display.man Makefile display.c
+# Wrapped by root@coupon on Tue Aug 16 00:33:06 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'README' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'README'\"
+else
+echo shar: Extracting \"'README'\" \(816 characters\)
+sed "s/^X//" >'README' <<'END_OF_FILE'
+XDisplay 1.0
+X15-December-1986
+X
+XThis is another C implementation of the 'display' command, written because
+X(a) is was easy, (b) I didn't know how to find the original, and (c) I have
+Xan disease whose only means to remission is writing flinky programs like
+Xthis one.
+X
+XDisplay runs a specified command over and over, printing the output through
+Xcurses(3X).  The command can be compound ('date;uusnap' is a personal
+Xfavorite), and the delay between executions is settable on the command line.
+XThe output from the command had better fit on a single screen, of course.
+X
+XTo install, unshar into an empty directory, edit the Makefile to change the
+XDESTDIR (probably to /usr/local, /usr/local/bin or /usr/ucb), then su and
+Xtype 'make install'.
+X
+XQuestions, problems, flames, to:
+X
+X	Paul Vixie
+X	paul@vixie.UUCP
+X	ptsfa!vixie!paul
+END_OF_FILE
+if test 816 -ne `wc -c <'README'`; then
+    echo shar: \"'README'\" unpacked with wrong size!
+fi
+# end of 'README'
+fi
+if test -f 'display.man' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'display.man'\"
+else
+echo shar: Extracting \"'display.man'\" \(1047 characters\)
+sed "s/^X//" >'display.man' <<'END_OF_FILE'
+X.TH DISPLAY 1 "December 15, 1986"
+X.UC 4
+X.SH NAME
+Xdisplay - repeat a command through curses for minimal update
+X.SH SYNOPSIS
+Xdisplay [-<delay>] <command>
+X.SH DESCRIPTION
+X.I Display
+Xrepeatedly executes a shell command, sending the output through
+X.IR curses (3X)
+Xto cause only the portions of the output which have changed from
+Xone execution to the next to be redrawn.
+X.I command
+Xmust be quoted if it contains blanks or other special characters.
+X.I delay
+Xis the number of seconds to suspend between updates; the default is 5.
+X.SH EXAMPLES
+X.sp 1
+Xdisplay -10 "date; echo ' '; uusnap; echo ' '; mailq"
+X.PP
+XThis provides a dynamic 'UUCP status watch' for BSD systems.  If anyone
+Xfigures out a non-nightmarish csh alias for something with both kinds of
+Xquotes in it, please send mail.
+X.fi
+X.SH "SEE ALSO"
+Xpopen(3),
+Xcurses(3X),
+Xsh(1)
+X.SH DIAGNOSTICS
+XFairly informative usage message if you run it with a bad command line.
+X.SH BUGS
+X.IR Popen (3)
+Xalways executes the command through
+X.IR sh (1)
+X.SH AUTHOR
+X.nf
+XPaul Vixie
+X{ptsfa,qantel,crash,winfree}!vixie!paul
+END_OF_FILE
+if test 1047 -ne `wc -c <'display.man'`; then
+    echo shar: \"'display.man'\" unpacked with wrong size!
+fi
+# end of 'display.man'
+fi
+if test -f 'Makefile' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Makefile'\"
+else
+echo shar: Extracting \"'Makefile'\" \(603 characters\)
+sed "s/^X//" >'Makefile' <<'END_OF_FILE'
+X# makefile for 'display'
+X# vix 15dec86 [stolen from 'which']
+X
+X# start changing
+XCFLAGS		=	-O -Dvoid=int
+XDEST_DIR	=	/usr/local
+XCURSES_LIBS	=	-lcurses -ltermcap 
+XMAN_DIR		=	/usr/man/manl
+XMAN_SUFFIX	=	l
+XSHAR_ARGS	=	-b
+X# stop changing
+X
+XSHAR_SOURCES	=	README display.man Makefile display.c
+XSHELL		=	/bin/sh
+X
+Xall		:	display
+X
+Xdisplay		:	display.c
+X			cc $(CFLAGS) -o $@ display.c $(CURSES_LIBS)
+X			strip display
+X
+Xinstall		:	all
+X			mv display $(DEST_DIR)
+X			chmod 775 $(DEST_DIR)/display
+X			cp display.man $(MAN_DIR)/display.$(MAN_SUFFIX)
+X
+Xdisplay.shar	:	$(SHAR_SOURCES)
+X			shar $(SHAR_ARGS) $(SHAR_SOURCES) > $@
+END_OF_FILE
+if test 603 -ne `wc -c <'Makefile'`; then
+    echo shar: \"'Makefile'\" unpacked with wrong size!
+fi
+# end of 'Makefile'
+fi
+if test -f 'display.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'display.c'\"
+else
+echo shar: Extracting \"'display.c'\" \(2056 characters\)
+sed "s/^X//" >'display.c' <<'END_OF_FILE'
+X/* display.c - repeatedly display command through curses
+X * vix 18apr86 [written]
+X * vix 15dec86 [major overhaul]
+X * vix 04mar87 [fix command line parsing, from Jeremy Primer, primer@huma1]
+X */
+X
+X
+X#include <curses.h>
+X#include <signal.h>
+X#include <ctype.h>
+X
+X
+X#define		DEFAULT_DELAY	5
+X
+X
+Xstatic	char	*Command;
+Xstatic	int	Delay;
+X
+X
+Xmain(argc, argv)
+Xint	argc;
+Xchar	*argv[];
+X{
+X	extern	void	parse_args(),
+X			die(),
+X			display();
+X
+X	parse_args(argc, argv);
+X
+X	signal(SIGHUP, die);
+X	signal(SIGINT, die);
+X	signal(SIGQUIT, die);
+X	signal(SIGTERM, die);
+X
+X	initscr();
+X	clear();
+X
+X	while (TRUE) {
+X		display();
+X		sleep(Delay);
+X	}
+X}
+X
+X
+Xstatic void die()
+X{
+X	move(LINES-1, 0);
+X	clrtoeol();
+X	refresh();
+X	endwin();
+X	exit(0);
+X}
+X
+X
+Xstatic void display()
+X{
+X	auto	FILE	*fp, *popen();
+X	auto	char	ch;
+X
+X	if (!(fp = popen(Command, "r"))) {
+X		perror("popen");
+X		exit(1);
+X	}
+X	move(0, 0);
+X	while (EOF != (ch = fgetc(fp)))
+X	{
+X		if (ch == '\n')
+X			clrtoeol();
+X		addch(ch);
+X	}
+X	clrtoeol();
+X	refresh();
+X	pclose(fp);
+X}
+X
+X
+Xstatic void parse_args(argc, argv)
+Xint	argc;
+Xchar	*argv[];
+X{
+X	extern	void	usage();
+X	auto	int	argn,
+X			delay_found;
+X
+X	Command = NULL;
+X	Delay = DEFAULT_DELAY;
+X	delay_found = FALSE;
+X	for (argn = 1;  argn < argc;  argn++)
+X	{
+X		if (argv[argn][0] == '-')
+X			if (delay_found)
+X				usage();	/* already got this once */
+X			else if (!isdigit(argv[argn][1]))
+X				usage();	/* not a numeric */
+X			else
+X			{
+X				Delay = atoi(&argv[argn][1]);
+X				delay_found = TRUE;
+X			}
+X		else
+X			if (Command != NULL)
+X				usage();	/* already got this once */
+X			else
+X				Command = argv[argn];
+X	}
+X	if (Command == NULL)
+X		usage();			/* no Command on line */
+X}
+X
+X
+Xstatic void usage()
+X{
+X	extern	char	*getenv();
+X	auto	char	*shell = getenv("SHELL");
+X
+X	fprintf(stderr, "\
+Xusage:  display [-<delay>] <command>\n\
+X        <delay>   = # of seconds between displays, default=%d\n\
+X        <command> = command to display, quoted if it contains blanks\n",
+X		DEFAULT_DELAY);
+X
+X	if (strcmp(shell, "/bin/sh"))
+X		fprintf(stderr, "\
+X	NOTE:  /bin/sh will be used to process the command, not SHELL (%s)\n",
+X			shell);
+X	
+X	exit(1);
+X}
+END_OF_FILE
+if test 2056 -ne `wc -c <'display.c'`; then
+    echo shar: \"'display.c'\" unpacked with wrong size!
+fi
+# end of 'display.c'
+fi
+echo shar: End of shell archive.
+exit 0

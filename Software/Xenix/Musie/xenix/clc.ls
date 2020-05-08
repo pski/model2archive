@@ -1,0 +1,5 @@
+-rw-r--r-- 0/0             137 Nov  7 00:53 1994 Tandy6000
+-rw-r--r-- 0/0           20176 Nov  7 00:44 1994 clc.c
+-rwxr-xr-x 0/0           23344 Nov  7 00:49 1994 clc.exe
+-rw-r--r-- 0/0            1139 Nov  7 01:10 1994 clc.man
+-rw-r--r-- 0/0            1880 Nov  7 00:43 1994 readme

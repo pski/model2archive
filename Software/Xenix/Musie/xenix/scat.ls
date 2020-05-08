@@ -1,0 +1,5 @@
+-rw-r--r-- 0/0              65 May 15 22:10 1995 Makefile
+-rw-r--r-- 0/0              54 May 15 22:06 1995 README
+-rwxr-xr-x 0/0            7376 May 15 22:10 1995 scat
+-rw-r--r-- 0/0            1505 Feb 14 23:50 1994 scat.c
+-rw-r--r-- 0/0            1505 May 15 22:03 1995 scat2.c

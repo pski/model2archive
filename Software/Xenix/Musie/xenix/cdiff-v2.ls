@@ -1,0 +1,8 @@
+-rw-r--r-- 0/0             910 Oct 29 10:49 1994 README
+-rw-r--r-- 0/0             419 Oct 29 10:49 1994 TC-READ.ME
+-rw-r--r-- 0/0            1191 Oct 29 10:50 1994 cdiff-v2.s.hdr
+-rw-r--r-- 0/0            4003 Oct 29 10:49 1994 cdiff.1
+-rw-r--r-- 0/0           32647 Oct 29 11:44 1994 cdiff.c
+-rw-r--r-- 0/0            5366 Oct 29 21:02 1994 cdiff.doc
+-rwxr-xr-x 0/0           19146 Oct 29 11:49 1994 cdiff.exe
+-rw-r--r-- 0/0            9327 Oct 29 10:50 1994 cdiff.mem

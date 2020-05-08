@@ -1,0 +1,9 @@
+-rw-r--r-- 0/0              90 Jun 28 00:22 1995 Makefile
+-rw-r--r-- 0/0             315 Jun 28 00:00 1995 Manifest
+-rw-r--r-- 0/0             263 Jun 28 00:18 1995 NOTES
+-rw-r--r-- 0/0             564 Jun 28 00:00 1995 README
+-rwxr-xr-x 0/0           10492 Jun 28 00:04 1995 dissect
+-rw-r--r-- 0/0            1961 Jun 28 00:19 1995 dissect.1
+-rw-r--r-- 0/0            3194 Jun 28 00:00 1995 dissect.c
+-rw-r--r-- 0/0            3204 Jun 28 00:20 1995 dissect.man
+-rwxr-xr-x 0/0               0 Jun 28 00:04 1995 mcount link to dissect

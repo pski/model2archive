@@ -1,0 +1,2 @@
+-rwxrwxrwx 3/3             738 Jun  2 19:15 1995 zmore
+-rwxrwxrwx 3/3             738 Jun  2 19:15 1995 zless

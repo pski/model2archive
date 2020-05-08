@@ -1,0 +1,1364 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  DOC Makefile README README.OLD Tandy6000 hash8.c lcc.sh,v
+#   ltest.c ltest2.c ltest3.c ncc
+# Wrapped by root@coupon on Thu Oct 20 13:46:21 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'DOC' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'DOC'\"
+else
+echo shar: Extracting \"'DOC'\" \(1324 characters\)
+sed "s/^X//" >'DOC' <<'END_OF_FILE'
+XHash8 documentation				Arch D. Robison
+X						University of Illinois
+X						Urbana Champaign
+X
+X						robison@uiucdcs
+X
+X			Hash8 
+X
+XThere three files (other than DOC) provided:
+X
+X	hash8.c     source code for long identifier converter
+X	Makefile    example makefile
+X	ncc	    shell script for compiling
+X
+XThe hash8 program allows short-identifier C compilers to compile
+Xlong-identifier programs.  It is not intened for production use,
+Xbut for quickly porting long-identifier programs.
+X
+XSee the documentation in hash8.c and the Makefile for how to use it with cc.
+X
+X----------------------------------------------------------------------
+X
+X			Hash8 with lint
+X
+XI've been able to hack a short identifier lint with "hash8" so it would work
+Xwith long identifier programs.  This was an easy modification since lint is
+Xa shell script.  The "hash8 encode" filter was put in between /lib/cpp and 
+X/usr/lib/lint/lint and all error message written to a temporary file.
+XThen "hash8 decode" was used to decode the error messages.
+X
+XNote that hash8's can not run in parallel, since the identifier map is read all
+Xat once and written all at once.
+X
+XThus you can't (regrettably) do: 
+X
+X     hash8 encode TABLE | /lib/cpp | hash8 decode TABLE
+X
+XThe above would have to be written:
+X
+X     hash8 encode TABLE >TEMP
+X     cat TEMP | /lib/cpp | hash8 decode TABLE
+X
+END_OF_FILE
+if test 1324 -ne `wc -c <'DOC'`; then
+    echo shar: \"'DOC'\" unpacked with wrong size!
+fi
+# end of 'DOC'
+fi
+if test -f 'Makefile' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Makefile'\"
+else
+echo shar: Extracting \"'Makefile'\" \(1840 characters\)
+sed "s/^X//" >'Makefile' <<'END_OF_FILE'
+X# Here is the original makefile for a sample program with long identifiers.
+X#
+X#snakeomatic:	main.o move.o screen.o
+X#		cc main.o move.o screen.o -lm
+X#
+X#main.o:	snakeomatic.h main.c
+X#		cc -c main.c
+X#
+X#move.o:		snakeomatic.h move.c
+X#		cc -c move.c
+X#
+X#screen.o:	snakeomatic.h screen.c
+X#		cc -c screen.c
+X
+X#---------------------------------------------------------------------------
+X#
+X# Makefile modified for hash8.  Each source file xxx has been renamed L_xxx.
+X# The "ncc" shell script filters each L_xxx file with hash8 and puts
+X# the result in file xxx, which is then compiled.
+X#
+X# Also note that any .h file must also be filtered by hash8.
+X#
+X# The file TABLE is the identifier mapping table.  You should "make TABLE"
+X# before your first compilation to initilize the mapping table.
+X# After that, you should not have to remake the table, even if you
+X# make corrections in the code.  Hash8 will automatically update
+X# the table when necessary.
+X#
+XSYSTEM = /usr/include/stdio /usr/include/signal.h /usr/include/sgtty.h 
+X
+Xsnakeomatic:	main.o move.o screen.o
+X		cc main.o move.o screen.o -lm 2>&1 | hash8 _decode TABLE
+X
+Xmain.o:		snakeomatic.h L_main.c
+X		ncc main.c
+X
+Xmove.o:		snakeomatic.h L_move.c
+X		ncc move.c
+X
+Xscreen.o:	snakeomatic.h L_screen.c
+X		ncc screen.c
+X
+Xsnakeomatic.h:  L_snakeomatic.h
+X		cat L_snakeomatic.h | hash8 encode TABLE >snakeomatic.h
+X
+X#
+X# When the identifier map is first created, all the system #include files
+X# should be run through hash8.  This usually not necessary, but it
+X# is possible that your program's identifiers could have a common prefix
+X# with a system identifier.  By processing the system #include files first,
+X# we ensure that those identifiers will not be changed.
+X#
+XTABLE:		hash8 $(SYSTEM)
+X		rm -f TABLE
+X		cat $(SYSTEM) | hash8 encode TABLE >/dev/null
+X
+Xhash8:		hash8.c
+X		cc $(CFLAGS) -Dvoid=int hash8.c -o hash8
+END_OF_FILE
+if test 1840 -ne `wc -c <'Makefile'`; then
+    echo shar: \"'Makefile'\" unpacked with wrong size!
+fi
+# end of 'Makefile'
+fi
+if test -f 'README' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'README'\"
+else
+echo shar: Extracting \"'README'\" \(873 characters\)
+sed "s/^X//" >'README' <<'END_OF_FILE'
+X
+X	An Improved Version of Arch Robison's "hash8"
+X
+XSome time ago, Arch Robison kindly provided me with a copy of his
+X"hash8" program, which gives long-id capabilities to all C compilers.
+XBriefly, hash8 replaces all long identifiers in a program with a
+Xnumerically-based identifier of 6 characters.  Options allow things
+Xlike using debuggers with the original long names.
+X
+XI have extended Arch's program with a shell script, "lcc.sh", which
+Xdoes exactly what "cc" does, but compiles long-name programs.  Unfortunately,
+Xthe script is quite system-specific, and I have an odd configuration
+X(68000 running UniSoft System V.0 with V7 compilers), so you will
+Xalmost certainly have to edit it before it is completely compatible
+Xwith your own "cc".  Nevertheless, for those with older compilers,
+Xthis is a life-saver.
+X
+X	Geoff Kuenning   geoff@ITcorp.com   {uunet,trwrb}!desint!geoff
+END_OF_FILE
+if test 873 -ne `wc -c <'README'`; then
+    echo shar: \"'README'\" unpacked with wrong size!
+fi
+# end of 'README'
+fi
+if test -f 'README.OLD' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'README.OLD'\"
+else
+echo shar: Extracting \"'README.OLD'\" \(1304 characters\)
+sed "s/^X//" >'README.OLD' <<'END_OF_FILE'
+X>From uucp Sat Oct 25 02:45 PDT 1986
+X>From ihnp4!uiucdcs!b.cs.uiuc.edu!robison  Sat Oct 25 02:45:46 1986 remote from trwrb
+XReceived: by ihnp4.ATT.COM id AA14044; 22 Oct 86 15:34:56 CDT (Wed)
+XReceived: from b.cs.uiuc.edu by a.cs.uiuc.edu with SMTP (UIUC-5.44/9.7),
+X	id AA26838; Wed, 22 Oct 86 11:29:19 CDT
+XReceived: by b.cs.uiuc.edu (UIUC-5.44/9.7),
+X	id AA04280; Wed, 22 Oct 86 11:25:50 CDT
+XDate: Wed, 22 Oct 86 11:25:50 CDT
+XFrom: trwrb!ihnp4!uiucdcs!b.cs.uiuc.edu!robison (Arch Robison)
+XMessage-Id: <8610221625.AA04280@b.cs.uiuc.edu>
+XTo: desint!geoff
+XSubject: long-to-short converter
+X
+X
+XHere is the long-identifier converter.  The converter has been used
+Xto create a long-identifier lint and with cc.  Please send me any bug
+Xreports or comments on how to improve it.  My version of lint that uses 
+Xit has been running for nearly a year now without problems.  Since lint
+Xis a licensed program, I can't send you a copy, though it shouldn't be 
+Xhard to figure out how to modify it.  (Lint is a shell script.)
+X
+XTo use hash8 with debuggers, you will want to modify it to turn off 
+Xstdin/stdout buffering.
+X
+XTo compile the program, make a directory and run the shell script below.
+XThen "make hash8".
+X
+X- Arch D. Robison
+X  Dept. of Computer Science
+X  University of Illinois at Urbana-Champaign
+X
+X  robison@uiucdcs
+X
+END_OF_FILE
+if test 1304 -ne `wc -c <'README.OLD'`; then
+    echo shar: \"'README.OLD'\" unpacked with wrong size!
+fi
+# end of 'README.OLD'
+fi
+if test -f 'Tandy6000' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Tandy6000'\"
+else
+echo shar: Extracting \"'Tandy6000'\" \(175 characters\)
+sed "s/^X//" >'Tandy6000' <<'END_OF_FILE'
+XThis program is for anyone who does not have Xenix 3.2 that can handle
+Xlong identifiers (with the "cc -+" option).  If you have Xenix 3.2,
+Xthis program is of no value to you.
+END_OF_FILE
+if test 175 -ne `wc -c <'Tandy6000'`; then
+    echo shar: \"'Tandy6000'\" unpacked with wrong size!
+fi
+# end of 'Tandy6000'
+fi
+if test -f 'hash8.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'hash8.c'\"
+else
+echo shar: Extracting \"'hash8.c'\" \(11200 characters\)
+sed "s/^X//" >'hash8.c' <<'END_OF_FILE'
+X/*
+X * Date: March 17 1985			Author: Arch D. Robison
+X *						Dept. of Computer Science
+X *						University of Illinois
+X *						Urbana-Champaign
+X *
+X *					USENET:	robison@uiucdcs
+X *
+X * Hash8 copies stdin to stdout, while replacing certain identifiers.
+X * lint can be converted to accept long identifiers by hacking in hash8
+X * between /lib/cpp and /usr/lib/lint/lint appropriately.
+X *
+X * There are three ways to call hash8:
+X *
+X *     hash8 encode table
+X *         Map long identifiers and those beginning with Q 
+X *	   into short identifiers Q%d
+X *
+X *     hash8 decode table
+X *         Map short identifiers Q%d into their long equivalents
+X *
+X *     hash8 _decode table
+X *         Map short identifiers _Q%d into their long equivalents
+X * 	   This is used to decode the linker's error messages
+X *
+X * The 'table' argument is the file name for the identifier map.
+X * The 'encode' calls will either create or expand the table.
+X *
+X * Typically, the encode option is used to preprocess input to the compiler
+X * or lint, and the decode option is used to decode error messages from
+X * the compiler.
+X *
+X * The constant HASHBITS may need to be changed.  It is the base two
+X * log of the number of distinct long identifiers which may be found.
+X * E.g. the value of 12 allows for 4096 long identifiers.
+X *
+X * Hash8 has not been thoroughly tested, though it can translate itself
+X * correctly.  Note that itself contains all sorts of quotes within quotes.
+X */
+X#include <stdio.h>
+X#include <ctype.h>
+X
+X/*
+X * Reserved is an array of words which we don't want modified, such
+X * as the key word "register", or system functions longer than 7 characters.
+X * Feel free to add any others, though remember to clear your hash table
+X * files after recompiling.
+X */
+Xchar **Reserved = NULL;
+Xint Res_max = 0;
+Xint Res_count = 0;
+Xchar *Def_reserved[] = {
+X   "continue",
+X   "register",
+X   "unsigned"
+X};
+X
+Xextern char *malloc (), *strcpy ();
+X
+X#define SIGCHARS 7		/* significant characters in identifier */
+X#define HASHBITS 12		/* hash table address size */
+X#define HASHLIMIT (1<<HASHBITS)
+X#define HASHMASK (HASHLIMIT-1)
+X#define PAGESIZE 4096		/* Memory allocation pagesize */ 
+X#define MAXLINE 1024		/* Maximum length of a source line allowed */
+X
+X#define W_SHORTEN  0		/* Identifier classes */
+X#define W_NORMAL   1
+X#define W_RESERVED 2
+X#define W_Valid(N) ((N) >= 0 && (N) <= 2)
+X
+X/*
+X * HashTab
+X *
+X * The identifier map is a hash table.  The table uses open addressing
+X * with linear probing for collision resolution.  Identifiers in the
+X * table are mapped into Qxxx, where xxx is the table address in hex.
+X *
+X * The hash table is effectively declared:
+X *
+X *      char *HashTab[HASHLIMIT];
+X *
+X * though the memory allocation is done with malloc.  Each empty hash table
+X * item is NULL.  Full entries point to an identifier.  The first byte of
+X * the identifier classifies the identifier:
+X *
+X *      W_NORMAL - don't modify this identifier
+X *	W_SHORTEN - shorten this identifier
+X *	W_RESERVE - reserved word 
+X */
+Xchar **HashTab;
+Xint HashSize = 0;    /* Number of elements in hash table 		    */
+Xint NewTab;          /* Flag which is set to true if hash table is modified */
+X
+Xchar *StrFree;	     /* Pointer to base of free string area                 */
+Xint StrLeft = 0;     /* Number of characters left in free string area       */
+X
+X/*
+X * Insert
+X * 
+X * Insert identifier in hash table
+X *
+X * In
+X *      k = index into hash table
+X *      S = identifier
+X *	Class = class of identifier (W_NORMAL,W_SHORTEN,W_RESERVED)
+X */
+Xvoid Insert (k,S,Class)
+X   int k;
+X   char *S;
+X   int Class;
+X   {
+X      register int L;
+X
+X      NewTab = 1;
+X      HashSize++;
+X      if ((StrLeft -= (L=2+strlen (S))) < 0)
+X         StrFree = malloc (StrLeft=PAGESIZE);
+X      *(HashTab[k] = StrFree) = Class;
+X      strcpy (StrFree+1, S);
+X      StrFree += L;
+X      StrLeft -= L;
+X   }			   
+X
+X/*
+X * LookUp
+X *
+X * Look up an identifer in the identifier hash table.
+X * If not found, then insert it in the table.
+X *
+X * The hashing uses open addressing with linear probing.
+X * The algorithm is a blue-light special, a better hash function
+X * (double hashing?) should be used.
+X * 
+X * In
+X *      S = identifier (must be at least seven characters if Duplicate == 0)
+X *      Class = identifier class (W_NORMAL,W_SHORTEN,W_RESERVED)
+X * Out
+X *      result = index into hash table 
+X */
+Xint LookUp (S,Class)
+X   char *S;
+X   int Class;
+X   {
+X      register int k,j;
+X      register char *T;
+X
+X      if (Class != W_SHORTEN) {
+X
+X         /* Hash first seven characters of identifier */ 
+X         for (j=0,k=0,T=S; j<SIGCHARS; j++, k+= *T++) k = (k<<1) + k;
+X
+X         /* 7-character search for identifier in table */
+X         for (j=k; HashTab[j&=HASHMASK] != NULL; j++) 
+X            if (!strncmp (HashTab[j]+1,S,SIGCHARS)) 
+X               if (!strcmp (HashTab[j]+1,S)) return j;
+X	       else {
+X		  Class = W_SHORTEN;
+X		  break;
+X	       }
+X	 /* The following test and assignment cause identifiers to be
+X	  * hashed even if they are the first long identifier.  This
+X	  * protects from truncation by the compiler.  Othewise, when
+X	  * you run adb you have to know which long id came first.
+X	  * Geoff Kuenning 11/8/86
+X	  */
+X         if (Class == W_NORMAL  &&  strlen (S) > SIGCHARS)
+X	    Class = W_SHORTEN;
+X      }
+X
+X      if (Class == W_SHORTEN) {
+X	 /* 
+X	  * There is another identifier with the same 7-character prefix. 
+X	  * Hash the complete identifier and look it up in the table.
+X	  */
+X         for (j=k; *T; j+= *T++) j = (j<<1) + j;
+X
+X	 /* all characters search for identifier in table */
+X	 for (; HashTab[j&=HASHMASK] != NULL; j++)
+X	       if (!strcmp (HashTab[j]+1,S)) return j;
+X      }
+X
+X      /* Identifier was not found - insert it in hash table */
+X      Insert (j,S,Class);
+X      if (HashSize == HASHLIMIT) 
+X	 fprintf (stderr,"hash8: table overflow\n"), exit (1);
+X      return j;
+X   }
+X
+X#define C_CODE 0	/* Defines for translator states */
+X#define S_QUOTE 1
+X#define D_QUOTE 2
+X#define COMMENT 3
+X
+X#define ENCODE 0	/* Mode values for translator */
+X#define DECODE 1
+X#define _DECODE 2
+X
+X/*
+X * Translate
+X *
+X * Translate input stream with identifier map.
+X *
+X * This should have been written with lex.
+X */
+XTranslate (Mode) 
+X   int Mode;
+X   {
+X      register char C, *P, *Q;
+X      char S[MAXLINE];
+X      int k, state=C_CODE, IsQ;
+X
+X      while (NULL != fgets (S,MAXLINE,stdin)) 
+X         for (P=S; C= *P; )
+X	    switch (state) {
+X	       case COMMENT:
+X	          putchar (*P++);
+X                  if (C == '*' && *P == '/') state=C_CODE, putchar (*P++);
+X		  break;
+X	       case S_QUOTE:
+X	       case D_QUOTE:
+X		  putchar (*P++);
+X		  switch (C) {
+X		     case '\'': if (state == S_QUOTE) state = C_CODE; break;
+X		     case '"' : if (state == D_QUOTE) state = C_CODE; break;
+X		     case '\\': putchar (*P++); break;
+X		     default: break; 
+X		  }
+X	          break;
+X	       
+X               case C_CODE:
+X		  if (isalpha (C) || C=='_') {
+X	             /* Beginning of identifier */
+X      	             for (Q=P; C= *Q, isalnum(C)||C=='_'; Q++);
+X	             *Q = '\0';
+X   	             switch (Mode) {
+X
+X			case ENCODE: /* We are encoding C source */
+X		           IsQ = *P=='Q' && isdigit (P[1]);
+X   	                   if (Q-P <= SIGCHARS && !IsQ) 
+X   	                      fputs (P,stdout);
+X		           else {
+X			      k = LookUp (P,IsQ ? W_SHORTEN : W_NORMAL);
+X			      if (*HashTab[k] != W_SHORTEN) fputs (P,stdout);
+X		              else printf ("Q%d",k);
+X		           }
+X			   break;
+X
+X			case _DECODE: /* We are decoding linker messages */
+X		           if (*P != '_') {
+X			      fputs (P,stdout);
+X			      break;
+X			   }
+X			   putchar (*P++);
+X			   /* continue on down to case DECODE */
+X
+X			case DECODE: /* We are decoding error message */
+X   	                   if (*P=='Q' && isdigit (P[1])) { 
+X			      k=atoi(P+1);
+X			      if (!(k &~HASHMASK) && HashTab[k]!=NULL) 
+X				 P = HashTab[k] + 1;
+X			   }
+X		           fputs (P,stdout);
+X			   break;
+X		     }
+X   	             *(P=Q) = C;
+X   	          } else if (isdigit (C)) {
+X	             /* Skip number to avoid changing long numbers */
+X	             while (isalnum(*P)) putchar (*P++);
+X	          } else {
+X		     putchar (*P++);
+X		     switch (C) {
+X		        default: break;
+X			case '\'': state = S_QUOTE; break;
+X                        case '"' : state = D_QUOTE; break;
+X                        case '/' : if (*P != '*') continue;
+X			           state=COMMENT;
+X		        case '\\': putchar (*P++); break;
+X		     }
+X	          }
+X	       }
+X   }
+X
+X/*
+X * ReadTab
+X *
+X * Read the hash table.
+X *
+X * In
+X *      Name = name of hash table file
+X */
+XReadTab (Name)
+X   char *Name;
+X   {
+X      FILE *Table;
+X      char S[MAXLINE];
+X      int k,L,Class;
+X
+X      /* First record all words we don't want mangled in hash table */      
+X      for (k = 0;  k < sizeof (Def_reserved) / sizeof (char *);  k++)
+X         LookUp (Def_reserved[k], W_RESERVED);
+X      for (k = 0;  k < Res_count;  k++) 
+X         LookUp (Reserved[k],W_RESERVED);
+X
+X      if (NULL == (Table = fopen (Name,"r"))) return;
+X      while (EOF != (L = fscanf (Table,"%d %d %s",&k,&Class,S))) 
+X	 if (L != 3 || k &~HASHMASK || !W_Valid (Class))
+X	    fprintf (stderr,"hash8 table error\n"),
+X	    exit (1);
+X         else Insert (k,S,Class);
+X      fclose (Table); 
+X      NewTab = 0;
+X   }
+X
+X/*
+X * WriteTab
+X *
+X * Write out the hash table
+X *
+X * In
+X *      Name = name of hash table file
+X */
+XWriteTab (Name)
+X   char *Name; 
+X   { 
+X      FILE *Table;
+X      int i;
+X
+X      if (NULL == (Table = fopen (Name,"w"))) 
+X	 fprintf (stderr,"hash8: can't open hash table file '%s'\n",Name),
+X	 exit (1);
+X      for (i=0; i<HASHLIMIT; i++)
+X         if (HashTab[i] != NULL && *HashTab[i] != W_RESERVED) 
+X            fprintf (Table,"%d	%d	%s\n",i,*HashTab[i],HashTab[i]+1);
+X      fclose (Table); 
+X   }
+X
+Xmain (argc,argv)
+X   int argc; char *argv[];
+X   {
+X      register char **h;
+X      int Mode;
+X
+X      /*
+X       * Set up the reserved-word list.
+X       */
+X      while (argc > 3  &&  argv[1][0] == '-'  &&  argv[1][1] == 'r') {
+X	 argv[1] += 2;
+X	 if (argv[1][0] == '\0') {
+X	    argc--;
+X	    argv++;
+X	 }
+X	 if (Res_count == Res_max) {
+X	    Res_max += 5;
+X	    if (Reserved == NULL)
+X	       Reserved = (char **) malloc (5 * sizeof (char *));
+X	    else
+X	       Reserved = (char **)
+X	        realloc ((char *) Reserved, Res_max * sizeof (char *));
+X	 }
+X	 Reserved[Res_count] = argv[1];
+X	 Res_count++;
+X	 argc--;
+X	 argv++;
+X      }
+X      if (argc != 3) {
+X         fprintf (stderr,
+X           "usage: hash8 [-r reserved] ... (encode|[_]decode) table\n");
+X         exit (1);
+X      }
+X
+X      /*
+X       * If either stdin or stdout is a tty, set both unbuffered, for use
+X       * in pipes.
+X       * Geoff Kuenning, 11/8/86
+X       */
+X      if (isatty (fileno (stdin))  ||  isatty (fileno (stdout))) {
+X	 setbuf (stdin, NULL);
+X	 setbuf (stdout, NULL);
+X      }
+X      HashTab = (char **) malloc ((sizeof (char*)) * (HASHLIMIT));
+X      for (h = HashTab+HASHLIMIT; --h > HashTab; ) *h = NULL;
+X     
+X      ReadTab(argv[2]); 
+X      
+X      if (!strcmp (argv[1],"encode")) Mode = ENCODE;
+X      else if (!strcmp (argv[1],"decode")) Mode = DECODE; 
+X      else if (!strcmp (argv[1],"_decode")) Mode = _DECODE; 
+X      else
+X         fprintf (stderr,"hash8: second arg must be 'encode' or 'decode'\n"),
+X	 exit (1);
+X
+X      Translate (Mode);
+X      if (NewTab) WriteTab(argv[2]);
+X   }
+X
+END_OF_FILE
+if test 11200 -ne `wc -c <'hash8.c'`; then
+    echo shar: \"'hash8.c'\" unpacked with wrong size!
+fi
+# end of 'hash8.c'
+fi
+if test -f 'lcc.sh,v' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'lcc.sh,v'\"
+else
+echo shar: Extracting \"'lcc.sh,v'\" \(11956 characters\)
+sed "s/^X//" >'lcc.sh,v' <<'END_OF_FILE'
+Xhead     1.5;
+Xaccess   ;
+Xsymbols  ;
+Xlocks    ; strict;
+Xcomment  @# @;
+X
+X
+X1.5
+Xdate     87.03.06.20.34.29;  author geoff;  state Exp;
+Xbranches ;
+Xnext     1.4;
+X
+X1.4
+Xdate     87.02.28.00.56.50;  author geoff;  state Exp;
+Xbranches ;
+Xnext     1.3;
+X
+X1.3
+Xdate     86.11.08.23.07.56;  author geoff;  state Exp;
+Xbranches ;
+Xnext     1.2;
+X
+X1.2
+Xdate     86.11.08.22.15.24;  author geoff;  state Exp;
+Xbranches ;
+Xnext     1.1;
+X
+X1.1
+Xdate     86.11.08.21.58.14;  author geoff;  state Exp;
+Xbranches ;
+Xnext     ;
+X
+X
+Xdesc
+X@Shell script to compile long-name C programs.
+X@
+X
+X
+X1.5
+Xlog
+X@Make -p work correctly
+X@
+Xtext
+X@: Use bin/sh
+X#
+X# $Header: lcc.sh,v 1.4 87/02/28 00:56:50 geoff Exp $
+X#
+X# $Log:	lcc.sh,v $
+X# Revision 1.4  87/02/28  00:56:50  geoff
+X# Major changes to handle things much better by running each compiler
+X# pass separately.  Also add the -R switch, and support for -D and
+X# library files.
+X# 
+X# Revision 1.3  86/11/08  23:07:56  geoff
+X# Add error processing, not quite like cc's
+X# 
+X# Revision 1.2  86/11/08  22:15:24  geoff
+X# Remove -HP, minor cleanup of output.  Working, except ignores errors
+X# 
+X# Revision 1.1  86/11/08  21:58:14  geoff
+X# Works only if -HP specified
+X# 
+X#
+X#	Replacement for the 'cc' command, with support for long
+X#	identifiers.
+X#
+X#	Usage:
+X#
+X#	lcc [options] files
+X#
+X#	As with 'cc', the files mentioned can be .c, .s, or .o files.
+X#
+X#	All 'cc' options are support (or should be -- report bugs!).
+X#
+X#	There are some extra options.  All begin with H:
+X#
+X#	-HD	Don't preserve the encode/decode table.  (Normally, it is
+X#		left in xxxx.t, where xxxx is the first file name encountered,
+X#		or the -o file name if -o is specified.)
+X#	-HA name The encode/decode table is put in <name>.  If it exists,
+X#		the program will append to it.
+X#	-HL	Only the C compiler itself is deficient;  the assembler
+X#		and linker can handle long names.  Use this facility to
+X#		generate long-name object files.  This is incompatible
+X#		with -P and -S, but conflict is not checked.
+X#	-R name	Add <name> to the reserved-word list.  Useful for
+X#		library routines that have long names.
+X#
+X#	Options supported:
+X#
+X#	-I<dir>	Set include path for cpp
+X#	-S	Generate .s files
+X#	-c	Generate .o files;  don't load
+X#	-n	Generate shared text (ld)
+X#	-p	Generate profiled output
+X#	-f*	Passed on to cc
+X#
+XTDIR=${TMPDIR:-/tmp}		# Where to put temp files
+XTFILE=lcc$$			# Base name for encoded source files
+XTMP=$TDIR/$TFILE		# Base name of cc's encoded input files
+XTABLE=${TFILE}t			# Where the decode file goes
+Xc1sw=				# Switches for compiler pass 1
+Xccsw=				# Switches for cc
+Xldsw=				# Switches for ld
+Xsuffix=o			# Suffix of output "object" files:  o, s, or i
+Xforceobj=-c			# How to force "objects":  -c, -P, or -S
+Xload=yes			# Yes to invoke loader
+Xnumsrcfiles=			# If this is exactly one x, we kill objects
+Xofiles=				# Files to be linked
+Xoptimize=no			# -O switch specified
+Xoptsw=				# Switches for optimizer
+Xpreprocess=			# Preprocess option:  null, -P, or -E
+Xreserved=			# Reserved-word list
+Xrmfiles=			# List of object files to remove (only one)
+Xverbose=			# Verbose option:  -v or null
+Xkilltable=no			# Yes if $TABLE is to be deleted
+Xtablename=			# Name of the output table
+Xmadetable=no			# Yes if we added to the table
+Xdumbcc=no			# Yes if only cc is dumb about long names
+X
+Xif [ -x /lib/c ]
+Xthen
+X    COMPILER=/lib/c
+Xelif [ -x /usr/lib/c ]
+Xthen
+X    COMPILER=/usr/lib/c
+Xelse
+X    COMPILER=c
+Xfi
+Xif [ -x /lib/c2 ]
+Xthen
+X    OPTIMIZER=/lib/c2
+Xelif [ -x /usr/lib/c2 ]
+Xthen
+X    OPTIMIZER=/usr/lib/c2
+Xelse
+X    OPTIMIZER=c2
+Xfi
+Xtrap '/bin/rm -f ${TFILE}.? ${TMP}* $TABLE; exit 1' 1 2 15
+X# 7 is SIGEMT, a fairly obscure one
+Xfailure=no
+Xtrap "failure=yes" 7
+Xwhile [ $# -gt 0 ]
+Xdo
+X    case "$1" in
+X	-HD)
+X	    TABLE=${TMP}t	# Put output table in $TMPDIR
+X	    killtable=yes
+X	    ;;
+X	-HA)
+X	    tablename=$2
+X	    TABLE=$2
+X	    shift
+X	    ;;
+X	-HL)
+X	    dumbcc=yes
+X	    ;;
+X	-R)
+X	    reserved="$reserved -r $2"
+X	    shift
+X	    ;;
+X	-n)
+X	    ldsw="$ldsw $1"
+X	    ;;
+X	-v)
+X	    verbose=-v
+X	    ;;
+X	-p)
+X	    ldsw="$ldsw $1"
+X	    c1sw="$c1sw -Xp"
+X	    ;;
+X	-f*)
+X	    ldsw="$ldsw $1"
+X	    c1sw="$c1sw $1"
+X	    ;;
+X	-o)
+X	    ldsw="$ldsw $1 $2"
+X	    tablename=$2.t
+X	    shift
+X	    ;;
+X	-R)
+X	    ldsw="$ldsw $1 $2"
+X	    shift
+X	    ;;
+X	-E|-P)
+X	    preprocess=$1
+X	    forceobj=$1
+X	    suffix=i
+X	    load=no
+X	    ;;
+X	-O*)
+X	    optimize=yes
+X	    optsw=`echo $1 | tr -d O`
+X	    if [ "X$optsw" = "X-" ]
+X	    then
+X		optsw=
+X	    fi
+X	    ;;
+X	-C|-D*|-U*|-I*)
+X	    ccsw="$ccsw $1"
+X	    ;;
+X	-S)
+X	    forceobj=-S
+X	    suffix=s
+X	    load=no
+X	    numsrcfiles=xx
+X	    ;;
+X	-c)
+X	    load=no
+X	    numsrcfiles=xx
+X	    ;;
+X	-l*)
+X	    ofiles="$ofiles $1"
+X	    ;;
+X	*.o)
+X	    numsrcfiles=xx
+X	    ofiles="$ofiles $1"
+X	    if [ "$tablename" = "" ]
+X	    then
+X		tablename=`basename $1 .o`.t
+X	    fi
+X	    ;;
+X	*.s)
+X	    if  [ "$dumbcc" = "yes" -a "X$preprocess" = "X" ]
+X	    then
+X		if cc $ccsw $verbose $forceobj $1
+X		then
+X		    :
+X		else
+X		    failure=yes
+X		    break
+X		fi
+X	    elif [ "$suffix" != "s" -a "X$preprocess" = "X" ]
+X	    then
+X		hash8 $reserved encode $TABLE < $1 > ${TMP}.s
+X		madetable=yes
+X		(cc $ccsw $forceobj $verbose ${TMP}.s 2> ${TMP}.e \
+X		    ||  kill -7 $$) \
+X		  | sed "s;${TMP}.s;$1;" | hash8 decode $TABLE
+X		sed "s;${TMP}.s;$1;" ${TMP}.e | hash8 decode $TABLE 1>&2
+X		if [ "$failure" = "yes" ]
+X		then
+X		    break
+X		fi
+X		obj=`basename "$1" '.s'`.$suffix
+X		ofiles="$ofiles $obj"
+X		rmfiles="$rmfiles $obj"
+X		mv ${TFILE}.$suffix $obj
+X		numsrcfiles="x$numsrcfiles"
+X	    fi
+X	    if [ "$tablename" = "" ]
+X	    then
+X		tablename=`basename $1 .s`.t
+X	    fi
+X	    ;;
+X	*.c)
+X	    obj=`basename "$1" '.c'`.$suffix
+X	    ppfile=${TMP}.i
+X	    if [ "X$verbose" = "X-v" ]
+X	    then
+X		echo "${1}:"
+X		echo "  Preprocessing" 1>&2
+X	    fi
+X	    if [ "X$preprocess" = "X-E" ]
+X	    then
+X		if cc $ccsw $preprocess $1
+X		then
+X		    :
+X		else
+X		    failure=yes
+X		fi
+X	    elif [ "X$preprocess" = "X-P" ]
+X	    then
+X		ppfile=$obj
+X	    fi
+X	    if cc $ccsw -E $1 > $ppfile
+X	    then
+X		:
+X	    else
+X		failure=yes
+X		/bin/rm -f $ppfile
+X		break
+X	    fi
+X	    if [ "X$preprocess" = "X-P" ]
+X	    then
+X		break
+X	    fi
+X	    hash8 $reserved encode $TABLE < $ppfile > ${TMP}.c
+X	    madetable=yes
+X	    /bin/rm -f $ppfile
+X	    if [ "$optimize" = yes ]
+X	    then
+X		unoptfile=${TMP}.s1
+X	    else
+X		unoptfile=${TMP}.s
+X	    fi
+X	    if [ "X$verbose" = "X-v" ]
+X	    then
+X		echo "  Compiling" 1>&2
+X	    fi
+X	    if $COMPILER $c1sw < ${TMP}.c > $unoptfile 2> ${TMP}.e
+X	    then
+X		/bin/rm -f ${TMP}.c
+X	    else
+X		hash8 decode $TABLE < ${TMP}.e 1>&2
+X		/bin/rm $unoptfile ${TMP}.c ${TMP}.e
+X		failure=yes
+X		break
+X	    fi
+X	    if [ $optimize = yes ]
+X	    then
+X		if [ "X$verbose" = "X-v" ]
+X		then
+X		    echo "  Optimizing" 1>&2
+X		fi
+X		if $OPTIMIZER $optsw < $unoptfile > ${TMP}.s 2> ${TMP}.e
+X		then
+X		    /bin/rm -f $unoptfile
+X		    unoptfile=${TMP}.s
+X		else
+X		    hash8 decode $TABLE < ${TMP}.e 1>&2
+X		    /bin/rm -f $unoptfile ${TMP}.s ${TMP}.e
+X		    failure=yes
+X		    break
+X		fi
+X	    fi
+X	    case "X$forceobj" in
+X		X-S)
+X		    hash8 _decode $TABLE < $unoptfile > $obj
+X		    /bin/rm -f $unoptfile
+X		    ;;
+X		*)
+X		    if [ "X$verbose" = "X-v" ]
+X		    then
+X			echo "  Assembling" 1>&2
+X		    fi
+X		    if [ "$dumbcc" = "yes" ]
+X		    then
+X			mv $unoptfile ${TMP}.s1
+X			hash8 _decode $TABLE < ${TMP}.s1 > ${TMP}.s
+X			/bin/rm -f ${TMP}.s1
+X			if as -o $obj ${TMP}.s
+X			then
+X			    :
+X			else
+X			    /bin/rm -f ${TMP}.s $obj
+X			    failure=yes
+X			    break
+X			fi
+X		    else
+X			if as -o $obj $unoptfile 2> ${TMP}.e
+X			then
+X			    /bin/rm -f $unoptfile ${TMP}.e
+X			else
+X			    hash8 _decode $TABLE < ${TMP}.e 1>&2
+X			    /bin/rm -f $unoptfile ${TMP}.e $obj
+X			    failure=yes
+X			    break
+X			fi
+X		    fi
+X		    ofiles="$ofiles $obj"
+X		    rmfiles="$rmfiles $obj"
+X		    ;;
+X	    esac
+X	    numsrcfiles="x$numsrcfiles"
+X	    if [ "$tablename" = "" ]
+X	    then
+X		tablename=`basename $1 .c`.t
+X	    fi
+X	    ;;
+X	*)
+X	    echo "lcc:  unrecognized argument $1, passing to cc and ld" 1>&2
+X	    echo "type 'cat $0' to learn usage"
+X	    ccsw="$ccsw $1"
+X	    ldsw="$ldsw $1"
+X	    ;;
+X    esac
+X    shift
+Xdone
+Xif [ "$load" = yes -a "$failure" = "no" ]
+Xthen
+X    if [ "X$verbose" = "X-v" ]
+X    then
+X	echo "  Loading" 1>&2
+X    fi
+X    (cc $ldsw $ofiles 2> ${TMP}.e  ||  kill -7 $$) \
+X      | if [ "$madetable" = yes ]
+X        then
+X	    hash8 _decode $TABLE
+X	    hash8 _decode $TABLE < ${TMP}.e 1>&2
+X	elif [ -r "$tablename" ]
+X	then
+X	    hash8 _decode $tablename
+X	    hash8 _decode $tablename < ${TMP}.e 1>&2
+X	else
+X	    cat
+X	    cat ${TMP}.e 1>&2
+X	fi
+X    if [ "$numsrcfiles" = x ]
+X    then
+X	/bin/rm -f $rmfiles
+X    fi
+Xfi
+X/bin/rm -f ${TFILE}.? ${TMP}*
+Xif [ "$killtable" = "yes" -o "$tablename" = "" ]
+Xthen
+X    /bin/rm -f $TABLE
+Xelif [ "$madetable" = yes -a "$TABLE" != "$tablename" ]
+Xthen
+X    mv $TABLE $tablename
+Xfi
+Xif [ "$failure" = "yes" ]
+Xthen
+X    exit 1
+Xelse
+X    exit 0
+Xfi
+X@
+X
+X
+X1.4
+Xlog
+X@Major changes to handle things much better by running each compiler
+Xpass separately.  Also add the -R switch, and support for -D and
+Xlibrary files.
+X@
+Xtext
+X@d3 1
+Xa3 1
+X# $Header: lcc.sh,v 1.3 86/11/08 23:07:56 geoff Exp $
+Xd6 5
+Xd59 1
+Xd127 1
+Xa127 1
+X	    ccsw="$ccsw $1"
+Xd129 4
+Xd156 1
+Xa156 1
+X	-f*|-C|-D*|-U*|-I*)
+Xd258 1
+Xa258 1
+X	    if $COMPILER < ${TMP}.c > $unoptfile 2> ${TMP}.e
+X@
+X
+X
+X1.3
+Xlog
+X@Add error processing, not quite like cc's
+X@
+Xtext
+X@d3 1
+Xa3 1
+X# $Header: lcc.sh,v 1.2 86/11/08 22:15:24 geoff Exp $
+Xd6 3
+Xd37 3
+Xa39 1
+X#		with -P and -S, but conflict is not cheked.
+Xd61 2
+Xd64 2
+Xd72 19
+Xa90 1
+Xtrap "/bin/rm -f ${TFILE}.? ${TMP}* $TABLE; exit 1" 1 2 15
+Xa106 2
+X	    forceobj=-S
+X	    suffix=s
+Xd109 4
+Xd138 9
+Xa146 1
+X	-f*|-O*|-C|-D*|-U*|-I*)
+Xd159 3
+Xd182 1
+Xa182 1
+X		hash8 encode $TABLE < $1 > ${TMP}.s
+Xd194 1
+Xd204 32
+Xa235 1
+X	    hash8 encode $TABLE < $1 > ${TMP}.c
+Xd237 2
+Xa238 4
+X	    (cc $verbose $ccsw $forceobj ${TMP}.c 2> ${TMP}.e  ||  kill -7 $$) \
+X	      | sed "s;${TMP}.c;$1;" | hash8 decode $TABLE
+X	    sed "s;${TMP}.c;$1;" ${TMP}.e | hash8 decode $TABLE 1>&2
+X	    if [ "$failure" = "yes" ]
+Xd240 15
+Xd257 27
+Xa283 5
+X	    case "X${preprocess}Y$forceobj" in
+X		X-P*|*Y-S)
+X		    obj=`basename "$1" '.c'`.$suffix
+X		    hash8 _decode $TABLE < ${TFILE}.$suffix > $obj
+X		    /bin/rm -f ${TFILE}.$suffix
+Xd286 4
+Xa289 1
+X			if [ "X$verbose" = "X-v" ]
+Xd291 5
+Xa295 1
+X			    echo "  Assembling" 1>&2
+Xd297 2
+Xa298 1
+X			if cc $ccsw -c $obj
+Xd300 1
+Xa300 1
+X			    :
+Xd302 2
+Xa306 2
+X			/bin/rm -f $obj
+X			obj=`basename "$1" '.c'`.o
+Xd309 1
+Xa310 7
+X		X-E*)
+X		    ;;
+X		*)
+X		    obj=`basename "$1" '.c'`.$suffix
+X		    ofiles="$ofiles $obj"
+X		    mv ${TFILE}.$suffix $obj
+X		    ;;
+Xd329 5
+Xa333 1
+X    (cc $verbose $ldsw $ofiles 2> ${TMP}.e  ||  kill -7 $$) \
+Xd337 1
+Xd341 1
+Xd344 2
+Xa345 1
+X	fi 1>&2
+Xd348 1
+Xa348 1
+X	/bin/rm -f $ofiles
+X@
+X
+X
+X1.2
+Xlog
+X@Remove -HP, minor cleanup of output.  Working, except ignores errors
+X@
+Xtext
+X@d3 1
+Xa3 1
+X# $Header: lcc.sh,v 1.1 86/11/08 21:58:14 geoff Exp $
+Xd6 3
+Xd64 3
+Xd133 7
+Xa139 1
+X		cc $ccsw $verbose $forceobj $1
+Xd144 8
+Xa151 3
+X		(cc $ccsw $forceobj $verbose ${TMP}.s 2>&1 ) \
+X		  | sed "s;${TMP}.s;$1;" \
+X		  | hash8 decode $TABLE 1>&2
+Xd165 1
+Xa165 1
+X	    (cc $verbose $ccsw $forceobj ${TMP}.c 2> ${TMP}.e ) \
+Xd168 4
+Xd183 7
+Xa189 1
+X			cc $ccsw -c $obj
+Xd218 1
+Xa218 1
+Xif [ "$load" = yes ]
+Xd220 1
+Xa220 1
+X    (cc $verbose $ldsw $ofiles 2>&1) \
+Xd243 6
+Xa248 1
+Xexit
+X@
+X
+X
+X1.1
+Xlog
+X@Works only if -HP specified
+X@
+Xtext
+X@d3 1
+Xa3 1
+X# $Header$
+Xd5 4
+Xa8 1
+X# $Log$
+Xa31 3
+X#	-HP	Hash before passing information to the preprocessor, rather
+X#		than after.  Useful if your preprocessor is dumb.  Conflicts
+X#		with -E and -P.
+Xd53 1
+Xa53 1
+Xpreprocess=			# Preprocess option:  null, -P, -E, or dumbpp
+Xa77 4
+X	-HP)
+X	    preprocess=dumbpp
+X	    load=no
+X	    ;;
+Xd146 1
+Xa146 13
+X	    if [ "X$preprocess" = "X" ]
+X	    then
+X		#
+X		# We preprocess before hashing so that symbols in include
+X		# files are picked up.  The disadvantage of this is that
+X		# preprocessor names are not shortened, which gives trouble
+X		# if your preprocessor is also dumb.  In this case,
+X		# specify the -HP switch.
+X		#
+X		cc $ccsw -E $1 | hash8 encode $TABLE > ${TMP}.c
+X	    else
+X		hash8 encode $TABLE < $1 > ${TMP}.c
+X	    fi
+Xd149 1
+Xa149 1
+X	      | hash8 decode $TABLE
+Xd193 1
+Xa193 1
+X    (cc $ldsw $ofiles 2>&1) \
+X@
+END_OF_FILE
+if test 11956 -ne `wc -c <'lcc.sh,v'`; then
+    echo shar: \"'lcc.sh,v'\" unpacked with wrong size!
+fi
+chmod +x 'lcc.sh,v'
+# end of 'lcc.sh,v'
+fi
+if test -f 'ltest.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'ltest.c'\"
+else
+echo shar: Extracting \"'ltest.c'\" \(1175 characters\)
+sed "s/^X//" >'ltest.c' <<'END_OF_FILE'
+X#include <stdio.h>
+X
+X/*
+X * Test the lcc script
+X */
+X
+Xint VeryLongIdentifierNumber1 = 1;
+Xint VeryLongIdentifierNumber2 = 2;
+X
+Xvoid VeryLongIdentifierNumber3 ();
+X/*
+X * The following should generate a lint complaint, because it actually
+X * returns an int.
+X */
+Xextern void VeryLongIdentifierNumber4 ();
+X
+X/*
+X * The following will generate a loader error.  On some loaders, this is
+X * ok;  on others it will keep you from getting an output file.  If so,
+X * you will need to remove the reference below.
+X */
+Xextern int VeryLongIdentifierNumber5 ();
+X
+Xint main (argc, argv)
+X    register int		argc;		/* Argument count */
+X    register char *		argv[];		/* Argument vector */
+X    {
+X
+X    /*
+X     * Generate a C compiler warning message.  Argv is char **, not char *.
+X     */
+X    argv = (char *) argc;
+X    VeryLongIdentifierNumber3 ();
+X    /*
+X     * The following is in a second file
+X     */
+X    VeryLongIdentifierNumber4 ();
+X    return 0;
+X    }
+X
+Xvoid VeryLongIdentifierNumber3 ()
+X    {
+X    int i = 0;
+X
+X    printf ("should print 1 2:  %d %d\n", VeryLongIdentifierNumber1,
+X      VeryLongIdentifierNumber2);
+X    if (i)				/* Never executed - undefined ref */
+X	VeryLongIdentifierNumber5 ();
+X    }
+END_OF_FILE
+if test 1175 -ne `wc -c <'ltest.c'`; then
+    echo shar: \"'ltest.c'\" unpacked with wrong size!
+fi
+# end of 'ltest.c'
+fi
+if test -f 'ltest2.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'ltest2.c'\"
+else
+echo shar: Extracting \"'ltest2.c'\" \(115 characters\)
+sed "s/^X//" >'ltest2.c' <<'END_OF_FILE'
+Xint VeryLongIdentifierNumber4 ()
+X    {
+X    printf ("VeryLongIdentifierNumber4 VerylongIdentifierNumber5\n");
+X    }
+END_OF_FILE
+if test 115 -ne `wc -c <'ltest2.c'`; then
+    echo shar: \"'ltest2.c'\" unpacked with wrong size!
+fi
+# end of 'ltest2.c'
+fi
+if test -f 'ltest3.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'ltest3.c'\"
+else
+echo shar: Extracting \"'ltest3.c'\" \(116 characters\)
+sed "s/^X//" >'ltest3.c' <<'END_OF_FILE'
+Xint VeryLongIdentifierNumber4 ();
+X    {
+X    printf ("VeryLongIdentifierNumber4 VerylongIdentifierNumber5\n");
+X    }
+END_OF_FILE
+if test 116 -ne `wc -c <'ltest3.c'`; then
+    echo shar: \"'ltest3.c'\" unpacked with wrong size!
+fi
+# end of 'ltest3.c'
+fi
+if test -f 'ncc' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'ncc'\"
+else
+echo shar: Extracting \"'ncc'\" \(314 characters\)
+sed "s/^X//" >'ncc' <<'END_OF_FILE'
+X
+X# Shell script for compiling long-identifier programs.
+X# (Must be executed by "sh", not "csh".)
+X#
+X# The long-identifier source should be named L_xxx.
+X# The script is then invoked with "ncc xxx"
+X#
+Xcat L_$1 | hash8 encode TABLE >$1	# Convert long identifiers
+Xcc -c $1 2>&1 | hash8 decode TABLE	# Compile short form
+END_OF_FILE
+if test 314 -ne `wc -c <'ncc'`; then
+    echo shar: \"'ncc'\" unpacked with wrong size!
+fi
+chmod +x 'ncc'
+# end of 'ncc'
+fi
+echo shar: End of shell archive.
+exit 0

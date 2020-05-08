@@ -1,0 +1,5 @@
+-rw-rw-r-- 100/20          820 Sep  4 16:19 1988 ORIGIN
+-rwxr-xr-x 0/0            9404 Mar  3 00:49 1995 shortc
+-rw-rw-r-- 100/20         1262 Mar  3 00:36 1995 shortc.1
+-rw-rw-r-- 100/20         6001 Sep  4 16:19 1988 shortc.c
+-rw-r--r-- 0/0            1812 Mar  3 00:37 1995 shortc.man

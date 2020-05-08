@@ -1,0 +1,499 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  Makefile README getopt.c lotto.c
+# Wrapped by root@coupon on Sun Aug 21 12:35:00 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'Makefile' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Makefile'\"
+else
+echo shar: Extracting \"'Makefile'\" \(40 characters\)
+sed "s/^X//" >'Makefile' <<'END_OF_FILE'
+Xlotto:	lotto.c
+X	cc -o lotto -O lotto.c 
+END_OF_FILE
+if test 40 -ne `wc -c <'Makefile'`; then
+    echo shar: \"'Makefile'\" unpacked with wrong size!
+fi
+# end of 'Makefile'
+fi
+if test -f 'README' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'README'\"
+else
+echo shar: Extracting \"'README'\" \(654 characters\)
+sed "s/^X//" >'README' <<'END_OF_FILE'
+Xusage: lotto [-t n] [-b n] [-n n] [-?]
+X
+XLotto plays any of those games where you choose several numbers, and
+Xtry to match a random drawing.
+X
+XBut it's more than just another random number generator - this one works
+Xon the principle that, the more you believe, the better it works! It includes
+Xa nearly infinite number of testimonials from real, actual people who have
+Xused Lotto to change their lives.
+X
+XSwitches:
+X
+X	-?	This message.
+X	-h	Ditto.
+X	-t	Sets the top number of the range (default 49)
+X	-b	Sets the bottom number of the range (default 1)
+X	-n	Sets the number of numbers to pick (default 6, maximum 0)
+X
+XLet me know when you make your first million!
+X
+END_OF_FILE
+if test 654 -ne `wc -c <'README'`; then
+    echo shar: \"'README'\" unpacked with wrong size!
+fi
+# end of 'README'
+fi
+if test -f 'getopt.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'getopt.c'\"
+else
+echo shar: Extracting \"'getopt.c'\" \(2996 characters\)
+sed "s/^X//" >'getopt.c' <<'END_OF_FILE'
+X/*
+X	I got this off net.sources from Henry Spencer.
+X	It is a public domain getopt(3) like in System V.
+X	I have made the following modifications:
+X
+X	index(s,c) was added because too many people could
+X	not compile getopt without it.
+X
+X	A test main program was added, ifdeffed by GETOPT.
+X	This main program is a public domain implementation
+X	of the getopt(1) program like in System V.  The getopt
+X	program can be used to standardize shell option handling.
+X		e.g.  cc -DGETOPT getopt.c -o getopt
+X*/
+X#include <stdio.h>
+X
+X#ifndef lint
+Xstatic	char	sccsfid[] = "@(#) getopt.c 5.0 (UTZoo) 1985";
+X#endif
+X
+X#define	ARGCH    (int)':'
+X#define BADCH	 (int)'?'
+X#define EMSG	 ""
+X#define	ENDARGS  "--"
+X
+X/* this is included because index is not on some UNIX systems */
+Xstatic
+Xchar *
+Xindex (s, c)
+Xregister	char	*s;
+Xregister	int 	c;
+X	{
+X	while (*s)
+X		if (c == *s) return (s);
+X		else s++;
+X	return (NULL);
+X	}
+X
+X/*
+X * get option letter from argument vector
+X */
+Xint	opterr = 1,		/* useless, never set or used */
+X	optind = 1,		/* index into parent argv vector */
+X	optopt;			/* character checked for validity */
+Xchar	*optarg;		/* argument associated with option */
+X
+X#define tell(s)	fputs(*nargv,stderr);fputs(s,stderr); \
+X		fputc(optopt,stderr);fputc('\n',stderr);return(BADCH);
+X
+X
+Xgetopt(nargc,nargv,ostr)
+Xint	nargc;
+Xchar	**nargv,
+X	*ostr;
+X{
+X	static char	*place = EMSG;	/* option letter processing */
+X	register char	*oli;		/* option letter list index */
+X	char	*index();
+X
+X	if(!*place) {			/* update scanning pointer */
+X		if(optind >= nargc || *(place = nargv[optind]) != '-' || !*++place) return(EOF);
+X		if (*place == '-') {	/* found "--" */
+X			++optind;
+X			return(EOF);
+X		}
+X	}				/* option letter okay? */
+X	if ((optopt = (int)*place++) == ARGCH || !(oli = index(ostr,optopt))) {
+X		if(!*place) ++optind;
+X		tell(": illegal option -- ");
+X	}
+X	if (*++oli != ARGCH) {		/* don't need argument */
+X		optarg = NULL;
+X		if (!*place) ++optind;
+X	}
+X	else {				/* need an argument */
+X		if (*place) optarg = place;	/* no white space */
+X		else if (nargc <= ++optind) {	/* no arg */
+X			place = EMSG;
+X			tell(": option requires an argument -- ");
+X		}
+X	 	else optarg = nargv[optind];	/* white space */
+X		place = EMSG;
+X		++optind;
+X	}
+X	return(optopt);			/* dump back option letter */
+X}
+X
+X
+X#ifdef GETOPT
+X
+X#ifndef lint
+Xstatic	char	sccspid[] = "@(#) getopt.c 5.1 (WangInst) 6/15/85";
+X#endif
+X
+Xmain (argc, argv) char **argv;
+X	{
+X	char	*optstring = argv[1];
+X	char	*argv0 = argv[0];
+X	extern	int 	optind;
+X	extern	char	*optarg;
+X	int 	opterr = 0;
+X	int 	C;
+X	char	*opi;
+X	if (argc == 1)
+X		{
+X		fprintf (stderr, "Usage: %s optstring args\n", argv0);
+X		exit (1);
+X		}
+X	argv++;
+X	argc--;
+X	argv[0] = argv0;
+X	while ((C = getopt (argc, argv, optstring)) != EOF)
+X		{
+X		if (C == BADCH) opterr++;
+X		printf ("-%c ", C);
+X		opi = index (optstring, C);
+X		if (opi && opi[1] == ARGCH)
+X			if (optarg)
+X				printf ("\"%s\" ", optarg);
+X			else opterr++;
+X		}
+X	printf ("%s", ENDARGS);
+X	while (optind < argc)
+X		printf (" \"%s\"", argv[optind++]);
+X	putchar ('\n');
+X	exit (opterr);
+X	}
+X
+X#endif
+END_OF_FILE
+if test 2996 -ne `wc -c <'getopt.c'`; then
+    echo shar: \"'getopt.c'\" unpacked with wrong size!
+fi
+# end of 'getopt.c'
+fi
+if test -f 'lotto.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'lotto.c'\"
+else
+echo shar: Extracting \"'lotto.c'\" \(8977 characters\)
+sed "s/^X//" >'lotto.c' <<'END_OF_FILE'
+X#include <stdio.h>
+X
+X#define	DFTHIGH	49		/* Default high number of range */
+X#define	DFTLOW	1		/* Default low number of range */
+X#define	DFTNUM	6		/* Default number of numbers to pick */
+X#define	MAXCOL	75		/* Screen Width */
+X
+Xint *mixem;
+X
+Xchar iline[512];
+X
+Xint high = DFTHIGH;		/* Highest Number */
+Xint low = DFTLOW;		/* Lowest Number */
+Xint number = DFTNUM;		/* Number of numbers to pick */
+Xint range;			/* Range of numbers */
+Xint numtest = 3;		/* Number of testimonials */
+X
+Xchar *order[] = {
+X    "FIRST", "SECOND", "THIRD", "FOURTH", "FIFTH", "SIXTH", "SEVENTH",
+X    "EIGHTH", "NINTH", "TENTH"
+X    };
+X
+X#define	MAXNUM	((sizeof order)/sizeof(char *))
+X
+Xchar *testimony[] = {
+X    "The first time I used LOTTO-DROID, I won ~$!",
+X    "I was unemployed, in debt for ~$, but now I have a ~T and a new ~T!",
+X    "Before I found LOTTO-DROID, I could only DREAM of winning ~$, but now that I have it, I'm looking forward to my first ~T!",
+X    "I never won a thing in my life, until I won the lottery with LOTTO-DROID.",
+X    "With LOTTO-DROID, I have a steady annual income of ~$ for the first time in my life!",
+X    "I thought I was stuck with my old ~T, but with LOTTO-DROID, I can have a new one every year!",
+X    "I saw those people on TV win a ~T or a ~T, but I never thought it could be me. Then I won ~$ with LOTTO-DROID!",
+X    "My friends laughed when they saw LOTTO-DROID. Now that I have a ~T and ~$ besides... they don't laugh anymore.",
+X    "I was so confident that LOTTO-DROID would fulfill my wildest fantasies, I quit my job! Now I'm broke and living on welfare, but I still play, every day!",
+X    "I got a copy of LOTTO-DROID to buy a ~T with, and another for a ~T, and another for a ~T - the more you have, the more you win!",
+X    "When my clients come to me to buy a ~T, I tell them to get a copy of LOTTO-DROID first.",
+X    "I didn't *always* have a ~T... but it was the first thing I got after winning ~$ with LOTTO-DROID!",
+X    "I wouldn't give up my new ~T for anything... Thank you, LOTTO-DROID!",
+X    "I've got a ~T in the garage and ~$ in the bank - thanks to LOTTO-DROID."
+X    };
+X
+X#define	NUMTESTIMONY	((sizeof testimony)/sizeof(char *))
+X
+Xchar *things[] = {
+X    "Corvette","Lamborghini","home in Pebble Beach","Florida condo",
+X    "vacation home","ceramic dalmatian","husband","wife",
+X    "case of herpes","30 foot yacht","living room set",
+X    "mink stoll","set of clothes","Picasso","Rembrandt","Da Vinci",
+X    "sailboat","set of plastic silverware","selection of blue chip stocks",
+X    "mortgage","string of pearlys","cubic zirconia diamond","nanny",
+X    "live in lover","personal maid","butler","Learjet","Rolls Royce",
+X    "Caribbean island","five year membership in Club Med",
+X    "luxury suite in the PTL theme park","Presidential nomination",
+X    "matched pen and pencil set","rack full of wire coat hangers",
+X    "condo on Park Avenue","condo on Pennsylvania Avenue",
+X    "child on the way","seat on the stock exchange",
+X    "gift certificate for the Home Shopping Network",
+X    "thousand bags of Doritos","marijauna ranch in Nicaragua",
+X    "documentary of my life on PBS",
+X    "television station that shows the movies *I* want to watch",
+X    "Mac II","IBM PS/2","Amiga 2000","Atari Mega ST","Epson QX-10",
+X    "Rolex","meerschaum pipe","free movie rental",
+X    "reserved seat at the next Superbowl","Turbo Porsche",
+X    "\"nugget\" bracelet","platinum tooth filling","facelift",
+X    "stretch limo","cellular telephone","plot in Forest Lawn",
+X    "major Hollywood audition","cruise around the world",
+X    "sense of self-worth","fatal disease","reason to go on living",
+X    "sex change operation","embassy post in the Marines",
+X    "night with Gary Hart","ministry","Suzuki Samurai",
+X    "sumo wrestler","subscription to GiantsVision","projection TV",
+X    "baseball team","basketball team","NBA franchise",
+X    "Jazzercise membership","barrel of pickels","herd of cattle",
+X    "space shuttle","private jet","phone call from the President"
+X    };
+X
+X#define	NUMTHINGS	((sizeof things)/sizeof(char *))
+X
+Xchar *locs[] = {
+X    "Sydney","Melbourne","Brasilia","Juneau","Honolulu","Anchorage",
+X    "Fairbanks","Hartford","Rochester","Burlington, VT","Montpelier, VT",
+X    "Manchester, NH","Linwood, MA","Whitinsville, MA","Worcester, MA",
+X    "Guam","Samoa","Mariana's Trench","Fiji","Mt. St. Helens",
+X    "Dover, NH","Seaside, CA","Los Angeles","New York City",
+X    "Great Neck","Pittsburgh","Boston","Providence, RI","Buffalo",
+X    "somewhere in Kansas","Minneapolis","San Jose","San Francisco",
+X    "Freiberg","Houston","Dallas","St. Louis","Chicago","Miami",
+X    "Las Vegas","Nashville","Tijuana","Havana","Philadelphia",
+X    "San Diego","Eugene, OR","Seattle","Sacramento","Portland, ME",
+X    "Eureka, CA","Sunnyvale, CA","San Juan","Tibet","Beijing",
+X    "Cincinnatti","Lansing, MI","Cleveland","Gary, IN","Little Rock",
+X    "Tallahasee","Boise","Salt Lake City","Tulsa","Nebraska City"
+X    };
+X
+X#define	NUMLOCS		((sizeof locs)/sizeof(char *))
+X
+Xchar usage[] =
+X
+X"usage: lotto [-t n] [-b n] [-n n] [-a n] [-?] [-h]\n\n\
+XLotto plays any of those games where you choose several numbers, and\n\
+Xtry to match a random drawing.\n\n\
+XBut it's more than just another random number generator - this one works\n\
+Xon the principle that, the more you believe, the better it works! It includes\n\
+Xa nearly infinite number of testimonials from real, actual people who have\n\
+Xused Lotto to change their lives.\n\nSwitches:\n\n\
+X\t-?\tThis message.\n\
+X\t-h\tDitto.\n\
+X\t-a\t# of testimonials.\n\
+X\t-t\tTop # (default %d)\n\
+X\t-b\tBottom # (default %d)\n\
+X\t-n\t# of picks (default %d, maximum %d)\n\n\
+X\n\n";
+X
+Xextern int optind;			/* Used by getopt */
+Xextern char *optarg;
+X
+Xextern int atoi(), getopt();
+Xextern char *gets(), *malloc();
+X
+Xmain(acnt,avar)
+Xint acnt;
+Xchar *avar[];
+X{
+X    int i, ni, t;
+X
+X    while((i=getopt(acnt,avar,"t:b:n:a:h?-")) != EOF){
+X	switch(i){
+X	    case 'a':
+X		numtest = atoi(optarg);
+X		if(numtest < 1) numtest = 1;
+X		break;
+X	    case 't':
+X		high = atoi(optarg);
+X		break;
+X	    case 'b':
+X		low = atoi(optarg);
+X		break;
+X	    case 'n':
+X		number = atoi(optarg);
+X		break;
+X	    case '?':
+X	    case 'h':
+X		printf(usage,high,low,number);
+X		return;
+X	    }
+X	}
+X
+X    if(high < low){
+X	printf("The high number of the range should be >= the low number.\n");
+X	return;
+X	}
+X
+X    if(number < 1 || number > MAXNUM){
+X	printf("Sorry, can't pick that many numbers. Must be between 1 and %d.\n",MAXNUM);
+X	return;
+X	}
+X
+X    range = high-low+1;
+X    mixem = (int *)malloc(sizeof(int) * range);
+X
+X    if(!mixem){
+X	printf("Couldn't allocate enough memory for the numbers!\n");
+X	return;
+X	}
+X
+X    srand(time(0L));			/* Randomize */
+X
+X    printf("LOTTO-DROID\n\n");
+X    printf("Win the lottery the way the experts do!\n\n");
+X
+X    if(yesno("Do you want to hear some testimonials from REAL PEOPLE? ")){
+X	printf("\n");
+X	for(i=0; i<numtest; ++i){
+X	    testify();
+X	    printf("\n");
+X	    }
+X	}
+X
+X    printf("\nPut the power of RANDOM NUMBERS to work FOR YOU!\n");
+X    printf("Can %d lottery winners be wrong? You decide!\n\n",rnd(10000));
+X
+X    while(!yesno("Do you believe? "))
+X	printf("RANDOM NUMBERS only work if YOU BELIEVE!\n");
+X
+X    printf("\n");
+X
+X    if(yesno("Do you REALLY believe? "))
+X	printf("Don't tell me, tell them RANDOM NUMBERS!\n\n");
+X    else
+X	printf("Deep in your heart, I KNOW you believe!\n\n");
+X
+X    for(i=0; i<range; ++i) *(mixem+i) = i;
+X
+X    for(i=0; i<range; ++i){
+X	ni = rnd(range);
+X	t = *(mixem+i);
+X	*(mixem+i) = *(mixem+ni);
+X	*(mixem+ni) = t;
+X	}
+X
+X    printf("I can FEEL the POWER commin' over me....");
+X    fflush(stdout); sleep(1);
+X    printf("It's the POWER of RANDOM NUMBERS!\n\n");
+X
+X    for(i=0; i<number; ++i){
+X	sleep(1);
+X	printf("Your %s number is %d!\n",order[i],*(mixem+i)+low);
+X	}
+X
+X    sleep(1);
+X    printf("\nI BELIEVE! you will win!\n");
+X}
+X
+Xyesno(s)
+Xchar *s;
+X{
+X    char *s1;
+X
+X    for(;;){
+X	printf("%s",s);
+X	s1 = gets(iline);
+X	if(!s1) return(0);
+X	if(iline[0] == 'y' || iline[0] == 'Y') return(1);
+X	if(iline[0] == 'n' || iline[0] == 'N') return(0);
+X	printf("Yes or No! ");
+X	}
+X}
+X
+Xint col=0;
+Xchar token[80];
+X
+Xtestify(){
+X    sprintf(iline,"%s - %c.%c., %s.",testimony[rnd(NUMTESTIMONY)],
+X				rnd(26)+'A', rnd(26)+'A',
+X				locs[rnd(NUMLOCS)]);
+X    tokenize(iline);
+X    if(col){
+X	printf("\n");
+X	col = 0;
+X	}
+X}
+X
+Xint isspace(ch)
+Xint ch;
+X{
+X    return(ch == ' ');
+X}
+X
+Xint rnd(n)
+Xint n;
+X{
+X    return((rand() & 0x7FFF) % n);
+X}
+X
+Xtokenize(s)
+Xchar *s;
+X{
+X    char tmptok[80];
+X    char *s1;
+X    int l;
+X
+Xfor(;;){
+X
+X    while(isspace(*s)) ++s;
+X    if(!*s) return;
+X    for(s1=token; *s && !isspace(*s);) *s1++ = *s++;
+X    *s1++ = ' ';
+X    *s1 = 0;
+X    l = (s1-token);
+X    if(l > 1 && token[0] == '~'){
+X	switch(token[1]){
+X	    case '$':
+X		sprintf(tmptok,"$%d%02d.00",rnd(10000),rnd(100));
+X		break;
+X	    case 'T':
+X		strcpy(tmptok,things[rnd(NUMTHINGS)]);
+X		break;
+X	    default:
+X		strcpy(tmptok,">>WHOOPS<<");
+X		break;
+X	    }
+X	strcat(tmptok,&token[2]);
+X	tokenize(tmptok);
+X	continue;
+X	}
+X    if((col + l) > MAXCOL){
+X	printf("\n");
+X	col = 0;
+X	}
+X    printf("%s",token);
+X    col += l;
+X    }
+X}
+END_OF_FILE
+if test 8977 -ne `wc -c <'lotto.c'`; then
+    echo shar: \"'lotto.c'\" unpacked with wrong size!
+fi
+# end of 'lotto.c'
+fi
+echo shar: End of shell archive.
+exit 0

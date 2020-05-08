@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3             188 Feb  8 01:27 1994 /usr/local/slowcat
+-rw-r--r-- 3/3             666 Aug 16 23:53 1994 /usr/lib/Help/lib/L/slowcat

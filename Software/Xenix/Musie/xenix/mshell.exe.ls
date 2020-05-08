@@ -1,0 +1,6 @@
+-rwxr-xr-x 0/0           50837 Aug 24 11:38 1994 /usr/local/mshell
+-rw-r--r-- 0/0            1409 Jul 27 08:49 1994 /usr/local/lib/mshell/menus/main.men
+-rwxr-xr-x 0/0            1743 Aug 24 11:57 1994 /usr/local/lib/mshell/menus/menulogin
+-rwxr-xr-x 0/0            1743 Aug 24 11:58 1994 /usr/local/lib/mshell/menus/menuloginsh
+-rw-r--r-- 0/0             187 Nov 10 12:16 1993 /usr/local/lib/mshell/commands/commands
+-rw-r--r-- 3/3           14513 Aug 24 14:00 1994 /usr/lib/Help/lib/L/mshell

@@ -1,0 +1,1943 @@
+
+HARDWARE(M)          XENIX Programmer's Manual          HARDWARE(M)
+
+
+
+NAME
+     Hardware - 16/12/16B/6000 hardware information.
+
+DESCRIPTION
+
+     The following information describes what type of hardware and memory
+     requirements are needed to support a Xenix system in the above family
+     of computers.  Also, included are hardware modification specifications
+     and other pertinent information as gathered and promulgated by many other
+     computer users on various computer networks.
+
+     CPU and MEMORY INFORMATION:
+
+     A model 16 and 16B came standard with a 68000 cpu that could only support
+     1.? versions of Xenix.  When 3.0 Xenix was introduced, a hardware
+     modification was introduced by Tandy with the addition of a pal chip
+     to the CPU so that these machines could run 3.0 Xenix versions without
+     actually upgrading to a 6000.  Any of these machines could also be
+     upgraded to an actual Model 6000 by swapping out the cpu and memory board
+     with actual 6000 hardware.  A Model 6000 memory board holds 1 meg of
+     memory and all others held 256k with a maximum of 2 boards that could be
+     installed in a Model 16 and 4 boards that could be installed in a Model
+     12 or 16B to reach the 1 meg limit.  It should be noted that with each
+     addition of a memory board, the power supply is further taxed.  Some
+     machines experienced problems with too many boards and users had to do
+     their own power supply modifications to boost the voltage.  This was a
+     problem not addressed by Tandy.  3.2 versions of Xenix have a kernel
+     that can support more than 1 meg of memory.  This required the MMU (memory
+     managment modification) to the cpu to accommodate the extra memory.  The
+     MMU was never offered in any of the Tandy catalogs however, it was sold
+     by Tandy at one time.  There was some outside vendor support for this
+     modification and even a few homemade boards appeared on the scene.
+
+     Assuming you have appropriate drivers, you can, however, use memory
+     above 1 meg as RAM-swap or something without an extended MMU.
+     Tandy's extended MMU is good to 4 meg; some others go to 7 meg.
+     Do not address memory at or above 0x700000.  This conflicts with some
+     memory-mapped I/O ports.
+
+     The Model 16/16B series of computers ran at 6-Mhz because the memory boards
+     would not run at 8 Mhz.  Any of the 6-Mhz CPU's will work at 8 Mhz if the
+     memory boards will work at that speed.  All 6 Mhz CPU's have the 8 Mhz
+     68000 in it.
+
+     The following solution has been suggested by other users to solve low
+     voltage problems due to the addition of extra memory boards:
+
+     Measure across one of the little bypass capacitors on one of the memory
+     boards with a good accurate digital VOM.  You should read between 5.08 and
+     5.14 volts, optimally about 5.12 volts (forget what the service manual says
+     about this).  If you measure less than that, you will need to parallel a
+     resistor across the main power supply's R41/R42/R43 (they are all in
+     parallel).  Start with a high value like 470k, and gradually reduce it
+     until the voltage is close to 5.12 volts.  Do not allow it to run higher
+     than 5.14 volts.  5.0 volts is bare minimum.
+   
+     MODEL 16/16B/OR 12 UPGRADED TO A 16B MEMORY BOARD CONFIGURATION
+     (256k memory boards)
+ 
+     E# locations on the boards must be jumper clipped as follows:
+     For the 68000 board only:
+     E1-E2 Causes the refresh circuit to output a pulse every 31.5 us.
+     E4-E7 Selects a 6 Mhz clock for the 68000
+
+     For the memory boards only:
+     E13-E14 Connects A14 directly to the ram
+     E15-E16 Connects A16 directly to the ram
+     E17-E18 Connects A15 directly to the ram
+     E11-E12 Supplies A17 inverted to 1/2 the ram
+
+     First memory board either 128k or 256K switch 2 of S1 on.  Maps the
+     board at 000000 to 03FFFF.
+
+     Second memory board either 384k or 512k switch 2 and 3 of S1 should be on
+     to map the RAM between 040000 to 07FFFF.
+
+     Third memory board either 640k or 768k switch 2 and 5 of S1 should be on
+     to map the RAM between 080000 to 0BFFFF.
+
+     Fourth memory board either 896k or 1024k switch 2,3, and 5 should be on
+     to map the RAM on this board between 0C0000 to 0FFFFF.
+     
+
+     MODEL 6000 (or upgraded 12/16/16B) MEMORY BOARD CONFIGURATION 
+
+     E# locations on 6000 boards must be correctly jumper clipped. Jumper E1-E2
+     is 512K.  Jumpered E2-E3 is 1 Meg.
+
+     E5-E6, E7-E8, E12-E14 are also jumper clipped with all other E# locations
+     left unused.
+
+     Dip switches must be correctly set as follows:
+
+     Switch	2	6	8	7	5	3	(note order)
+     ______________________________________________________
+     512k       ON      OFF     OFF     OFF     OFF     OFF
+     1 meg      ON      OFF     OFF     OFF     OFF     OFF
+
+     With the extended MMU in place use (Tandy Catalog # 26-6020):
+
+     1 meg	ON	OFF	OFF	ON	OFF	OFF
+     2 meg	ON	OFF	ON	OFF	OFF	OFF
+     3 meg	ON	OFF	ON	ON	OFF	OFF
+     4 meg	ON	ON	OFF	OFF	OFF	OFF
+
+     The access speed of memory chips tells you how fast the memory
+     *can* be accessed.  The machine determines how fast it *will* be
+     accessed.  If you install memory that is too much faster than the
+     original, it won't get refreshed fast enough and will start dropping
+     bits.  I would worry about putting 70ns chips in a 6000, but 120ns
+     should be fine.  Sometimes it's hard to get the slower chips these
+     days.
+
+     HOW TO MODIFY YOUR MEMORY BOARDS AND 68000 CPU BOARDS 
+
+/* Written  9:44 pm  Jan 25, 1987 by sir-alan.UUCP!mikes in homer:comp.sys.tandy */
+/* ---------- "Upgrading 128k/256k memory boards t" ---------- */
+
+The following note is being reposted as apparently some interested parties
+missed the first posting, and attempts to send the note by e-mail have
+failed.  The note was written by Paul Sutcliffe (paul@devon).
+
+-------------------------------------------------------------------------
+Anyway, here's the info on the 1Meg upgrade.  After finishing this
+modification, the schematic of the board looks just like the real 6000
+1Meg board, except that the 6000 board has jumpers to turn the board
+back into a Model-16-type board:
+
+
+You will need 150ns chips for a 6mHz 68000, and you should use
+120ns chips for an 8mHz 68000 (150ns may not be fast enough).
+
+I as able to purchase NEC 150ns 256K RAMs for $2.85 apiece from
+Microprocessors Unlimited, Inc., 24000 So. Peoria Ave., Beggs,
+Oklahoma, (918) 267-4961.  The whole bill for 36 (I ordered spares)
+was $106.85.  I received the order in 3 days.  This was in late
+January, so the prices may have changed.  At that time, 120ns NEC's
+were $3.37 apiece.
+	
+The mod is as follows:
+
+Parts Needed:
+
+    Description			Qty
+    RAM chips (see above)	 32
+    Resistor, 68 ohm		  1
+    74S240			  1
+    74S157			  1
+
+Cut the following traces:
+	
+    BUS A17 --> U9.13	    Cut top side between U9 and first via
+    BUS A18 --> U2.4	    Cut bottom side between U2 and first via
+    BUS A19 --> U2.6	    Cut bottom side between U2 and first via
+
+New Parts:
+
+    Mount the 74S240 on top of U3 or U4 by bending up all pins EXCEPT
+    1, 10, 19, and 20.  This chip will be called P1 for piggyback 1.
+
+    Mount the 74S157 on top of U29 by bending up all pins EXCEPT 1, 8,
+    15, and 16.  This chip will be called P2 for piggyback 2.
+
+Jumpers:
+
+    BUS A17 --> P1.11	    Via from first cut	    Buffered A17
+    BUS A18 --> P1.13	    Via from second cut	    Buffered A18
+    BUS A19 --> U9.13	    Via from third cut	    Buffered A19 for bank
+    U2.4    --> U2.5	    On U2 to default address selection
+    U2.6    --> U2.7	    On U2 to default address selection
+    P1.9    --> P2.2	    Buffered A17
+    P1.7    --> P2.3	    Buffered A18
+    P2.4    --> resistor    A17 MUXed with A18
+    resistor--> pin 1 of ALL RAM chips on the bottom of the board.
+
+The resistor is in series to pin 1 of all the RAM chips.
+
+That's All Folks!  The mod could have been done a little differently
+without the 74S157, but that chip makes it possible to use only 16
+RAMs to get 512K (in case of memory failure, a 512K board is better
+than a 0K board!).
+
+                          Mike Squires
+                          814-724-3360
+
+        uucp: ..!pitt!sir-alan!mikes
+              ..!cwruecmp!ncoast!peng!sir-alan!mikes
+
+      BITNET: mikes%sir-alan@pitt.UUCP
+
+|Subject: 68000-l12
+|
+|
+|>Roy,
+|>I am under the impression that you did the hardware
+|>work with david butlers 68kl12, what can you tell me
+|>about the mods, i.e. how stable is it really?
+|
+|Here is a list of the modifications required.  You will need to be looking at
+|a 68000 CPU board and a memory board to fully understand them.  I couldn't
+|taks a good enough picture to show you the mods anyway.
+|The only real problems I have with the modifications are the power-supply and
+|the cooling.  Butler just can't imagine that heat would be a problem running
+|at 12Mhz, nor can he imagine that the +5V line is any problem, but the
+|reality is that they are both problems.  In the system I have set-up just
+|for this work I have added a 38 watt secondary hard disk power supply to the
+|system.  I did this by using the mounting posts that are on the left-hand (
+|as you are looking at the computer) side of the 6000.  The early card cages
+|were made with these posts put there just for this, because the +5V line was
+|a concern in the basic design of the 6000.  I also have the large back-door
+|fan kit on the system to alleviate heat problems.  The bottom line is the
+|boards will not run reliably at 12Mhz 0/waits if you are only allowing
+|convection cooling.  The boards require forced air cooling.  I have not
+|tried mounting heat sinks to the 68000 CPU, but that may do the trick.
+|The problem with the power-supply is well known.  The +5V current draw
+|is about 14 amps.  The limit is 15 amps.  The power-supply just runs out
+|of gas and the system gets flaky.  Now 12Mhz with 1 wait state is as reliable
+|as the 8Mhz board and can use the 150ns rams instead of the 100ns rams 
+|required to run at 0 wait states.  Power is less of a problem and heat is
+|even less of a problem.  The following is a list of loop times for the various
+|configurations, you justify the what you need and then you can do it.
+|
+|Clock Speed		8Mhz 		12Mhz		12Mhz
+|Wait States		 0		  1		  0
+|
+|Loop Times		8.0 sec		6.3 sec		5.1 sec
+|
+|------------------------------------------------------------------------------
+|These are the modifications to get you running at 12Mhz and 1 wait state.
+|
+|68000 CPU Board Modifications
+|
+|	1. Remove U1. (74F32)
+|
+|	2. Install a socket where U1 was. (Optional)
+|
+|	3. Install a 74S32 in U1.
+|
+|	4. Add a 220pf capacitor from U1.3 to ground. (150ns rams)
+|
+|	5. Move jumper block to E5-E7 on the 68K board.
+|
+|68000 Memory Board Modifications (150ns rams)
+|
+|	1. Remove jumper block at E12 to E14.
+|
+|	2. Add a jumper from U13.4 to E14.
+|
+|	3. Cut the trace at U13.8.
+|
+|	4. Install a jumper from U13.6 to U11.3.
+|
+|NOTE:	The following modifications are not required, but may help.
+|
+|	4. Cut trace at U1.19.
+|
+|	5. Cut traces on both sides of U10.10.
+|
+|	6. Install a jumper from U1.19 to U10.10.
+|
+|	7. Install a jumper from U9.1 to U9.19.
+|
+|	If you have any problems, run the memory diagnostics, and if those
+|	pass, then dink around with the value of the capacitor you added.
+|	Timing is very critical. I think I've got a 30ns window for
+|	proper operation, if your rams are prime.
+|
+|	As a side note, this mod has been running in my system for about a
+|	year with no problems, and I have installed it on 3 other local
+|	systems and they have had no troubles with it either.
+|
+|----------------------------------------------------------------------------
+|12Mhz 68000 CPU w 0/wait states modifications and 100ns rams on the memory 
+|boards.
+|
+|68000 CPU Board
+|
+|	1. Remove U1.
+|
+|	2. Insert a socket at U1 (Optional)
+|
+|	3. Insert a 74S32 at U1.
+|
+|	4. Move jumper block from E6-E7 to E5-E7.
+|
+|
+|68000 Memory Board
+|
+|	1. Remove U9  and all capacitors attached to it.
+|
+|	2. Insert a socket at U9. (Optional)
+|
+|	3. Insert a 74S244 at U9.
+|
+|	4. Install a 10pf capacitor from U9.16 to ground. (U9.19)
+|
+|	5. Install a 10pf capacitor from U9.18 to ground. (U9.19)
+|
+|	6. Cut trace at U9.1 at the feedthrough on the bottom of the memory
+|	   board.
+|
+|	7. Install a jumper from U9.1 to U9.19.
+|
+|	8. Install a jumper from feedthrough, where you just cut the trace to
+|	   U10.10.
+|
+|	9. Cut both traces, on the bottom of the memory board, from U10.10.
+|
+|	10. Install a jumper from U10.4 to feedthrough where U10.10 used to
+|	    be connected.
+|
+|	11. Cut the trace from U13.8.
+|
+|	12. Install a jumper from U13.6 to U11.3.
+|
+|	13. Move block jumper to E12-E14.
+|
+|	14. Install 100ns rams in all of the ram sockets.
+|
+|	15. Install four 74ALS240A's at U5, U6, U7, U8.
+|
+|The bottom line is both the above modifications are reliable as far as we 
+|know.  The 12Mhz w/1 wait state has been running in several systems for about
+|1 year and has no problems.  Some of Tech Support's computers are running
+|this modification as well without any problems.
+|
+|The 12Mhz 0/wait state modification seems reliable if you get past the 
+|heat and power supply problems and really screams, but I don't know how
+|reliable the mods are from system to system yet.  Jerry Ballard said he was
+|going to mod up some systems over at R&D, he will let me know the results.
+|Until we have more than one set done, I will not bless the modifications.
+|(I'm funny that way)  I have a funny feeling that Butler is going to do some
+|more mods to the board with Kueck down at Tech Support.  He can't beleive
+|that heat could be a problem, but I don't have the time nor the inclination
+|to go into a course on electro-thermal dynamics.  So that is where it stands.
+|Have fun!
+|
+|
+|						Roy Neese
+|					UUCP @  cpe!neese
+|						techsup!cpedev!neese
+|
+
+
+     SERIAL INTERFACE
+
+     With the introduction of 3.2 Xenix, a Model 12/16B/6000 with the user
+     accessable card cage could obtain 2 3-user serial boards so these machines 
+     could accommodate up to 9 users.  Of course, in a 9 user environment,
+     3 or 4 megs of memory is a good idea and generally speaking 1 meg per 3
+     users is a must to prevent system overload.  A Model 16 may not have 
+     enough card slots to support the same full configuration.
+
+     Or, you could quit using your 3-port card and get 2 4-port cards, if you
+     can find them.  This makes 9 or 11 users (including the console).  (The
+     version of z80ctl required to use 4-port boards is in /usr/lib/m6010.tar
+     in the 03.02.00 development system upgrade).
+
+     The 3-port boards have DB-25 connectors that are wired to be used with
+     a straight-through cable to a terminal (unlike the built-in SIO ports
+     which are wired to be used with a straight-through cable to a modem).
+     Use a "crossover" cable to connect a 3-port card to a modem or a 
+     SIO port to a terminal (possibly a null modem might work or an adapter).
+
+     Tandy, in their infinite wisdom, has decided to drop the 26-1373 modem
+     adapter.  This is the little devil that lets you connect a modem to a
+     3-port card.  The following schematic provides the pin outs to construct
+     your own adapter:
+
+
+     3-port:   1    2    3    4    5    6    7   20
+               ^    ^    ^    ^    ^    ^    ^    ^
+	       |    |    |    |    |    |    |    |
+	       |    |    |    +----+    |    |    |
+	       |    |    |              |    |    |
+	       |    |    |              |    |    |
+	       |    |    |    +----+    |    |    |
+	       |    |    |    |    |    |    |    |
+	       v    v    v    v    v    v    v    v
+     Modem:    1    3    2    4    5   20    7    8
+
+
+     The wiring for 4-port cards is documented in /usr/lib/m6010.tar, which
+     you need to use them.
+
+     The 3-port card supports async only.  So does the little-known 4-port card.
+     The 2 on-board SIO ports support sync (with hardware modifications) and
+     async, but I don't think you can switch between them with software changes
+     only.  Tandy 6000 Xenix doesn't support synchronous operation.
+
+     To install one 3 port card, set dip switch #1 ON and place it in the
+     lower card slot just above the video card.  This will give you tty06,
+     tty05, and tty04 (from left to right on the card edge). To install two 3
+     port cards, set dip switch #2 ON for the second card and place this
+     card in the lower card slot just above the video card making sure that
+     3 port card number one is NOW MOVED one slot higher residing ABOVE card
+     number two.  With two 3 port cards you will have tty09, tty08, tty07,
+     on the lowest card and tty06, tty05, and tty04 on the highest card in
+     the card cage.  Again, the highest tty number is always on the left
+     side of the card.  For Xenix configurations supporting 3 3 port cards,
+     the third card has dip switch #3 turned on, all cards are moved up
+     one slot and card #3 becomes the lowest card in the cage.
+     
+     USING MODEMS
+
+     Xenix supports Tandy/Hayes/Vadic modems.  However, users report success
+     with others as well.  Below is a report on this:
+    
+     Just about any external modem will work such as a Trailblazer Plus.  Baud
+     rates higher than 9600 won't work due to baud rate divider accuracy.  
+     (Although there is a hardware change/software patch to fix this).  Be 
+     sure to connect the Data Terminal Ready (pin 20 on serial ports A&B) and 
+     Carrier Detect (pin 8) straight through, in addition to the data lines
+     (pins 2 & 3), and ground (pin 7).  You probably want to connect RTS and CTS
+     (pins 4 & 5) also.  If you want to have the modem auto-answer, be sure 
+     that command echo is OFF, auto answer is ON, and command responses are OFF.  
+     Enable logins on the serial port to answer, and disable logins on the port 
+     to dial out.  If your modem has an option to reload the parameter settings 
+     when DTR drops, sometimes AT&D2, use it, and store the settings for ANSWER 
+     mode in the EAROM.
+
+     You should be sure not to use the "enable" or "disable" commands more often
+     than once a minute.  (Using them on different lines is no excuse).  Failure
+     to heed this warning, especially in automatic dial scripts, may cause init
+     (process 1) to become <defunct> and the system will run out of process
+     slots until it is rebooted.  Use a locking mechanism in your scripts,
+     such as testing the existence of a file to check if another copy of the
+     script is running.
+
+     With modifications 19,200 baud is easily reachable.
+     Some users report using Telebit T3000/T2500 modems at 19,200 and even
+     38,400 baud with little or no problems.  Of course this is on TTY01 and
+     TTY02.  Normal PCI TTYs (TTY04 - TTY0n) are incapable of receiving bursty
+     data at high rates.  Transmission isn't the problem, reception is.  A MUX
+     board is suggested which is reliable at 19,200 baud.   Don't put
+     4800 baud into the PCI ports and expect error-free data.
+
+     The 'cu' and 'cu.s3' programs are not capable of handling binaries, 
+     unless they are made non-binary by some method such as uuencode.  UUCP 
+     will handle binaries (and if binary data won't work through the modem, 
+     you can't transfer text files via uucp either!)  Other communication 
+     programs, such as kermit, can handle binaries.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                    6000 > 4000 > 3000      Vol. 1, No. 3
+             Serial Ports and your Tandy 16/6000 Computer system
+        by Frank Durda IV  Copyright 1990, 1991.  All Rights Reserved.
+                          Original Version 4-Apr-91
+
+       This article may be  republished in  part  or  in  its  entirety
+       provided  credit  is  given  and  the material is made available
+       without charge.
+
+       A modest media charge is acceptable IF  the  recipient  has  the
+       option  of  providing  their own media to duplicate the material
+       onto at no charge.  Any other use of this  material   must  have
+       prior written approval.
+
+       Commercial bulletin boards and other information  servers  (like
+       Compuserve(R))  who  place  an  additional  copyright or similar
+       restriction on material that is retrieved from their system  MAY
+       NOT  distribute  or  archive  this  article.   UUNET and freely-
+       accessible ftp/uucp sites are allowed to archive/distribute this
+       article.
+
+
+This article discusses the different  RS-232C  subsystems  available  for  the
+Model  II/16/12/16B/16BHD/6000/HD systems, and what modifications you can make
+to XENIX to allow higher baud rates and increase reliability.
+
+
+Inboard ports with the Z80 SIO
+------------------------------
+
+The first two RS-232C ports discussed are contained within a chip  called  the
+Z80 SIO.  This part is located on the CPU card in the II/16 systems and on the
+main logic board in the 12/16B/16BHD/6000/6000HD systems.
+
+Several different versions of the Z80 SIO have been sold.  This is because the
+chip itself has more connections than it has pins to connect them to in the 40
+pin package.  Depending on which Z80 SIO you buy, one or more capabilities may
+be  deleted  so that others are accessible.  To date, Radio Shack has used the
+same version of the SIO in all of its products and the  Zilog  designation  of
+that  part  is  "SIO/0".  This version of the chip does not support split baud
+rates for transmission and reception on channel B.  An example of  this  would
+be  to  transmit at 1200 baud and receive at 9600.  This is not very common in
+the U.S., but has been used frequently in Europe.
+
+The Z80 SIO/0 has two complete UARTs and can transmit and receive at speeds up
+to  56K.  The 8530 SCC that is used in Appletalk, Tops and many "Smart" multi-
+port boards for "AT" systems, is a direct descendent of  the  Z80  SIO.   (The
+first  eight  command  registers  of  the 8530 SCC are almost identical to the
+SIO.)  The SIO supports asynchronous, synchronous monosync and  bisync  modes.
+It  can even implement SDLC.  Asynchronous operation is the only mode the 6000
+XENIX driver currently supports.
+
+The Z80 SIO/0 requires external clocking for the various  baud  rates  it  can
+operate  at, although it can further divide the input clock by 1, 16, 32 or 64
+to achieve the desired value.  In  the  Model  6000  (and  all  other  systems
+mentioned  earlier), a CTC (counter-timer-chip) is used to generate the needed
+transmit and receive clocks.  The XENIX driver is responsible for  programming
+a divisor into the CTC and the SIO for each port.
+
+
+                                   Page  1
+
+
+
+
+
+
+
+
+The SIO ports are better suited than the PCI ports (these are discussed below)
+when it comes to high data rates for a couple of reasons.  First, the SIO will
+hold up to three received characters at a time.  If the  operating  system  is
+tied  up  performing  other  operations,  these  ports are able to wait longer
+before being serviced without losing any  characters.   (When  characters  are
+lost  in  this way, it is called an overrun.)  For example, if the CPU is busy
+doing some other task, four characters would have to  be  completely  received
+before a character would be lost.  The PCI ports overrun if a second character
+completely arrives before the first character has been read by the CPU.
+
+The second reason that the SIO works well at high speeds is  because  it  uses
+vectored interrupts.  When an interrupt is received from the SIO, the CPU will
+start executing code at one of eight different memory locations.  Depending on
+which  address  the  program  counter  is  set  to,  the  XENIX driver "knows"
+immediately (without asking the SIO) whether a character has been received, if
+it  is  ready  to  transmit  another  character  or  if some status change has
+occurred (such as carrier dropping).  Each port  in  the  SIO  generates  four
+different  interrupt vectors.  (Interestingly enough, this one chip is capable
+of generating as many different hardware  interrupt  vectors  as  the  maximum
+number  available  on  the  IBM-PC.)  This all means that the XENIX driver can
+respond to the needs of the SIO in a minimum number of instructions  and  then
+resume execution of its current task.
+
+When it comes to modem support, again, the SIO ports are the preferred  choice
+over  the  PCI ports.  This is because these ports can generate and respond to
+the various modem control signals including CD, DTR, RTS, CTS and  DSR.   When
+connecting  a  2400 or 9600 baud modem, the SIO ports should be used if at all
+possible.
+
+
+3-port board with the 8251A PCI
+-------------------------------
+
+The 8251A UART is used on the three-port board that Radio Shack  offered  with
+the  Model 16B and later systems.  The 8251A is a very simple part and because
+of this, it is one of the harder parts to work with.
+
+The 8251A PCI contains a single UART channel.  As with the SIO, its baud  rate
+clocks  must be generated externally, and an Intel 8253 PIT (Peripheral Timer)
+performs this task.  The three port board also contains a CTC, which  is  used
+to generate Z80-style interrupts when the PCIs request them.
+
+Each PCI has three signals that can cause an interrupt.  One signal goes  high
+when  the  chip  has  received  a  character.   Another  goes  high  when  the
+transmitter holding register is empty.  (This does not  mean  the  transmitter
+has  gone idle.)  The third signal is used for special operations.  The CTC on
+the 3-port board looks for a rising edge (signal  going  from  0  volts  to  5
+volts) from each PCI and when the CTC sees one, it generates an interrupt (and
+vector) for that particular device.  However,  a  single  CTC  chip  can  only
+produce four different interrupt vectors, so a design decision was made to tie
+all three sources of interrupt (receive, transmit and  special)  together  for
+each  PCI  UART  chip.   This  means  that  when  the XENIX driver receives an
+interrupt from a PCI UART, it only knows which PCI caused the  interrupt.   It
+does  not  know  the reason for the interrupt and must poll the device to find
+out what it wants.  This slows operation of this chip considerably and  limits
+its ability to work at high speeds.
+
+                                   Page  2
+
+
+
+
+
+
+
+
+Another problem caused by tying the three interrupt sources together  is  that
+if  one  or  more items is not taken care of by the interrupt service routine,
+the chip will be unable to cause any subsequent interrupts.  This  is  because
+the  CTC  only  responds  to  the  rising  edge of a signal.  So the interrupt
+service routine must check just before it exits to make sure that no  requests
+remain  outstanding  (or have just shown up) from that chip before exiting the
+interrupt service routine.  It  is  possible  to  "miss"  a  condition  change
+between the time the ISR "looked" and exited, but as long as all three signals
+went low for a moment, the  CTC  will  reset  and  another  interrupt  can  be
+generated.
+
+The PCI also causes problems because its status signal lines can go high,  but
+the status register (which the CPU reads to find out what the chip wants done)
+may not reflect the same information for a period of time.  This means that if
+an  interrupt  is responded-to too quickly, it may read incorrect status.  The
+XENIX driver must deliberately wait until it is certain that the  PCIs  status
+register reflects the state that caused the interrupt.  The combination of the
+latency in the status register and the way the PCI is  connected  to  the  CTC
+creates a series of race conditions that have caused port lock-ups in numerous
+versions of XENIX drivers.
+
+The PCI chip contains minimal modem control capability.  In fact, the chip has
+no  connection  for  carrier  detect  (DCD).   Modem  control  must be handled
+externally, and in the case of the 3-port  board,  this  was  not  done.   The
+original  purpose of this board was that it would be used to attach additional
+terminals to the XENIX system.  Modems were not to be connected.   Over  time,
+the  marketing  strategy changed, but not the hardware design, and modems were
+expected to be able to be used with the 3-port board.  The only status  signal
+that  software  could  even "see" from the RS-232 connector was data-set-ready
+(DSR, pin 6.) So a special  "null-modem"  was  built  that  re-routed  carrier
+detect  (DCD,  pin  8)  to the DSR pin.  The XENIX driver was also modified to
+treat the DSR signal as though it was DCD.  As far as output signals, the  PCI
+did  allow  software to control data terminal ready (DTR, pin 20) and ready to
+send (RTS, pin 5).  The PCI accepted and used (but did not make  available  to
+software)  the  clear  to  send (CTS, pin 4) signal.  When the PCI saw the CTS
+signal go false, it would refuse to transmit, without giving the XENIX  driver
+any  explanation.   (The  original  8251 could stop transmitting in mid-byte.)
+This stoppage could cause port lockups and many users finally lifted pin 17 on
+the  PCI  chips  to  prevent  the chip from paying attention to the CTS signal
+rather than cut up the board or make special cables.
+
+Subsequently, the 3-port board ports cannot  be  recommended  for  modem  use.
+They  are  also not recommended for high-volume incoming data, particularly at
+high baud rates.
+
+
+
+4-port board with the 8250 UART
+-------------------------------
+
+The four-port board was used in the Radio Shack Multiplexer box and was  never
+sold  as  part  of an "official" 6000 configuration, yet it is the best add-on
+port board in existence for these systems.   The four-port board was  designed
+several years before the 3-port board.
+
+
+
+                                   Page  3
+
+
+
+
+
+
+
+
+
+This board uses four 8250/16450 UARTs, the same  part  that  is  used  on  the
+serial  adapters in IBM PC and compatible systems.   This chip provides a baud
+rate generator and all modem control/status signals.  It can run at baud rates
+up  to  56K.   Like the PCI, it only holds one received character, and must be
+serviced quickly when operating at high baud rates.
+
+The four-port board employs memory-mapped ports as well as  interrupt-vectored
+operation.   As with the PCI, each chip (port) generates one interrupt vector,
+and the CPU  must  poll  the  device  to  determine  the  items  that  require
+servicing.  Unlike the PCI, this information is immediately accessible through
+memory-mapped   registers   and   is   arranged   to   make   servicing   very
+straightforward.   The  8250  is  picky  about  which outstanding request that
+software responds to first, but otherwise  it  can  be  serviced  quickly  and
+without the risk of a race condition.
+
+These boards can be identified by having four 8250s and two blocks of switches
+on  the  board.   It  also  has  four  push-on style connectors for the RS-232
+connections.  You have to make the cables to connect these boards to a DB25 or
+other  connector.   The  Multiplexer  box  had  its own modem boards that used
+similar connectors.  Most (if not all) four-port boards had every IC socketed.
+The boards I have come across are not marked with any Radio Shack part number.
+
+The software to run with four-port board(s) instead of a 3-port  board(s)  can
+be  found  on the XENIX 3.2.0 Development System disk.  (It is not possible to
+mix board types, so you cannot use 3-port and 4-port boards at the same time.)
+
+The boards are probably not  available  from  Radio  Shack  anymore.   Only  a
+limited  number  of Multiplexer boxes were ever built and these had up to four
+boards in them.   But if you can find them, it will be  worth  your  while  to
+switch over to using them in place of the 3-port boards.
+
+Since the original 4-port driver was written,  the  NS16550  UART  has  become
+available.   It  is generally software compatible with the 8250 and 16450, but
+is able to hold up to 16 characters without  losing  anything.   The  existing
+driver  obviously  does  not  take  advantage of this feature, but if there is
+interest, a special version could be prepared.
+
+
+Baud Rates and the Model 6000
+-----------------------------
+
+All three types of UARTS on the Model  6000  systems  suffer  from  a  similar
+problem:   inaccurate  baud rates.  The input clock that is fed to the CTCs or
+baud rate generators on all three configurations is 2.000 MHZ, which does  not
+divide  down  well  into  most  baud  rates.  RS-232C standards allow for some
+deviation (less than 10%), but as the baud rate increases, the  error  induced
+by  this  clock  becomes significant.  9,600 baud is less than 1% out of spec,
+but 19,200 baud is nearly 9% high or 7% low, making  it  unreliable  since  it
+leaves  no room for deviation at the other system.  38,400 baud is also out of
+spec.  These speeds would probably work if using  direct  connections  between
+6000s, since both systems would be off-speed in the same direction.
+
+
+
+
+
+                                   Page  4
+
+
+
+
+
+
+
+
+
+The reason 2.000 MHZ was used was that it happened to  be  available.   It  is
+one-half  the  Z80 CPU operating clock frequency, and is available on the bus.
+The 8250 and 8251 parts work best with 1.8432 MHZ, the  speed  recommended  by
+the  UART  manufacturers  and  the  same  speed  used  in  IBM PC systems.  By
+disconnecting the 2.000 MHZ input to these parts  and  providing  1.8432  MHZ,
+accurate  operation  at speeds up to 38,400 baud are possible.  (If you have a
+Telebit Trailblazer modem, you can talk to it at 19,200 and  have  it  operate
+reliably.)   The Z80 SIO can handle the 2.000 MHZ clock marginally better than
+the other parts since it has more clock-divider resolution, but  it  can  also
+benefit from using the 1.8432 MHZ signal.
+
+The following instructions detail how to modify all three types  of  UARTs  to
+use a 1.8432 MHZ crystal oscillator.  Note that this is different from a plain
+crystal.  This device has four pins and looks like a small  sardine  can.   It
+accepts +5 and ground and outputs 1.8432 MHZ at TTL levels.  Stores that carry
+IBM PC (or compatible) parts should have or be able to get this part since  it
+is used on IBM serial and serial/parallel adapters.  (Send e-mail if you would
+like an address of a mail-order house that carries this part.)
+
+Once you have made the modifications, you will also have to patch the  divisor
+tables  in XENIX (actually z80ctl) so that they will match the new clock rate.
+These patches are also provided below.
+
+Modifications for the 3-port board
+----------------------------------
+
+1.      Locate U12 on the 3-port board.  With  the  RS-232  connectors  facing
+        away  from  you  and with the component side facing up, locate an etch
+        that runs out from under U12 in the seven o'clock position, runs about
+        half  an  inch,  and  then  ends  at a pass-thru hole.  (This is about
+        half-way between U11 and U12.)  Cut this etch  about  halfway  between
+        U12 and the pass-thru hole.
+
+2.      Obtain a 14 pin DIP socket and solder a short piece of  fine  wire  to
+        pin 8 on the socket.
+
+3.      Bend outwards all pins on the socket EXCEPT 7 and 14.
+
+4.      Position the DIP socket over U12 on the component side and solder  pin
+        7  to  pin  7  of  U12 and and 14 to pin 14.  You may need to tape the
+        socket  in  place  before  attempting  to  solder  the  pins.    Avoid
+        overheating the chip at U12.
+
+5.      Solder the other end of the wire that is attached  to  pin  8  of  the
+        socket  to  the  pass-thru hole mentioned in step 1.  (Between U11 and
+        U12.)
+
+6.      Plug the crystal oscillator  into  the  new  DIP  socket,  noting  the
+        position of pin 1 on the oscillator.
+
+If you ever want to undo this modification, simply remove the crystal from the
+socket  and  repair  the  broken  etch.   The  DIP  socket does not need to be
+removed.
+
+
+
+                                   Page  5
+
+
+
+
+
+
+
+
+Modifications for the 4-port multiplexer board
+----------------------------------------------
+
+1.      Remove U38 from its socket.  Keep this part in case you want to remove
+        the modification.
+
+2.      Obtain a 14 pin DIP socket and solder a wire-wrap or similar fine wire
+        between pins 5 and 8.
+
+3.      Bend pin 8 on the DIP socket out so it will not plug into  the  socket
+        on the adapter card.  Pin 5 should remain straight.
+
+4.      Plug the crystal oscillator  into  the  new  DIP  socket,  noting  the
+        position of pin 1 on the oscillator.
+
+5.      Plug the DIP socket containing the crystal oscillator into the  socket
+        for U38.
+
+Once complete you should have the crystal plugged into an extra  socket  which
+is plugged into the board socket U38.
+
+If you ever want to undo this modification, simply remove the added DIP socket
+and the crystal oscillator (as a unit) and replace U38.
+
+
+Modifications for the Model 16 (16A) CPU board - Rev C and D only
+-----------------------------------------------------------------
+
+This will not be as clean a modification as some of the others,  so  read  the
+instructions  first.   If  you  don't  own  the service manual, get one before
+performing this modification.
+
+1.      Remove the Z80 CPU card from the computer.  It is normally located  in
+        the slot nearest to the power supply.
+
+2.      Obtain a 14 pin DIP socket and position it over U37.  A piece of  tape
+        can  be  used  to help hold the part in place while you are making the
+        modifications.
+
+3.      Solder pins 7 and 14 of the DIP socket to pins 7 and 14 of the  IC  at
+        U37.  Fold the remaining pins up so that they do not touch the IC.
+
+4.      Locate U19, a 28 pin Z80 CTC.  Remove the chip from the socket.
+
+5.      Bend pins 21 and 23 out slightly and re-insert the  CTC,  making  sure
+        that pins 21 and 23 remain on the outside of the socket.
+
+6.      Run a jumper between pin 8 of the 14 pin DIP socket you mounted on the
+        U37  IC and pins 21 and 23 of the CTC chip ITSELF, NOT the socket that
+        the CTC is plugged into.  Important!  Make sure the jumper to pins  21
+        and 23 do not touch pin 22 or other adjacent pins.
+
+7.      Install the crystal oscillator in the 14 pin socket at U37, noting the
+        correct position in pin 1.
+
+(continued)
+
+                                   Page  6
+
+
+
+
+
+
+
+
+If you ever want to remove this modification, remove the jumper described
+in step 6.  Then clean pins 21 and 23 of the CTC, straighten
+the pins and re-insert
+the CTC into the socket normally.  The crystal oscillator can also be removed
+from its socket.  Leave the added socket at U37 in place.
+
+
+Modifications for the Model 16B/6000 CPU board
+----------------------------------------------
+
+1.      Disassemble the 16B/6000, remove the  expansion  tower  and  move  the
+        power  supply  out  of  the way.  Disconnect all cables leading to the
+        main logic board (sometimes called the "I/O  processor").  Remove  all
+        screws holding the board in place and then remove the card.
+
+2.      Locate U33, a 28 pin Z80 CTC.  Remove the chip from the socket.
+
+3.      Bend pins 21 and 23 out slightly and re-insert the  CTC,  making  sure
+        that pins 21 and 23 remain on the outside of the socket.
+
+4.      Locate the "spare" IC  position  on  the  board,  next  to  the  power
+        connector and TP10.  Remove the solder from all 16 holes and install a
+        14 pin socket, with pin 1 going in the hole next to TP10.   This  part
+        position will be called U100 from this point on.
+
+5.      Run a jumper between U100 pin 7 and the ground pad next to it (the pin
+        8  position  of a 16 pin part.)  Solder pins 1 and 14 of the socket to
+        the board.
+
+6.      Run a jumper from U100 pin 8 (of the 14 pin socket) through the  empty
+        hole  next  to it (the pin 9 position of a 16 pin part) and to pins 21
+        and 23 of the CTC itself, NOT the socket for the CTC. Keep  this  line
+        as  short as possible, but route it so that it will stay flush against
+        the PC board.  IMPORTANT!  The jumper from pin 21 to pin 23  must  not
+        touch pin 22 or any other adjacent pins.
+
+7.      Plug the crystal oscillator into the new socket at U100.  Pin 1 on the
+        oscillator should be nearest to TP10.
+
+8.      OPTIONAL:   While you are in the neighborhood, you may want to undo  a
+        modification  that makes TTY01 appear to have carrier when there is no
+        device connected.  Locate connector J1 and next to it  you  will  find
+        the  label for R33.  If your board has this modification, the resistor
+        at R33 will run from this point  to  a  pad  two  inches  away.   (The
+        resistor  may  be  covered  with  tape or shrink tubing.)  To undo the
+        modification, install R33 as indicated on the circuit board.  You  may
+        want  to  discard  the  shrink  tubing  and  shorten  the leads on the
+        resister.  Be sure the leads do not short out against other circuits.
+
+9.      Re-install the CPU board, reattach all cables and put the system  back
+        together by reversing the disassembly procedure.
+
+If you ever want to remove this modification, remove the jumper  described  in
+step  6,  clean  pins 21 and 23 of the CTC, straighten them and re-insert them
+into the socket normally.  The crystal oscillator can also be removed from its
+socket.  Leave the socket and the jumper described in step 5 in place.
+
+                                   Page  7
+
+
+
+
+
+
+
+
+Software Modifications for the SIO and PCI UARTS
+------------------------------------------------
+
+The following patches will change BOTH the SIO and PCI ports of your system so
+that  they  will  work  with  the new clock.  The patches will also enable the
+19,200 baud rate for both types of UARTS.   (If you have a MUX system, contact
+me for the patches for your system.)
+
+REMEMBER, this patch was NOT supplied by Tandy, so don't expect them  to  know
+anything  about  it  or  support it.  Also, be sure to install a normal system
+(including undoing the clock modifications) before expecting Tandy to make any
+repairs.   Failing  to  give  them  an  unmodified  system  may  result in the
+modifications getting blamed for whatever the problem is.
+
+# cd /
+# cp z80ctl z80ctl.orig
+# patch z80ctl
+byte offset (<ENTER> to exit)? 224              This fixes the checksum
+0224:  9b |.| > 99
+0225:  9e |.| > c0
+0226:  0a |.| > q
+
+byte offset (<ENTER to exit)? 25a               This updates the version stamp
+025a:  30 |0| > 35
+025b:  29 |)| >
+025c:  20 | | >
+025d:  20 | | >
+025e:  32 |2| > 31
+025f:  33 |3| > 30
+0260:  2d |-| >
+0261:  4d |M| > 4f
+0262:  61 |a| > 63
+0263:  72 |r| > 74
+0264:  2d |-| >
+0265:  38 |8| >
+0266:  37 |7| > 39
+0267:  5d |]| > q
+
+byte offset (<ENTER> to exit)? 2b59             This indicates more baud rates
+2b59:  0e | | > 0f                              are available
+2b5a:  30 |0| > q
+
+byte offset (<ENTER> to exit)? 2c2c             This updates the SIO tables.
+2c2c:  9c |.| > 90                              If you decide to modify ONLY
+2c2d:  80 |.| >                                 the PCI 3-port board, skip the
+2c2e:  07 |.| >                                 patches starting at 2c2c and
+2c2f:  d0 |.| > c0                              continue at 2d62 (below).
+2c30:  40 |@| >
+2c31:  07 |.| >
+2c32:  8e |.| > 83
+2c33:  40 |@| >
+2c34:  07 |.| >
+2c35:  74 |t| > 6b
+2c36:  40 |@| >
+
+(continued)
+
+                                   Page  8
+
+
+
+
+
+
+
+
+2c37:  07 |.| >
+2c38:  68 |h| > 60
+2c39:  40 |@| >
+2c3a:  07 |.| >
+2c3b:  4e |N| > 48
+2c3c:  40 |@| >
+2c3d:  07 |.| >
+2c3e:  34 |4| > 30
+2c3f:  40 |@| >
+2c40:  07 |.| >
+2c41:  d0 |.| > c0
+2c42:  40 |@| >
+2c43:  47 |G| >
+2c44:  68 |h| > 60
+2c45:  40 |@| >
+2c46:  47 |G| >
+2c47:  45 |E| > 40
+2c48:  40 |@| >
+2c49:  47 |G| >
+2c4a:  34 |4| > 30
+2c4b:  40 |@| >
+2c4c:  47 |G| >
+2c4d:  1a |.| > 18
+2c4e:  40 |@| >
+2c4f:  47 |G| >
+2c50:  0d |.| > 0c
+2c51:  40 |@| >
+2c52:  47 |G| >
+2c53:  00 |.| > 06
+2c54:  00 |.| > 40
+2c55:  00 |.| > 47
+2c56:  00 |.| > 03
+2c57:  00 |.| > 40
+2c58:  00 |.| > 47
+2c59:  c5 |.| > q
+
+byte offset (<ENTER> to exit)? 2d62             This updates the PCI tables
+2d62:  c4 |.| > 00                              If you decide to modify the
+2d63:  09 |.| >                                 SIO UARTS only, do not apply
+2d64:  83 |.| > 00                              the patches that start at 2d62.
+2d65:  06 |.| >                                 Just stop here.
+2d66:  70 |p| > 17
+2d67:  04 |.| >
+2d68:  a4 |.| > 59
+2d69:  03 |.| >
+2d6a:  41 |A| > 00
+2d6b:  03 |.| >
+2d6c:  71 |q| > 40
+2d6d:  02 |.| >
+2d6e:  a1 |.| > 80
+2d6f:  01 |.| >
+2d70:  d0 |.| > c0
+2d71:  00 |.| >
+2d72:  68 |h| > 60
+
+(continued)
+
+                                   Page  9
+
+
+
+
+
+
+
+
+2d73:  00 |.| >
+2d74:  45 |E| > 40
+2d75:  00 |.| >
+2d76:  34 |4| > 30
+2d77:  00 |.| >
+2d78:  1a |.| > 18
+2d79:  00 |.| >
+2d7a:  0d |.| > 0c
+2d7b:  00 |.| >
+2d7c:  00 |.| > 06
+2d7d:  00 |.| >
+2d7e:  00 |.| > 03
+2d7f:  00 |.| > q
+
+byte offset (<ENTER> to exit)?
+#
+
+If you elect to omit portions of the above patches, the system will display  a
+message about "Unsupported Version" when you boot the system.  This is normal.
+
+If you entered all of the above patches and you get  this  message,  it  is  a
+warning  that  at  least one patch was not correct.  Make a copy of the backup
+file (cp z80ctl.orig z80ctl) and repeat the patching  procedure,  taking  care
+not to make any mistakes.
+
+If the system will not even boot, you  can  boot  using  the  backup  copy  of
+z80ctl.  At the Xenix Boot> prompt, press [F2].  Then you can specify the name
+of the backup file (z80ctl.orig).  Once  booted,  copy  z80ctl.orig  over  the
+faulty  copy  (cp  z80ctl.orig z80ctl) and try patching it again.  Always keep
+the unmodified z80ctl file (z80ctl.orig) in case you need it.
+
+After you have applied the patches and made the hardware modifications, reboot
+your system and try out the UARTs.
+
+Finally, some utilities do not recognize "19200"  or  "38400"  as  valid  baud
+rates,  but  will  usually  accept "exta", which will get you 19,200 baud, and
+"extb", which will get you 38,400 baud.
+
+
+                                                        Have fun!
+
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+If you have questions about this article, please send email to:
+
+                                Frank Durda IV @ <m6000@nemesis.lonestar.org>
+                                ...uunet!utacfd!nemesis!m6000   (Internet route)
+                                ...letni!rwsys!nemesis!m6000
+                                ...decvax!microsoft!trsvax!nemesis!m6000
+
+
+
+
+
+
+
+                                   Page  10
+
+
+
+     HARDDRIVES
+
+     A 16B/6000 or upgraded Model 12 came standard with an internal 15-meg
+     harddrive or 2 floppies and the choice of an external 15/35/70 meg
+     harddrive.  Some users report swapping out the 15 meg internal drive
+     and installing the 35 or 70 meg internally.
+
+     With the exception of the Segate ST-251, many people have had excellent
+     success attaching other drives to their system.  An ST 4096 with
+     1024 cyls x 9 heads can be used if the 1010 controller is replaced with
+     a 2010 to support more cylinders, but more importantly, it supports the
+     faster buffered seek rates that modern drives offer.  Many of the 19 Msec
+     drives degrade down to 28 Msec or slower when connected to a 1010 
+     controller.  Some users report operating for years on Radio Shack and
+     non-Radio Shack drives with a 2010 controller and no ill-effects.
+     The ST 4096 drive can be reduced to 8 head operation by taping lead
+     number 2 on the 34 pin card edge connector. 
+
+     Other drives used with success are Micropolis 1335 and 1325 (supposedly
+     the 1325 was one of the drives that Tandy installed internally), CDC,
+     Miniscribe, and Rodime.  Harddrives should be jumper clipped correctly
+     and not as drive #1 if it is being used as #0.  Some users report
+     that when swapping out external drives, the flying leads that are wired
+     to the front panel switches need to be relocated for them to work.
+
+     Any ST506 hard drive with 1024 cylinders and max of 8 heads may
+     be used. Open the case, yank out the old drive, and plug in the
+     new one. That easy.
+
+
+                     6000 > 4000 > 3000      Vol 1, No. 2
+
+       Hard Disk Drives and your Tandy 16/6000 Computer system - Part 1
+              by Frank Durda IV  (c) 1989              4-Mar-89
+
+       This article may be  republished in part or in its entirety pro-
+       vided credit is given and the material is made available without
+       charge.  A modest media charge is acceptable  IF  the  recipient
+       has the option of obtaining the material at no charge by provid-
+       ing  his/her own media.  Any other use of this   material   must
+       be  approved  in  advance in  writing.
+
+
+This article discusses how the different disk controllers and interfaces  used
+by  Radio  Shack  on  the  Model II/16/12/16B/16BHD/6000/HD systems work, what
+their limits are, and how you can add more and faster drives to your system.
+
+
+ST506 - A Drive That Became An Interface Standard
+-------------------------------------------------
+
+The disk drives used by the Model  II/16/12/16B/16BHD/6000/6000HD  are  ST506-
+type  drives.  The ST506 was a disk drive which had an interface that has been
+duplicated on dozens of different drives over the years.   Over time that  in-
+terface  has taken on the name of the ST506 drive.  The ST506 drive was a very
+low capacity drive by todays standards but the interface had enough flexibili-
+ty  to allow more growth.  (The ST506 interface was also called the "S" inter-
+face by some manufacturers for a time but that name is not commonly  used  to-
+day.)
+
+The ST506 interface itself consists of two cables which carry data and control
+signals  to  and  from  the drives that are attached.  The "Data" cable has 20
+pins that carry the actual serial data stream to and from the write/read heads
+along  with  timing information used only in older drives.  Although it can be
+wired in other ways, most systems run a separate "Data" cable to each drive to
+reduce the possibility of noise and line loss affecting the data stream.
+
+The "Control" cable has 34 pins and these are used to  instruct  the  selected
+drive  as  to  where the heads should be positioned and which surface is to be
+read or written at this time.  The drive also  reports  its  status  on  other
+lines  in  the  "Control"  cable.   (Drives  compatible with the SA1000 series
+drives used a 50 pin "Control" cable which had the same signals as the 34  pin
+cable.)   A single "Control" cable is attached to all of the ST506 drives on a
+single controller.
+
+The "Control" cable is terminated in the drive  furthest  (electrically)  from
+the  disk  controller.  Most drives use a resistor pack that can be removed to
+provide this termination.  In systems where a separate "Data"  cable  is  used
+for  each drive, signals in this cable are also terminated in the drive.  Some
+drives assume separate "Data" cables and do not have a way to disable its ter-
+mination.   Others  use  a single jumper to enable or disable the "Data" cable
+termination.  For all Radio Shack configurations, the  "Data"  cable  must  be
+terminated.
+
+The ST506 interface makes two size limitations on the drives that are attached
+to  it.  A maximum of eight (8) heads may be present on any drive on the ST506
+bus and a maximum of four (4) drives can be attached at any one time.  All the
+other size limitations or restrictions that exist in a given system are due to
+the type of controller, support circuitry or software that is present.  (If  a
+drive  has  more  than 8 heads, it is not a ST506 drive.  This is discussed in
+more detail later.)
+                6000 > 4000 > 3000      Vol 1, No. 2            Page  2
+
+
+Controllers and Host Interfaces
+-------------------------------
+
+Radio Shack used four different disk controllers and two host interface boards
+during  the  production  of  the Model II/16/12/16B/16BHD/6000/6000HD systems.
+Here is a discussion of each.
+
+#1.     The original hard disk controller was only used with the 8" 8 Megabyte
+        hard disk drives.  It was based on the 8x300 processor.  This card can
+        be identified by the presence of an edge connector for the host inter-
+        face  cable.   The  8X300  CPU was being used to emulate the 1000 disk
+        controller chip-set that Western Digital had under development at that
+        time.  The firmware on most of these controllers only allowed 512 byte
+        sectors, which prevented them from being used directly with the  Model
+        III/4 operating systems.  This adapter provided connections for 34 and
+        50 pin "Control" cables so  that  SA1000-compatible  drives  could  be
+        used.   The  8  Meg  drive  is a Shugart SA1004, which requires a 4.34
+        Mbits/sec transfer rate.  This  rate  is  incompatible  with  the  5.0
+        Mbits/sec rate used by all ST506/ST412 drives.
+
+        The host interface adapter (the card that goes in the CPU  card  cage)
+        that  was  used  with  this  controller can be identified use of power
+        strips, which appear as red strips  of  plastic-coated  metal  running
+        under the integrated circuits.
+
+
+#2.     A modified version of the first controller.  First designed to be used
+        with  5"  TM602  (5 Megabyte) ST506 hard disk drives on the Model III.
+        This board also used the 8X300 controller but had newer firmware  that
+        would  allow  both  256 and 512 byte sectors.  This and all subsequent
+        controller boards only provided a 34 pin "Control" connector  and  the
+        transfer rate was changed to be 5.0 Mbits/sec.
+
+        A 50 pin vertical header connector is used on this controller for  the
+        host  interface  cable.  The host interface cable pin-out was modified
+        so that the cable could be plugged directly into the expansion  inter-
+        face  on  a  Model  III  and the then-under-development Model V (later
+        renamed IV and then just 4).  A small interface box  was  required  to
+        attach this controller to a Model I.
+
+        When a 12 Megabyte drive (TM603) became available, a new  host  inter-
+        face  board was designed for the Model II/16/12/16B systems which pro-
+        duced signals that looked like those produced by  a  Model  III/4  EI.
+        This  host  interface card is incompatible with the original disk con-
+        troller (#1).  The newer interface card can be identified by the  lack
+        of the red power strips.
+
+        Because the interface signals look just like the output of  the  Model
+        III/4/4P/4D,  add-on  devices  for  these systems could be attached to
+        II/12/16/6000 systems.  For example, a Network 4 board can be attached
+        to a Model 16 by using this interface card.  The interface card can be
+        jumpered so its Counter-Timer-Chip (CTC) can respond at different port
+        ranges.   The  disk  controller  has similar jumpers so that the ports
+        numbers that it uses can also be changed, allowing a  system  to  have
+        more than one interface card installed at a time.  This capability was
+        never used by Radio Shack.
+                6000 > 4000 > 3000      Vol 1, No. 2            Page  3
+
+
+#3.     A new half-sized disk controller board was created when the 1010  chip
+        set  became available.  Although the 1010 controller was initially ad-
+        vertised as software compatible with the 8x300 emulation, new releases
+        of  all  operating  systems were required to deal with the differences
+        between the two designs.  This controller used the same host interface
+        board as controller #2.
+
+#4.     A special disk controller board was developed for the 16B HD  and  was
+        used  later  in  the  6000 HD.  This controller fit into a slot in the
+        16B/6000 and contained the host interface and  disk  controller  on  a
+        single  board.   This board also used the 1010 controller.  Due to the
+        limited space on the board,  it was decided that only two drives would
+        be  allowed  to be attached to this controller.  The extra "Data" con-
+        nectors and line drivers were omitted from the design.  Apart from the
+        number  of  drives,  this controller was designed to be programmed the
+        same as controller #3.  Slight timing differences and  hardware  race-
+        conditions  resulted  in  another round of operating system updates to
+        support this controller.
+
+
+This table summarizes the above controllers and what they allow:
+
+   Name        Cntrl            Max     Host Interface  Radio Shack Drives
+               type             Drives  type            allowed
+
+#1 WD1000      8x300 CPU emulation  4   Incompatible    8 Meg
+#2 8X300       8x300 CPU emulation  4   Model III/4     5, 12, 15, 35, 70 Meg *
+#3 WD1000-TB1  1010 state-machine   4   Model III/4     5, 12, 15, 35, 70 Meg *
+#4 8898798     1010 state-machine   2   Combined in HDC 5, 12, 15, 35, 70 Meg *
+
+*  Note that on controllers #2, #3 and #4, marketing reasons caused subsets of
+   these  drives  to  be  supported  by  certain controllers although all were
+   hardware-capable of being used.  For example, Radio Shack  only  offered  a
+   TM503  (15  Meg)  drive  as the internal drive on the 16B HD/6000 HD (which
+   used the internal controller #4), although larger  drives  could  certainly
+   have  been  used  and probably would have reduced power requirements, noise
+   levels and seek times, resulting in more reliable and faster systems.
+                6000 > 4000 > 3000      Vol 1, No. 2            Page  4
+
+
+Hard Disk Drives
+----------------
+
+The following tables contain information that will be useful in comparing per-
+formance  and power requirements of the various drives.  Fields that are blank
+were not published by the manufacturer.
+
+Model           SA1004    TM602     TM503     TM603     Q540      1325
+Manufacturer    Shugart   Tandon    Tandon    Tandon    Quantum   Micropolis
+
+Sold by R/S     Yes       Yes       Yes       Yes       Yes       Yes
+Formatted Size  8 Meg     5 Meg     15 Meg    12 Meg    35 Meg    70 Meg
+Media Size      8"        5.25"     5.25"     5.25"     5.25"     5.25"
+Cylinders       256       153       306       230       512       1024
+Heads           4         4         6         6         8         8
+Seek TK to TK   19msec    18msec    18msec    18msec    10msec    6msec
+Seek Full Strk* 150msec   (336msec) (170msec) (450msec) 80msec    62msec
+Seek Average    70msec    168msec   85msec    225msec   45msec    28msec
+Latency Avg.    9.6msec   8.34msec  8.33msec  8.34msec  8.5msec   8.33msec
+Interface       SA1000    ST506     ST506     ST506     ST412     ST412
+RWC from host   128       128       No        128       No        No
+Write Precomp   128       128                 128       256       No
+Rotational Spd  3125      3600      3600      3600      3600      3600
+MTBF (in hrs)   8,000               11,000              10,000    20,000
+
+
+Power Requirements in Amperes
+Model           SA1004    TM602     TM503     TM603     Q540      1325
+Manufacturer    Shugart   Tandon    Tandon    Tandon    Quantum   Micropolis
+
+5VDC Start                          1.2                           0.9
+5VDC Run        2.0       0.8       0.8       0.8       0.7       0.9
+5VDC Max        3.6                 1.2                 1.0       0.9
+
+12VDC Start     ---       5.0       5.0       5.0       4.5       3.9
+12VDC Run       ---       1.5       1.5       1.5       2.0       2.1
+12VDC Max       ---                 2.0                 2.4       3.3
+
+The SA1000 drives did not use 12VDC, but did require these additional voltages:
+
+24VDC Run       0.2       ---       ---       ---       ---       ---
+24VDC Step      2.8       ---       ---       ---       ---       ---
+-5VDC Run       0.2       ---       ---       ---       ---       ---
+115VAC 60Hz     .75       ---       ---       ---       ---       ---
+(spindle motor)
+
+Typical Watts** (102)     (22)      (22)      (22)      23        10
+                6000 > 4000 > 3000      Vol 1, No. 2            Page  5
+
+
+Model           ST225     ST251     ST251-1   ST4096    94205-51  ST151
+Manufacturer    Seagate   Seagate   Seagate   Seagate   CDC       Seagate
+
+Sold by R/S     No        No        No        No        Yes       No
+Formatted Size  20 Meg    40 Meg    40 Meg    80 Meg    40 Meg    42.5 Meg
+Media Size      8"        5.25"     5.25"     5.25"     5.25"     3.5"
+Cylinders       615       820       820       1024      989       977
+Heads           4         6         6         9         5         5
+Seek TK to TK   20msec    8msec     8msec     6msec     5msec     8msec
+Seek Full Strk* 190msec   95msec    70msec    55msec    65msec    44msec
+Seek Average    85msec    40msec    28msec    28.0msec  28msec    24msec
+Latency Avg.    8.33msec  8.33msec  8.33msec  8.33msec  8.33msec  8.33msec
+Interface       ST412     ST412     ST412     ST412     ST412     ST412
+RWC from host   No        No        No        No        No        No
+Write Precomp   300       No        No        No        128       No
+Rotational Spd  3600      3600      3600      3600      3600      3600
+MTBF (in hrs)   50,000+   50,000+   50,000+   30,000+   30,000    45,000+
+
+Power Requirements in Amperes
+Model           ST225     ST251     ST251-1   ST4096    94305-51  ST151
+Manufacturer    Seagate   Seagate   Seagate   Seagate   CDC       Seagate
+
+5VDC Start      1.2                           1.5       1.0
+5VDC Run        0.8       1.0       1.2       1.5       0.4       0.5
+5VDC Max                                      1.5       0.6
+
+12VDC Start     2.6                           4.0       4.5
+12VDC Run       0.9       0.5       0.5       1.5       1.5       0.45
+12VDC Max       2.4       2.0       2.5       2.5       2.0       2.0
+
+Typical Watts** 14.8      11        12        23        (20)      8
+
+
+*  Maximum seek rates in parentheses were not published and have been computed
+   as  twice  the  average  access.   Note that some manufacturers compute the
+   average access time as the time it takes to seek 1/3rd the distance  across
+   the drive, which means the actual maximum seek time could be higher.
+
+** Typical watts values in parentheses were not published and have  been  com-
+   puted with the formula W = V x I summed for each voltage used by the drive.
+
++  MTBF values for these drives have increased since  they  originally  became
+   available.  Values shown are as of Seagate Pub 1000-002, March 1989.
+                6000 > 4000 > 3000      Vol 1, No. 2            Page  6
+
+
+Incompatibilities And Other Strangeness
+---------------------------------------
+
+Starting with controller #2, Radio Shack changed the "Cable Open" signal (line
+7)  in  the  "Data"  cable  into  a signal to activate the power supply in the
+secondary drive cabinets.  When +12 VDC is present on this line, the secondary
+power  supplies  are  activated.  The reason this was implemented was that the
+old 8" system required the user to turn a keyswitch on all the drives  (up  to
+four)  to  start  the  system  and this was considered a nuisance.  This local
+variation of the ST506 standard can be found in  all  subsequent  Radio  Shack
+disk  controllers,  even  on  the  latest ones built for the IBM AT-compatible
+line.  Not all disk drives handle this deviation from the ST506 standard; some
+have  line  7  grounded,  which can cause a resistor on the disk controller to
+burn out.  Some use line 7 for factory diagnostic control or some  other  test
+signal.   Many  start-up  failures are caused by connecting one or more of the
+data cables upside down, which will short +12 to ground via that resistor.  On
+the  IBM  AT-style  controllers  that  Tandy  sells,  this resistor is usually
+strapped across the solder side of the board.  The "Data" cable for  the  pri-
+mary  drive  (drive  0)  does  not  have +12 on line 7 since that unit has the
+keyswitch or is mounted inside the computer.
+         So if you buy a drive that was not sold by Radio Shack and you use it
+as  a primary, it will probably work fine.  If a second drive of the same type
+is bought and attached as a secondary, then the smoke may start  pouring  out.
+To  avoid this possibility when adding an additional drive, peel line 7 out of
+the "Data" cable and run that wire over to the control relay in each secondary
+cabinet.   Then  the  drive  will not have to contend with this non-compliance
+with the ST506 standard but the remote power-up feature will work.
+
+Radio Shack also implemented some other features that are really nice but  are
+literally  tacked  onto  the drive with bits of wire.  In all but the internal
+drives on the 16B HD and 6000 HD, it is possible to write protect an individu-
+al  drive  and  get  a visual indication of which drive is currently selected.
+The connections are as follows:
+
+        +----------------------+
+        |                      |           -|-  =  No Connection
+   Drive Active Lamp           |           -+-  =  Connection
+        |                      |
+        +----------------------|------------ 5 Red     +5    (to controller
+        |                      +------------ 4 Purple         in primary drive
+   Write Protect Lamp             +--------- 3 Black   Gnd    or to lamp driver
+        |                         |  +------ 2 Yellow         board in second-
+        +----------------------+  |  |  +--- 1 White          ary drives)
+        |                      |  |  |  |
+   Write Protect Switch        |  |  |  |
+        |                      |  |  |  |    These lines were attached to test
+        |                      |  |  |  |    points or components on the drive:
+        |                      |  |  |  |
+        +----------------------|--+  |  +--- A Not Seek Complete
+                               |     +------ B Not Active
+                               +------------ C Write Protect "Data" Line 5
+                6000 > 4000 > 3000      Vol 1, No. 2            Page  7
+
+
+Signals "A", "B" and "C" are attached to points on the disk drive  electronics
+and these points change from drive to drive.  Signal "C", or Write Protect, is
+attached to line 5 which on most drives is listed as "Reserved", although some
+Tandon  drives  listed it as "Test/PK".  The ST506/ST412 drives themselves use
+the Write-Fault signal (Control cable, line 12) to  alert  the  controller  to
+problems when attempting to write to media.   The write protect signal is held
+high by using the lamp as a pull-up resistor, but so little current is  drawn,
+the  lamp  never  illuminates.   When  the write protect switch is closed, the
+write protect lamp is lit and the signal line is pulled low.   All  four  disk
+controller  boards monitor line 5 in the "Data" cable.  The state of this sig-
+nal can be can normally be read in port 0xc0.  This port is not a part of  the
+1010/2010  controller  chip  and is implemented with external components.  All
+four drives' write-protect status is in the upper bits.  Bit 7  is  for  Drive
+Select  1, Bit 6 is DS2, Bit 5 is DS3 and Bit 4 is DS4.  As suggested for line
+7, you may want to peel line 5 out of the cable in case the drive you have has
+it tied to ground.
+
+
+Signals "A" and "B" are combined and when the drive is Active  and  Seek  Com-
+plete  is  true,  the  Active light is lit.  The light goes out briefly during
+seeks (Seek Complete false) and would stay off when another drive was  select-
+ed.   Many  drives  provide  a  similar output capable of driving a LED, but a
+marketing decision selected the incandescent lamps and a  lamp  driver  became
+necessary.   The lamp driver consists of a 75453 or a 75452 with an additional
+gate from a 7414.  Here is that circuit:
+
+Circuit from controllers #1 and #2      Circuit from controller #3
+
+                          +------+                                +------+
+from    5  ---- +5 -------|8  7  |      from    5  ---- +5 -------|8  7  |
+drive/  4  ---------------|3 S5  |      drive/  4  ---------------|3 S5  |
+lamp    3  ---- Gnd ------|4 N4  | or   lamp    3  ---- Gnd ------|4 N4  |
+inter-  1  ---------------|1  5  |      inter-  1  ---------------|1  5  |
+connect 2  ---------------|2  3  |      connect 2  ---+ +\    +---|2  2  |
+                          +------+                    | | \   |   +------+
+                                                      +-|  >o-+
+                                                        | / SN7414
+                                                        +/
+
+Some users who have installed their own drives have removed  the  incandescent
+lamp  and  installed  the  LED  from the drive in the ACTIVE socket.  Then the
+light defuser is removed and the old wiring is replaced with a direct  connec-
+tion to the lamp contacts on the drive.  Some of these arrangements only indi-
+cate that the drive is selected (won't blink while seeking), but they are sim-
+ple to install.
+                6000 > 4000 > 3000      Vol 1, No. 2            Page  8
+
+
+The Other Limits
+----------------
+
+As mentioned earlier, the ST506 interface limits  the  number  of  drives  and
+heads.  The 8X300 and 1010 controllers used by Radio Shack limit the number of
+cylinders to 1024 that can be accessed on an attached drive.
+
+However, the owner of controller #3 or #4 can  use  drives  with  up  to  2048
+cylinders by replacing the 1010 controller with a 2010 controller.  On some of
+these boards, the 1010 is even socketed, making the upgrade even easier.   The
+difference  between the 1010 and the 2010 that makes this possible is an addi-
+tional bit in the Cylinder Number High register:
+
+      7   6   5   4   3   2   1   0       7   6   5   4   3    2   1   0
+    +---+---+---+---+---+---+---+---+   +---+---+---+---+---+----+---+---+
+    | x | x | x | x | x | x |(9)|(8)|   | x | x | x | x | x |(10)|(9)|(8)|
+    +---+---+---+---+---+---+---+---+   +---+---+---+---+---+----+---+---+
+                WD1010-05                           WD2010-05
+
+XENIX 3.2 supports the 2010 controller.  (If you are still running  TRSDOS-II,
+don't bother getting a 2010, just keep using the Dumont.)  The following patch
+must be made to the diskutil utility so it will  allow  formatting  of  drives
+larger than 1024 cylinders.  DO NOT apply this patch if the 2010 controller is
+not installed. Entering a cylinder count greater than 1024 if a 1010 controll-
+er  is installed will result in unusable media.  (Reformatting will recover if
+you attempt to do this anyway.)
+
+   This patch is only valid for the version of diskutil that came with
+   XENIX 3.2.0.  The version message in diskutil must say: 3(42)  3-Mar-87
+
+        # patch /diskutil
+        byte offset (<ENTER> to exit) ? 16be [ENTER]
+        16be: 04 |.| > 08 [ENTER]
+        16bf: b7 |.| > q [ENTER]
+        byte offset (<ENTER> to exit) ? [ENTER]
+        #
+
+The WD2010-05 controller is available in single quantities  from  Hallmark  in
+Dallas  Tx.  The phone number is 214-553-4300.  It is not cheap; it runs about
+$85 (and Hallmark has a $100 minimum order requirement), although the  ability
+to  increase  total  disk  space  may  make it worth it.  Hopefully there is a
+cheaper source out there.  It may be cheaper to get a used WA2  AT  disk  con-
+troller  and  take  the 2010 off of it.  Many of these use the 2010.  Then put
+the 1010 on the WA2 and sell it to someone who doesn't need drives that big.
+
+Another factor in favor of buying a 2010: the 1010 and 8X300 controllers limit
+the  top  seek  speeds to a rate lower than the speeds high performance drives
+available today can provide.  In other words, a 19 msec  drive  will  probably
+not  actually  run  that  fast  if driven by a 1010 or 8X300 controller.  Even
+drives as slow as 28 msec can be slightly inhibited by the speed of these con-
+trollers.   The  2010  allows the higher seek rates to be achieved if software
+changes are also made.  These changes will be discussed in detail in a  future
+article.
+                6000 > 4000 > 3000      Vol 1, No. 2            Page  9
+
+
+ST412 And The Death of Reduced Writing Current
+----------------------------------------------
+
+The big difference between the ST506 and the ST412 is  that  the  ST412  drive
+does  not  have  to  be told by the disk controller when it should use a lower
+writing current.  Reduced writing current is  used  on  the  inner  tracks  of
+drives  because the bits are spaced closer together and if the writing current
+is too high, the resulting magnetic field from the write head may  alter  bits
+that  were  just written in addition to the bit that is supposed to be written
+at a given instant.  The host indicates when to use  reduced  writing  current
+(RWC) by setting line 2 on the "Control" cable to true (LOW).
+
+All four controllers above use the "Write Precompensation Register" to control
+both  precompensation  and  reduced-write  current.  The assumption these con-
+trollers made was that  if  the  drive  required  precompensation,  the  write
+current should be reduced at the same point.  On most drives, this was usually
+not the case.
+
+A few ST506 and all ST412 drives use their on-board electronics to monitor the
+head  position  and  reduce the write current at the point that is correct for
+that drive.  Line 2 on the "Control" cable is ignored.  In newer  drives,  the
+controller  need  only get the write precompensation starting point right, and
+in some of the latest drives, write  precompensation  is  not  needed  either.
+(See ST251, ST251-1 and ST4096 on page 5.)
+
+
+Lose Write Current, Gain A Head Select
+--------------------------------------
+
+When the hard disk drives started handling the reduced write  current  manage-
+ment,  line 2 in the "Control" cable could be used for something else.  On the
+larger drives line 2 has been designated as  the  fourth  head  select  (2^3),
+which  will  allow  up  to 16 heads to be present in the drive.  An example of
+this usage is the Seagate ST4096 which has 1024 cylinders and 9  heads.   This
+drive provides a formatted disk capacity of 80 Megabytes.
+
+If you attempted to use a drive like the ST4096 on  your  existing  system  or
+after  you upgrade to the 2010, you are still limited to eight heads.  But be-
+cause this drive uses line 2 of the "Control" cable, you must  disconnect  (or
+tape  over)  that  pin.  Otherwise when you reach cylinder 512 and the reduced
+write current signal is asserted, the drive will attempt  to  access  heads  9
+through  15,  which  will  fail,  resulting  in  7 out of every 8 tracks being
+flawed-out.  Covering the pin with a small piece of  electrician's  tape  will
+work fine unless you unplug and reconnect the cables frequently.
+
+Since we have reached a semi-logical stopping point, this discussion  will  be
+continued  in  a future article.  That article will discuss getting that extra
+boost of speed from the 2010 if you own fast drives and ways to  go  beyond  8
+heads.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+If you have questions about this article, please send email to:
+
+                                Frank Durda IV @ <trsvax!uhclem>
+                                ...decvax!microsoft!trsvax!uhclem
+                                ...hal6000!trsvax!uhclem
+
+              ADDING NON-TANDY HARD DRIVES TO A MODEL 16/6000
+                                     or
+                        WHAT COULD POSSIBLY GO WRONG?
+
+     I had read Frank Durda's excellent article on the installation of
+     non-Tandy hard drives on Model 16's and 6000's.  With a feeling of
+     "What could possibly go wrong?," I embarked on an upgrade project for
+     my 16B.  The plan was to continue to use the internal 15 Meg drive as
+     primary and to simply add a second drive in an external cabinet.  A
+     cabinet that I had purchased at a flea market would serve, and I
+     purchased a Seagate ST-125-1 (20 Meg, 3.5") at a local computer store.
+     I figured that I was entering somewhat uncharted territory and having
+     local people to talk to would be a good thing.  This turned out to be
+     true and false respectively.
+     
+     I followed Frank's directions to the letter, and everything seemed to go
+     ok.  But within a week or so, I began getting random hard and soft
+     errors on hd1 (the Seagate).  Somehow, this didn't seem right, and I was
+     convinced that either I was doing something wrong or the drive was bad
+     (does that cover all the bases?).  The local folks were supremely
+     unhelpful.  The only computers in their universe were PC's and they
+     never wanted to see my hard drive again.  So much for local support.
+     Seagate was no better.  I am sure there are plenty of people at Seagate
+     who know a lot about Seagate drives, but I never talked to any of them.
+     Their tech support people knew about PC's, PC's, and PC's.  They said
+     there was somebody there who was their "Tandy expert" who would return
+     my call.  The call was indeed returned, but the person could offer no
+     suggestions.
+     
+     At this point, in desperation, I got in contact with Frank, who was most
+     helpful, and suggested that perhaps the Seagate couldn't tolerate the
+     write-precompensation that the Tandy driver applies at the half-way
+     point.  He gave me the incantation to kill the write-precomp (included
+     at the end of this article) and the random errors went away.  Success!
+     
+     After running with the 15 Meg internal Tandon as primary and the Seagate
+     125 as secondary for a while, I got itchy for more adventure.  This time
+     I purchased a Seagate ST-251-0 (40 Meg) from Hard Drives International.
+     When it arrived, I ran into trouble immediately.  The diskutil program
+     wouldn't even begin a format--it just hung forever.  I called HDI.  They
+     have an 800 number for tech support and the person I talked to was most
+     helpful, admitted that he knew nothing about Tandy 6000's, but thought
+     the drive was probably bad and insisted that I send it back.  I doubted
+     it, but packed up the drive.  Well, the replacement drive formatted just
+     fine.  HDI was right.  I killed the write pre-comp, build a file system
+     and put the drive into service.
+     
+     Later, I picked up a new Seagate ST-251-1 (like a 251-0 but faster) at a
+     flea market, thinking it would make a dandy replacement for old Tandon
+     (still squeaking along just fine, thank you very much).  It would be a
+     lot faster and have a lot more capacity.  Well, it would have if it had
+     worked.  Once again, I got no response from diskutil.  This time, I
+     didn't even have an unfriendly local dealer to turn to.  Stupid me.
+     Was the drive bad?  I don't know for sure.  As it turned out, I had
+     broken down and bought a cheap PC clone around the same time.  The
+     251-1 was attached to the PC and has been running flawlessly there
+     ever since.  Why would a Seagate 251-0 work fine and a 251-1 refuse
+     to work at all (but run fine on a PC)?  Beats me!  The suggestion has
+     been made that the Tandy controllers might be slightly out of spec and
+     some drives are more tolerant than others.  I have no way to confirm
+     or deny this, and in any case there doesn't seem to be a good way of
+     predicting what works.
+     
+     If there is any moral to this story, it is to buy replacement drives
+     with the understanding that they can be returned if they don't work on
+     your machine.  I have no connection with HDI, but have been very
+     pleased with their service and they have a 30 day "no particular
+     reason" return policy.  My most recent addition was a Mitsubishi
+     MR535B 40 Meg drive, which worked perfectly the first time (finally!)
+     and is highly recommended.  I would also like to give special thanks
+     to Frank Durda IV for his patient help during my early troubles.
+     
+     Patching the write precomp point is simple once you know how.  Use the
+     patch program supplied with the 16/6000 to change two bytes:
+     
+     patch /dev/hdbt0 [or /dev/hdbt1]
+     
+     byte offset:
+     e   ff <-- new value
+     f   ff <-- new value
+     
+     Then hit <break> to get out of the patch program (the documentation
+     supplied with patch is somewhat nonexistent).  You can reenter the
+     patch program to confirm that the changes were indeed made.  You then
+     need to do a shutdown and reboot the system to activate the changes.
+     
+     This has the effect of starting write precomp on track FFFF (which you
+     don't have).  Most newer drives don't need write precomp, but some
+     (like the Mitsubishi) do.  The diskutil program will set things up to
+     start write precomp at the half-way point, so the values you will see
+     at locations e and f are the high and low bytes of the number of
+     cylinders on your drive, divided by two.
+     
+     One last problem.  For reasons that I do not understand, the Seagate
+     drives do not repond well to the Tandy reset button.  With the old
+     Tandon drives, you can do a shutdown, hit reset, and reboot the
+     system.  With the Seagates, doing this will cause the system to hang
+     as soon as the drives are accessed.  Cycling the power cures the
+     problem.  The bottom line is that if you must reboot the system, you
+     must also power cycle it.  Of course, the good news is that if you
+     never reboot, you never have to power cycle.  And if you do a normal
+     shutdown and then turn the machine off, things are just fine when it
+     is later powered back on.  But if the system panics, and you have to
+     fsck, be prepared for a couple of power cycles.
+     -------------
+     -- 
+     Jay Rouman  (jsr@dexter.mi.org  jsr@ais.org)
+
+     DISK CARTRIDGE SYSTEM
+
+     Tandy also offered the 10 meg Bernouli disk cartridge system.  This
+     required a controller card installed in the card cage.  Apparently
+     this controller card also supports the 20 meg cartridge although this
+     has not yet been confirmed.
+
+     INSTALLING A 5/14" FLOPPY DRIVE
+
+                     6000 > 4000 > 3000      Vol 1, No. 1
+        Utilizing 5 1/4" media on your Tandy 16/6000 computer system.
+     by Frank Durda IV  Copyright 1988, 1990, 1991.  All Rights Reserved.
+              Original Version 31-Aug-88 - Last Updated 1-Jun-91
+       Originally published on USENET in comp.sys.tandy, September 1988
+
+       This article may be  republished in  part  or  in  its  entirety
+       provided  credit  is  given  and  the material is made available
+       without charge.
+
+       A modest media charge is acceptable IF  the  recipient  has  the
+       option  of  providing  their own media to duplicate the material
+       onto at no charge.  Any other use of this  material   must  have
+       prior written approval.
+
+       Commercial bulletin boards and other information  servers  (like
+       Compuserve(R))  who  place  an  additional  copyright or similar
+       restriction on material that is retrieved from their system  MAY
+       NOT  distribute  or  archive  this  article.   UUNET and freely-
+       accessible ftp/uucp sites are allowed to archive/distribute this
+       article.
+
+If you have reached the point where  you  are  having  trouble  getting  8"
+media,  or  are  faced  with the prospect of getting the drives repaired or
+replaced, this article may interest you.
+
+The following information will allow you to add or substitute 5  1/4"  high
+capacity  floppy  drives  for  8" double sided drives in your 16/6000 XENIX
+system.  You can mix 8" and 5 1/4" drives, or chuck the 8" drives entirely.
+
+If you just want to look at the pay-back, pull out your handy  Radio  Shack
+computer  catalog.  Ten 8" DD DS disks cost $39.95.  Ten 5 1/4" HD DS disks
+cost $18.95.   If you buy your disks at those prices, it will take  just  5
+boxes  of  5  1/4" vs 8" diskettes to pay off the approx $100 drive.  Since
+most mail order houses can get you ten 5 1/4" HD DS for less than $10, a  5
+1/4"  drive  will  pay  back a lot quicker.  In addition, most people would
+agree that 5 1/4" media  quality  is  usually  better  than  the  8"  media
+available today.
+
+If you want to add 5 1/4" drives externally, you should obtain an enclosure
+to  mount  the  drives  in.   These  are available from numerous mail-order
+houses.  One is AEROCOMP, 2544 West Commerce St, Dallas Tx 75212, P.O.  Box
+223957  and  the order number is 1-800-527-0347.  (Sorry, I have never done
+business with this firm, so  I  can't  comment  on  their  product.)   They
+advertise an enclosure for two 5 1/4" drives.  You could also order such an
+enclosure from Radio Shack National Parts (it was used for CoCo  drives  in
+recent years).
+
+Almost any high-capacity (1.2 Meg) drive can be used.   I  used  Mitsubishi
+MF504B-347UA  drives.   For  that  particular drive, these straps should be
+set:
+        TD MS SR-PM2 RI SB DSx
+Other drives that should be acceptable include TEAC 55G series drives.
+
+Warning:  If the drive only has DSx straps,  it probably cannot be used.
+          This type of drive is pre-configured to be used with an IBM-AT
+          disk  controller   and  will  not  work  with  anything  else.
+
+DSx should be set as you prefer.  On a Model 16B and 6000 drive 0  may  not
+be  selected on the external connector.  If you have two internal drives on
+a 16B/6000 and want to keep using them, your external drives  must  be  DS2
+and DS3.  The last external drive must contain a terminating resistor pack.
+
+If you only have one internal drive, you may have  three  5  1/4"  external
+drives.  Set the strap DS1 for the first drive, DS2 for the second, and DS3
+for the third.
+
+If your 16B/6000 has two internal 8" drives and you wish to disable one  of
+them,  it  will  be  necessary to disassemble your 16B/6000, and disconnect
+power and data  cables  going  to  your  second  internal  drive.   If  the
+terminating  resistor pack is installed on the drive you are disconnecting,
+you must move the resistor pack to drive 0.  By  disconnecting  the  power,
+you  will  reduce  the power consumption and heat load on your system.  You
+must also add a jumper at E40-E41 on the 16B/6000 main CPU board (under the
+card cage).  This moves the DS1 signal to the external connector.
+
+If you have a Model II or 16A, you can have at least  two  external  drives
+and  as  many  as  four  if  you  decide  to  disable  the internal drives.
+Initially it is suggested that you leave drive 0 as an 8" drive  until  you
+can copy your installation floppies onto 5 1/4" media.
+
+On the Model 16A, 16B and 6000, it is advised that you leave  one  internal
+drive  connected to power even if you decide to disconnect its data cables.
+This is to insure a minimum load on certain power supply voltages.
+
+You must construct the cable between the Model II/16A/16B/6000  and  the  5
+drives.  You will need a 50 pin dip connector and at least one 34 pin
+edge connector  (one per drive).  You may use either 34 or 50 pin wire.
+
+If you have an existing 50 pin cable and a 34 pin  cable,  you  may  simply
+wish  to  cut  the connector off one end and splice the appropriate signals
+together.  Just try to keep the total length to under 6'.
+
+Because the cable you build may be delicate, you may want to build it as  a
+short  cable which can fit entirely inside your drive enclosure with the 50
+pin connector mounted so that a longer  standard  50-to-50  pin  cable  can
+connect  between  the computer and the drive enclosure by plugging into the
+"translation" cable.
+
+Here is the wiring table.  Keep in mind that the odd numbers are ground  on
+both the 34 and 50 pin connectors.  The new cable should re-route the wires
+in pairs to help simplify assembly and assure  adequate  ground.   When  an
+entire group of wires can be moved as a set, they are listed together.
+
+Signal Name             50 Pin  tie to  34 Pin
+                       connector       connector
+                        Pins            Pins
+
+Side Select (14)        14-15           31-32
+
+Index (20)              20-21           7-8
+
+Ready (22)              22-23           33-34
+
+Drive Select 1 (26)     26-31           9-14
+Drive Select 2 (28)
+Drive Select 3 (30)
+
+Drive Select 4 (32)     32-33           5-6
+
+Direction (34)          34-47           17-30
+Step (36)
+Write Data (38)
+Write Gate (40)
+Track 0 (42)
+Write Protect (44)
+Read Data (46)
+
+Again, note that on both connectors the odd numbered pins  are  ground  and
+even  numbered  pins  are  the  signals.   Do not get the ground and signal
+reversed. For example,  the  Index  signal  line,  pin  20  on  the  50-pin
+connector,  connects  to  pin 8 on the 34-pin connector.  21 connects to 7.
+When dealing with a group of signals such as  "26-31  goes  to  9-14",  you
+would  have  26->10, 27->9, 28->12, 29->11, 30->14, 31->13.  By putting the
+edge or DIP (but not both ends) connectors  "on  the  wrong  side"  of  the
+ribbon  cable, the cabling system itself will assist in getting the correct
+alternations.
+
+In addition to the above, pins 9 and 10 on the 50  pin  connector  must  be
+tied   together  to  produce  the  "double-sided"  signal  that  the  Model
+16/16B/6000 requires.  All other pins on the 34 and 50 pin connector should
+not be connected to anything.  Your cable can look like this:
+
+        +---+                           +-----+        +-----+
+        ! 5 !--------\           /------!  3  !--------!  3  !
+        ! 0 !--------\ A miracle/-------!  4  !--------!  4  !
+        !   !-N/C       occurs----------!     !--------!     !
+        ! p !------------here-----------!  p  !--------!  p  !
+        ! i !--------/          \-------!  i  !--------!  i  !
+        ! n !-------/               N/C-!  n  !--------!  n  !
+        +---+                           +-----+        +-----+
+        DIP                              Edge           Edge
+    (facing down)                     (facing up)     (facing up)
+
+That is all there is to it.  Once you have built your  cable,  and  applied
+power  to your drive enclosure, connect the cable to your Model 16/16B/6000
+external floppy connector (on the 16B/6000 it is behind the access door and
+in  the  lower  right corner), and turn on your system.  If the drive light
+comes on and stays on, this usually indicates that the cable is plugged  in
+upside down somewhere (check your pin 1 keying).
+
+If the drive light does not light, run diskutil and  attempt  to  format  a
+floppy in that drive.  If the drive light does not come on, check the drive
+select strap on the drive and make sure it is set to the drive  number  you
+tried to format.  If that is ok, the cable may be at fault.
+
+If the drive light does come on but diskutil does not get past cylinder  0,
+the  terminating  resistor may not be installed or the cable is incorrectly
+wired.
+
+If diskutil gets all the way through formatting a floppy, and it behaves as
+though it formatted a double sided disk, you are in business.
+
+If you have some programs that are hard coded to expect  media  in  certain
+drives   under   XENIX,  consider  renaming  the  device  names  (/dev/fdn,
+/dev/rfdn, /dev/fdbtn and /dev/rfdbtn) so that you can  use  5  1/4"  media
+instead.   Be sure to rename all the floppy devs with the same drive number
+or else you can get into trouble.
+
+Although the 5 1/4" drives are 80 track drives, only 77 of the  tracks  are
+used  under 6000 XENIX, because it still thinks it is talking to a 77-track
+8" drive.  However, because 6000 XENIX writes the correct number of sectors
+per  track  allowed  for  that  transfer  rate and motor speed (16 512-byte
+sectors), the XENIX-usable storage will equal 1.224 meg (((76x2x16)+16)x512
+=  1,253,376, which is 24K more than the IBM AT format allows.  The full 80
+tracks can be utilized,  but  this  requires  patching  and  more  operator
+intervention when performing tars dumps and file-system creation.  This and
+passing data between IBM AT and a 6000 XENIX system on 5 1/4" disks will be
+discussed in a future issue.
+
+One final note:  5 1/4" disk drives will not detect a  diskette  change  as
+the  earlier  8"  half-height  drives  did  (most had square lights).  (The
+cost-reduced 8" drives usually had round drive lights and these would  only
+report  a disk change if it occurred while the drive light was on.) Because
+there is no separate signal line available, some 5 1/4"  drives  simply  do
+not  provide that information while others combine it with the READY signal
+or some other signal.  On the drives I used, I found that attempting to use
+the  combined  READY  and DISK CHANGE caused numerous problems so the above
+straps do not enable that feature.  If  you  obtain  a  different  type  of
+drive,  you  need  to strap it so that the READY signal indicates READY and
+nothing else.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+If you have questions about this article, please send email to:
+
+                                Frank Durda IV @ <m6000@nemesis.lonestar.org>
+                                ...utacfd!nemesis!m6000   (Internet route)
+                                ...rwsys!nemesis!m6000
+                                ...decvax!microsoft!trsvax!nemesis!m6000
+                                or from CompuServe:
+                                >INTERNET:m6000@nemesis.lonestar.org
+
+SEE ALSO:
+
+     configuration(M)

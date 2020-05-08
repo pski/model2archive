@@ -1,0 +1,431 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  anagram.6 anagram.c
+# Wrapped by root@coupon on Thu Sep 15 00:29:14 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'anagram.6' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'anagram.6'\"
+else
+echo shar: Extracting \"'anagram.6'\" \(2183 characters\)
+sed "s/^X//" >'anagram.6' <<'END_OF_FILE'
+X.TH ANAGRAM 6L 11-Sep-1987
+X.SH NAME
+Xanagram \- search dictionary for anagrams
+X.SH SYNOPSIS
+X.I anagram
+X[ -d <dictfile> ] [ -m <Nr> ] [ -l ] [ -r ] string1 [ string2 . . . ]
+X.SH DESCRIPTION
+XFor each of its arguments,
+X.I anagram
+Xsearches the dictionary file for words which contain the exact same letters as
+Xthe argument, but in any order, and writes them to the standard output.
+XDictionary entires which contain non-alphabetic characters are ignored.
+X.sp
+X.I Anagram
+Xis useful for cheating on word-puzzles.
+X.sp
+XOptions are:
+X.sp
+X.in +10
+X.ti -5
+X.B -d
+X.I <dictfile>
+X\- Used to specify
+X.I <dictfile>
+Xas the file containing the word list, instead of the default.
+X.sp
+X.ti -5
+X.B -m
+X.I <Nr>
+X\- Indicates the minimum length of words to be read from the dictionary file.
+XThis is useful for avoiding lots of anagrams constructed from tiny little
+Xconnective words and abbreviations. The default minimum is two.
+X.sp
+X.ti -5
+X.B -l
+X\- Allows
+X.I anagram
+Xto find partial matches, printing out the leftover letters between square
+Xbrackets. This is useful for finding "near matches" or for deciphering a
+Xscrambled multi-word phrase where one of the words isn't literally in the word
+Xlist.
+X.sp
+X.ti -5
+X.B -r
+X\- Recursive mode. This one is real useful. In this mode, when
+X.I anagram
+Xfinds a match which doesn't use up all the letters in the argument string, it
+Xtries to match recursively on the remainder of the string. This allows it to
+Xunscramble an entire phrase into separate words. Be warned that
+X.I anagram
+Xoperates rather slowly in this mode.
+X.in -10
+X.SH EXAMPLES
+X.nf
+X.na
+X\&
+X% anagram stop
+Xpost
+Xspot
+Xstop
+X.sp
+X% anagram -l stop
+Xopt [s]
+XPo [st]
+Xpost
+Xpot [s]
+Xso [pt]
+Xsop [t]
+Xspot
+XSt [op]
+Xstop
+Xto [ps]
+Xtop [s]
+X.sp
+X% anagram -m 3 -r tfyoowtr
+Xforty tow
+Xforty two
+X.fi
+X.ad
+X.SH AUTHOR
+XFred Blonder <fred@mimsy.umd.edu>
+X.SH FILES
+X.in +5
+X.ti -5
+X/usr/dict/words \- default dictionary file
+X.br
+X.ti -5
+X/usr/dict/web2 \- a more complete dictionary, which takes longer to search.
+X.in -5
+X.SH "SEE ALSO"
+Xgrep(1)
+X.SH DIAGNOSTICS
+XThe only likely errors are problems opening or reading the dictionary file.
+X.SH BUGS
+XExtremely inefficient. Makes multiple passes through the dictionary file when
+Xoperating in recursive mode.
+END_OF_FILE
+if test 2183 -ne `wc -c <'anagram.6'`; then
+    echo shar: \"'anagram.6'\" unpacked with wrong size!
+fi
+# end of 'anagram.6'
+fi
+if test -f 'anagram.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'anagram.c'\"
+else
+echo shar: Extracting \"'anagram.c'\" \(5973 characters\)
+sed "s/^X//" >'anagram.c' <<'END_OF_FILE'
+X#ifndef lint
+Xstatic char sccsid[] = "@(#)anagram.c (U of Maryland) FLB 4-Sep-1987";
+Xstatic char RCSid[] = "@(#)$Header: anagram.c,v 1.1 87/09/11 02:19:33 fred Exp $";
+X#endif
+X
+X/*
+X * anagram - search a dictionary for anagrams of a given string
+X *
+X *	Anagram takes each of its arguments in turn and searches
+X *	a dictionary file for anagrams, printing any it finds to
+X *	the standard output.
+X *
+X *	Options:
+X *
+X *		-d <dictionary-file>
+X *			Specifies a file other than the default,
+X *			to read the word list from.
+X *
+X *		-m <n>
+X *			Indicates the minimum number of characters
+X *			in an anagram, which will be acceptable.
+X *			The default is 2.
+X *
+X *		-l
+X *			Permits partial matches with 'leftover'
+X *			letters which will be printed between
+X *			square brackets.
+X *
+X *		-r
+X *			Recursive mode: anagram will find
+X *			partial mathces and then attempt to
+X *			find matches for the remaning letters.
+X *
+X *	Fred Blonder <fred@mimsy.umd.edu>, September 4, 1987
+X *
+X * To compile:
+X %	cc -s -O anagram.c -o anagram
+X */
+X
+X#include <stdio.h>
+X#include <ctype.h>
+X
+Xchar *index();
+X#define void=int
+X#define EX_USAGE 0
+X#define EX_OK 0
+X#define EX_OSFILE 0
+X#define EX_IOERR 1
+X#define	DICTIONARY	"/usr/dict/words"	/* Default dictionary */
+X#define	LETTERS_IN_ALPHABET	26	/* This shouldn't change much. ;-) */
+X
+Xtypedef char histogram[LETTERS_IN_ALPHABET];
+X
+X/* Program arguments and defaults. */
+Xchar *dictionary = DICTIONARY;
+Xint leftovers_flag = 0, min_letters = 2, recurse_flag = 0;
+X
+X/*****************************************************************************/
+X
+Xmain(argc, argv)
+Xint argc;
+Xchar *argv[];
+X{
+X
+X#define	SHIFT	argc--; argv++
+X
+XSHIFT;
+X
+Xwhile (argc > 0 && **argv == '-') {	/* Munch on flag arguments. */
+X	register char *cp;
+X
+X	for (cp = &argv[0][1]; *cp; cp++)
+X		switch (*cp) {
+X			case 'd':	/* User-specified dictionary */
+X				SHIFT;
+X				dictionary = *argv;
+X				break;
+X
+X			case 'l':	/* Allow 'leftover' letters */
+X				leftovers_flag++;
+X				break;
+X
+X			case 'm':	/* Specify minimum word length */
+X				SHIFT;
+X				min_letters = atoi(*argv);
+X				break;
+X
+X			case 'r':	/* Recursive mode */
+X				recurse_flag++;
+X				break;
+X
+X			default:
+X				fprintf(stderr,
+X					"anagram: unknown flag: %c\n", *cp);
+X			}
+X	SHIFT;
+X	}
+X
+Xif (argc < 1) {
+X	fprintf(stderr,
+X	    "usage: anagram [ -d <dictionary> ] [ -m <number> ] [ -l ] ");
+X	fprintf(stderr, "[ -r ] string1 [ string2 . . . ]\n");
+X	exit(EX_USAGE);
+X	}
+X
+Xdo {
+X	unscramble(*argv);
+X	SHIFT;
+X	if (argc > 0)
+X		putchar('\n');
+X	} while(argc > 0);
+X
+Xexit (EX_OK);
+X}
+X
+X/*****************************************************************************/
+X
+Xunscramble(word)
+Xchar word[];
+X{
+Xhistogram w_h, d_h, diff_h;
+Xregister FILE *dict_f;
+Xchar dict_buff[BUFSIZ];
+Xregister int diff;
+Xlong p_loc = 0L;
+X
+Xmake_hist(word, w_h);
+X
+Xif ((dict_f = fopen(dictionary, "r")) == NULL) {
+X	perror(dictionary);
+X	exit(EX_OSFILE);
+X	}
+X
+Xwhile (p_loc = ftell(dict_f), fgets(dict_buff, BUFSIZ, dict_f) != NULL) {
+X	register char *cp;
+X
+X	if (cp = index(dict_buff, '\n'))
+X		*cp = '\0';
+X
+X	if (strlen(dict_buff) < min_letters)
+X		continue;
+X
+X	{
+X	register char *cp;
+X
+X	for (cp = dict_buff; *cp && isalpha(*cp); cp++);
+X	if (*cp)
+X		continue;
+X	}
+X
+X	make_hist(dict_buff, d_h);
+X	diff = cmp_hist(w_h, d_h, diff_h);
+X
+X	if (!diff) {
+X		printf("%s\n", dict_buff);
+X		continue;
+X		}
+X
+X	if (diff > 0) {
+X		long f_loc;
+X
+X		f_loc = ftell(dict_f);
+X		if (fseek(dict_f, p_loc, 0) < 0) {
+X			perror("Seek error on dictionary file");
+X			exit(EX_IOERR);
+X			}
+X		remainder(dict_buff, dict_f, diff_h);
+X		if (fseek(dict_f, f_loc, 0) < 0) {
+X			perror("Seek error on dictionary file");
+X			exit(EX_IOERR);
+X			}
+X		}
+X	}
+X
+X(void)fclose(dict_f);
+X}
+X
+X/*****************************************************************************/
+X
+Xremainder(p_line, file, hist)
+Xchar p_line[];
+Xregister FILE *file;
+Xhistogram hist;
+X{
+Xhistogram d_h, diff_h;
+Xchar dict_buff[BUFSIZ];
+Xregister int diff, found_match = 0;
+Xlong p_loc = 0L;
+X
+Xif (recurse_flag)
+X	while (p_loc = ftell(file), fgets(dict_buff, BUFSIZ, file) != NULL) {
+X		register char *cp;
+X
+X		if (cp = index(dict_buff, '\n'))
+X			*cp = '\0';
+X
+X		if (strlen(dict_buff) < min_letters)
+X			continue;
+X
+X		{
+X		register char *cp;
+X
+X		for (cp = dict_buff; *cp && isalpha(*cp); cp++);
+X		if (*cp)
+X			continue;
+X		}
+X
+X		make_hist(dict_buff, d_h);
+X		diff = cmp_hist(hist, d_h, diff_h);
+X
+X		if (!diff) {
+X			printf("%s %s\n", p_line, dict_buff);
+X			found_match++;
+X			continue;
+X			}
+X
+X		if (diff > 0) {
+X			long f_loc;
+X			char t_buf[BUFSIZ];
+X
+X			f_loc = ftell(file);
+X			if (fseek(file, p_loc, 0) < 0) {
+X				perror("Seek error on dictionary file");
+X				exit(EX_IOERR);
+X				}
+X			(void)sprintf(t_buf, "%s %s", p_line, dict_buff);
+X			remainder(t_buf, file, diff_h);
+X			found_match++;
+X			if (fseek(file, f_loc, 0) < 0) {
+X				perror("Seek error on dictionary file");
+X				exit(EX_IOERR);
+X				}
+X			}
+X		}
+X
+Xif (!found_match && leftovers_flag) {
+X	printf("%s ", p_line);
+X	print_hist(hist);
+X	putchar('\n');
+X	}
+X}
+X
+X/*****************************************************************************/
+X
+Xmake_hist(word, w_hist)
+Xchar word[];
+Xhistogram w_hist;
+X{
+Xregister char *cp;
+X
+Xfor (cp = (char *)w_hist; cp < (char *)&w_hist[LETTERS_IN_ALPHABET]; cp++)
+X	*cp = (char)0;
+X
+Xfor (cp = word; *cp; cp++)
+X	if (isalpha(*cp))
+X		if (isupper(*cp))
+X			w_hist[tolower(*cp)-'a']++;
+X		else
+X			w_hist[*cp-'a']++;
+X}
+X
+X/*****************************************************************************/
+X
+Xcmp_hist(h1, h2, h3)
+Xhistogram h1, h2, h3;
+X{
+Xregister char *cp1, *cp2, *cp3;
+Xregister int c = LETTERS_IN_ALPHABET;
+Xint ret_val = 0;
+X
+Xfor (cp1 = (char *)h1, cp2 = (char *)h2, cp3 = (char *)h3;
+X					c-- > 0; cp1++, cp2++, cp3++)
+X	if (*cp3 = (*cp1 - *cp2))
+X		if (*cp3 > 0)
+X			ret_val++;
+X		else
+X			return -1;
+X
+Xreturn ret_val;
+X}
+X
+X/*****************************************************************************/
+X
+Xprint_hist(h)
+Xhistogram h;
+X{
+Xregister int k;
+X
+Xputchar('[');
+X
+Xfor (k = 0; k < LETTERS_IN_ALPHABET; k++) {
+X	register int i;
+X
+X	for (i = h[k]; i > 0; i--)
+X		putchar('a'+k);
+X	}
+X
+Xputchar(']');
+X}
+X
+X/*****************************************************************************/
+END_OF_FILE
+if test 5973 -ne `wc -c <'anagram.c'`; then
+    echo shar: \"'anagram.c'\" unpacked with wrong size!
+fi
+# end of 'anagram.c'
+fi
+echo shar: End of shell archive.
+exit 0

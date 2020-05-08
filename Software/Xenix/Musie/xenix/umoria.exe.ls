@@ -1,0 +1,13 @@
+-rws--x--x 0/0          397710 May  1 04:17 1995 /usr/games/moria
+-r--r--r-- 0/0             336 May  1 04:17 1995 /usr/games/lib/moria/hours
+-r--r--r-- 0/0             649 May  1 04:17 1995 /usr/games/lib/moria/news
+-r--r--r-- 0/0            2496 May  1 04:17 1995 /usr/games/lib/moria/origcmds.hlp
+-r--r--r-- 0/0             376 May  1 04:17 1995 /usr/games/lib/moria/owizcmds.hlp
+-r--r--r-- 0/0            2587 May  1 04:17 1995 /usr/games/lib/moria/roglcmds.hlp
+-r--r--r-- 0/0             376 May  1 04:17 1995 /usr/games/lib/moria/rwizcmds.hlp
+-rw-r--r-- 0/0               0 May  1 04:17 1995 /usr/games/lib/moria/scores
+-r--r--r-- 0/0            1462 May  1 04:17 1995 /usr/games/lib/moria/version.hlp
+-r--r--r-- 0/0             409 May  1 04:17 1995 /usr/games/lib/moria/welcome.hlp
+-rw------- 0/0           49358 May  1 10:10 1995 /usr/games/lib/moria/doc/moria1.txt
+-rw------- 0/0           55998 May  1 10:10 1995 /usr/games/lib/moria/doc/moria2.txt
+-rw-r--r-- 0/0            3919 May  1 10:12 1995 /usr/lib/Help/lib/L/moria

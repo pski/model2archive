@@ -1,0 +1,4 @@
+:
+TZ=GMT0
+export TZ
+/bin/date

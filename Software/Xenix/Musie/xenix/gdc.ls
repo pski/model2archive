@@ -1,0 +1,6 @@
+-rw-r--r-- 0/0             108 Nov  4 01:26 1994 Makefile
+-rw-r--r-- 0/0             634 Nov  4 01:17 1994 curse-clck.hdr
+-rw-r--r-- 0/0             482 Nov  4 01:17 1994 gdc.6
+-rw-r--r-- 0/0            2377 Nov  4 01:29 1994 gdc.c
+-rwxr-xr-x 0/0           30759 Nov  4 01:31 1994 gdc.exe
+-rw-r--r-- 0/0            1077 Nov  4 01:34 1994 gdc.man

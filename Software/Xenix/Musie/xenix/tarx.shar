@@ -1,0 +1,478 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  Makefile README symlink.c tarx.1 tarx.c
+# Wrapped by root@coupon on Tue Aug 16 11:11:08 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'Makefile' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Makefile'\"
+else
+echo shar: Extracting \"'Makefile'\" \(372 characters\)
+sed "s/^X//" >'Makefile' <<'END_OF_FILE'
+X#This makefile was constructed for the Tandy 6000.  symlink.c was not part of
+X#the tarx package, in fact it was fetched out of C news and should really be
+X#added to your object ".a" libraries.  Normally symlink would be accessed via
+X#a LDFLAG, but in this case it wasn't.
+X
+XCFLAGS = -O -Dvoid=int
+XLDFLAGS = 
+X
+Xtarx:	tarx.o symlink.o
+X	$(CC) tarx.o symlink.o $(LDFLAGS) -o $@
+END_OF_FILE
+if test 372 -ne `wc -c <'Makefile'`; then
+    echo shar: \"'Makefile'\" unpacked with wrong size!
+fi
+# end of 'Makefile'
+fi
+if test -f 'README' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'README'\"
+else
+echo shar: Extracting \"'README'\" \(368 characters\)
+sed "s/^X//" >'README' <<'END_OF_FILE'
+XTarx is a newer, cleaner, more versatile replacement for my old targ/tarl
+Xprograms for salvaging information from damaged tar tapes.  It does a
+Xbetter job on various details and has been extensively tidied up.
+X
+X                                         Henry Spencer at U of Toronto Zoology
+X                                          henry@zoo.toronto.edu   utzoo!henry
+END_OF_FILE
+if test 368 -ne `wc -c <'README'`; then
+    echo shar: \"'README'\" unpacked with wrong size!
+fi
+# end of 'README'
+fi
+if test -f 'symlink.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'symlink.c'\"
+else
+echo shar: Extracting \"'symlink.c'\" \(128 characters\)
+sed "s/^X//" >'symlink.c' <<'END_OF_FILE'
+X/*
+X * symlink dummy
+X */
+X
+Xint
+Xsymlink(n1, n2)
+Xchar *n1;
+Xchar *n2;
+X{
+X	extern int errno;
+X
+X	errno = 0;		/* kludge */
+X	return(-1);
+X}
+END_OF_FILE
+if test 128 -ne `wc -c <'symlink.c'`; then
+    echo shar: \"'symlink.c'\" unpacked with wrong size!
+fi
+# end of 'symlink.c'
+fi
+if test -f 'tarx.1' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'tarx.1'\"
+else
+echo shar: Extracting \"'tarx.1'\" \(2755 characters\)
+sed "s/^X//" >'tarx.1' <<'END_OF_FILE'
+X.TH TARX 1 "26 July 1990"
+X.BY Zoology
+X.SH NAME
+Xtarx - recover files from damaged tar-format archives
+X.SH SYNOPSIS
+X\fBtarx\fR
+X[
+X.B \-t
+X]
+X[
+X.B \-b
+Xblockfactor
+X]
+X[
+X.B \-e
+Xerrlimit
+X] [
+X.B \-E
+Xeoflimit
+X]
+Xname ...
+X.SH DESCRIPTION
+X\fITarx\fR is used to list and recover files from a
+Xdamaged \fItar\fR(1) archive.
+XIt uses a simplistic pattern-matching
+Xapproach to identify \fItar\fR header blocks.
+XIt will cheerfully persist despite all sorts of bad things about the archive
+X(such as wrong checksums, read errors, and scraped-off magnetic surface...),
+Xup to a maximum of \fIerrlimit\fR (default 3) hard errors in a row
+Xor \fIeoflimit\fR (default 2) EOFs in a row.
+XSuch events are reported but don't terminate operations.
+XThe \fItar\fR archive is read from standard input.
+X.PP
+XWith the
+X.B \-t
+Xoption,
+X\fItarx\fR lists the file names it sees in the archive.
+X.PP
+XWithout the
+X.B \-t
+Xoption,
+X\fItarx\fR takes file or directory \fIname\fRs as arguments
+Xand attempts to extract them from the archive.
+X(If no \fIname\fRs are given, \fItarx\fR extracts everything it can find.)
+X\fITarx\fR is not willing to create directories, however,
+Xso these must be made manually beforehand if they do not already exist.
+XFiles are owned by the user, and have his default permissions.
+X.PP
+X.I Tarx
+Xallocates a read buffer of \fIblockfactor\fR*512 bytes,
+Xwhere the default \fIblockfactor\fR is 400 (to allow for the very large
+Xblocks sometimes found on cartridge tapes),
+Xand attempts a full-sized read each time.
+XIt copes properly with getting less than it expected, although it does
+Xinsist that the result be a multiple of 512 bytes.
+XWhen dealing with cranky tape drives or other special situations,
+Xor severely short of memory, or working on a 16-bit machine,
+Xit may be useful to specify a smaller \fIblockfactor\fR.
+X(Notably, on 16-bit machines 126 is often the maximum that will work.)
+XSpecifying a larger \fIblockfactor\fR may be necessary if tape blocks
+Xare truly enormous.
+X.SH EXAMPLE
+X``tarx \-t </dev/rmt0 >filelist'' lists all files on the tape
+Xmounted on /dev/rmt0 and places the results in ``filelist''.
+X.PP
+X``tarx joe/precious </dev/rmt0'' restores the file
+X``joe/precious'' from the tape mounted on /dev/rmt0.
+XThe directory ``joe'' must already exist.
+X.SH SEE ALSO
+Xtar(1)
+X.SH HISTORY
+XWritten by Henry Spencer, Univ. of Toronto Zoology,
+Xbased on older programs by the same author.
+XThis software is public domain.
+XOriginal manual page by Chris Robertson.
+X.SH BUGS
+X\fITarx\fR should be smarter about directories and permissions.
+X.PP
+XArguably should use the \fItar\fR header-block checksum,
+Xinstead of the slightly-arcane pattern matcher, to identify header blocks.
+X.PP
+XA \fItar\fR archive containing a file which is itself a \fItar\fR archive
+Xwill cause considerable confusion.
+END_OF_FILE
+if test 2755 -ne `wc -c <'tarx.1'`; then
+    echo shar: \"'tarx.1'\" unpacked with wrong size!
+fi
+# end of 'tarx.1'
+fi
+if test -f 'tarx.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'tarx.c'\"
+else
+echo shar: Extracting \"'tarx.c'\" \(5856 characters\)
+sed "s/^X//" >'tarx.c' <<'END_OF_FILE'
+X/*
+X * tarx - manipulate damaged tar tapes heuristically
+X */
+X
+X#include <stdio.h>
+X#include <string.h>
+X
+X#define NAMSIZ 100		/* why isn't there a tar.h??? */
+X#define	FLAG	(NAMSIZ+8+8+8+12+12+8)	/* offset of is-a-link flag */
+Xstruct matches {
+X	int offset;
+X	char value;
+X} matches[] = {			/* pattern-match table for header blocks */
+X	NAMSIZ+6,	' ',
+X	NAMSIZ+7,	'\0',
+X	NAMSIZ+8+6,	' ',
+X	NAMSIZ+8+7,	'\0',
+X	NAMSIZ+16+6,	' ',
+X	NAMSIZ+16+7,	'\0',
+X	NAMSIZ+24+11,	' ',
+X	NAMSIZ+36+11,	' ',
+X	NAMSIZ+48+6,	'\0',
+X	0,		0,
+X};
+X
+X#ifndef MAXBLOCK
+X#define	MAXBLOCK	400	/* SGI makes blocky tapes */
+X#endif
+Xint maxblock = MAXBLOCK;
+X#define	BLOCK	512
+X
+Xchar *buf;			/* -> malloced buffer */
+Xint nleft = 0;			/* number of blocks left in buffer */
+Xint whichnow;			/* index in buffer of current block */
+X
+Xint nbad = 0;			/* number of consecutive bad reads */
+Xint badlimit = 3;		/* limit on consecutive bads */
+Xint neof = 0;			/* number of consecutive EOF marks */
+Xint eoflimit = 2;		/* limit on consecutive eofs */
+X
+Xint opened = 0;			/* are we writing a file? */
+Xint f;				/* the file descriptor, if any */
+Xlong fsize;			/* number of bytes not yet written to file */
+X
+Xchar op = 'x';			/* what operation is being done? */
+X
+X#define	STREQ(a, b)	(*(a) == *(b) && strcmp((a), (b)) == 0)
+X
+X#ifndef lint
+Xstatic char RCSid[] = "$Header$";
+X#endif
+X
+Xint debug = 0;
+Xchar *progname;
+X
+Xextern void exit();
+X#ifdef UTZOOERR
+Xextern char *mkprogname();
+X#else
+X#define	mkprogname(a)	(a)
+X#endif
+X
+X/*
+X - main - parse arguments and handle options
+X */
+Xmain(argc, argv)
+Xint argc;
+Xchar *argv[];
+X{
+X	int c;
+X	int errflg = 0;
+X	register char *block;
+X	extern char *readblock();
+X	extern char *malloc();
+X	extern int optind;
+X	extern char *optarg;
+X
+X	progname = mkprogname(argv[0]);
+X
+X	while ((c = getopt(argc, argv, "tb:e:E:d")) != EOF)
+X		switch (c) {
+X		case 't':	/* just list files */
+X			op = 't';
+X			break;
+X		case 'b':	/* set blocking factor */
+X			maxblock = atoi(optarg);
+X			break;
+X		case 'e':	/* set error limit */
+X			badlimit = atoi(optarg);
+X			break;
+X		case 'E':	/* set eof limit */
+X			eoflimit = atoi(optarg);
+X			break;
+X		case 'd':	/* Debugging. */
+X			debug++;
+X			break;
+X		case '?':
+X		default:
+X			errflg++;
+X			break;
+X		}
+X	if (errflg) {
+X		fprintf(stderr, "usage: %s ", progname);
+X		fprintf(stderr, "[-t] [-b blockf] [-e errs] [-E eofs] [name] ...\n");
+X		exit(2);
+X	}
+X
+X	buf = malloc(maxblock*BLOCK);
+X	if (buf == NULL) {
+X		fprintf(stderr, "%s: cannot allocate buffer of %d blocks\n",
+X							progname, maxblock);
+X		exit(1);
+X	}
+X
+X	for(;;) {
+X		block = readblock(0);
+X
+X		if (block != NULL)
+X			doblock(block, argc - optind, &argv[optind]);
+X	}
+X	/* NOTREACHED */
+X}
+X
+X/*
+X - readblock - read in a block and deal with error/eof
+X */
+Xchar *
+Xreadblock(desc)
+Xint desc;
+X{
+X	register int count;
+X	extern int errno;
+X	extern int sys_nerr;
+X	extern char *sys_errlist[];
+X
+X	if (nleft > 0) {
+X		whichnow++;
+X		nleft--;
+X		return(buf+whichnow*BLOCK);
+X	}
+X
+X	count = read(desc, buf, maxblock*BLOCK);
+X	if (count != 0 && neof > 0)
+X		printf("---! %d EOF(s)\n", neof);	/* delayed EOF count */
+X	if (count <= 0 || count%BLOCK != 0) {
+X		if (count == 0)
+X			neof++;
+X		else if (count > 0) {
+X			printf("---! bad block size (%d) - treated as bad\n", count);
+X			nbad++;
+X		} else {
+X			if (errno >= 0 && errno < sys_nerr)
+X				printf("---! error (%s)\n", sys_errlist[errno]);
+X			else
+X				printf("---! error %d\n", errno);
+X			nbad++;
+X		}
+X		if (nbad >= badlimit)
+X			exit(1);
+X		if (neof >= eoflimit)
+X			exit(0);
+X		return(NULL);
+X	}
+X
+X	/* successful read */
+X	nbad = 0;
+X	neof = 0;
+X	whichnow = 0;
+X	nleft = count/BLOCK - 1;	/* -1 for one we're about to return */
+X	return(buf);
+X}
+X
+X/*
+X - doblock - process a block
+X */
+Xdoblock(block, argc, argv)
+Xchar *block;
+Xint argc;
+Xchar **argv;
+X{
+X	register int count;
+X	register int tar = istar(block);
+X	register int ret;
+X
+X	if (!tar && !opened)
+X		return;
+X
+X	if (!tar && opened) {
+X		count = (fsize > BLOCK) ? BLOCK : (int)fsize;
+X		ret = write(f, block, count);
+X		if (ret < 0)
+X			printf("---! write error in file!\n");
+X		fsize -= count;
+X		if (fsize <= 0) {
+X			opened = 0;
+X			close(f);
+X			printf("--- done\n");
+X		}
+X		return;
+X	}
+X	/* it's a tar header block */
+X
+X	if (op == 't') {
+X		printf("%s\n", block);
+X		return;
+X	}
+X	/* op == 'x' */
+X
+X	if (opened) {
+X		printf("---! premature end\n");
+X		close(f);
+X		opened = 0;
+X	}
+X
+X	if (!match(block, argc, argv))
+X		return;		/* this file is not of interest */
+X
+X	switch (block[FLAG]) {
+X	case '0':
+X	case '\0':
+X		f = creat(block, 0666);
+X		if (f < 0)
+X			printf("---! unable to create `%s'\n", block);
+X		else {
+X			opened = 1;
+X			ret = sscanf(block+NAMSIZ+24, "%lo", &fsize);
+X			if (ret != 1) {
+X				printf("---! can't read size of `%s'", block);
+X				close(f);
+X				opened = 0;
+X			} else {
+X				printf("--- reading %s %ld\n", block, fsize);
+X				if (fsize <= 0) {
+X					close(f);
+X					opened = 0;
+X					printf("--- done\n");
+X				}
+X			}
+X		}
+X		break;
+X	case '1':
+X		f = link(block+FLAG+1, block);
+X		if (f < 0)
+X			printf("---! unable to link %s to %s\n", block+FLAG+1, block);
+X		else
+X			printf("--- link %s to %s\n", block+FLAG+1, block);
+X		break;
+X	case '2':
+X		f = symlink(block+FLAG+1, block);
+X		if (f < 0)
+X			printf("---! unable to symlink %s to %s\n", block+FLAG+1, block);
+X		else
+X			printf("--- symlink %s to %s\n", block+FLAG+1, block);
+X		break;
+X	default:
+X		printf("---! unknown flag value %c\n", block[FLAG]);
+X		break;
+X	}
+X}
+X
+X/*
+X - match - does this string match one of the arguments?
+X */
+Xint
+Xmatch(s, argc, argv)
+Xchar *s;
+Xint argc;
+Xchar **argv;
+X{
+X	register int i;
+X	register int len;
+X
+X	if (argc == 0)
+X		return(1);
+X
+X	for (i = 0; i < argc; i++) {
+X		len = strlen(argv[i]);
+X		if (strncmp(s, argv[i], len) == 0 &&
+X					(s[len] == '/' || s[len] == '\0'))
+X			return(1);
+X	}
+X	return(0);
+X}
+X
+X/*
+X - istar - is this plausibly a tar header block?
+X */
+Xint
+Xistar(block)
+Xregister char *block;
+X{
+X	register int loop;
+X
+X	for (loop = 0; matches[loop].offset != 0; loop++)
+X		if (block[matches[loop].offset] != matches[loop].value)
+X			return(0);
+X	return(1);
+X}
+END_OF_FILE
+if test 5856 -ne `wc -c <'tarx.c'`; then
+    echo shar: \"'tarx.c'\" unpacked with wrong size!
+fi
+# end of 'tarx.c'
+fi
+echo shar: End of shell archive.
+exit 0

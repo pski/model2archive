@@ -1,0 +1,140 @@
+:
+:	poll uucp system
+:
+:	tudor apmadoc
+:	8/22/83
+:
+:	modified 9/26/83
+:	by Dennis Young
+:
+:	modified 12/23/85 to ignore L.sys call times
+:	by Jerry McFall
+:
+:	modified 11/28/88 to leave modem port status the same
+:	as it was found
+:	by Jay Rouman
+:
+:	sort on system names added 12/28/88 -- jsr
+:	minor cleanup 01/10/89 -- jsr
+:	improve grep for tty01 enabled 04/01/89 -- jsr
+:	reset modem on exit and minor bug fix 03/11/90 -- jsr
+:
+: USAGE: poll system  > /dev/null &  --- for non-verbose polling
+: USAGE: poll system                 --- for verbose polling
+:
+: Edit the tty in this file for your own uucp modem hookup
+
+opt=
+
+cd /usr/spool/uucp
+
+: if no system names are on command line then check spool dir for systems to
+: call else use system list on command line
+
+if [ $# -eq 0 ]
+then
+	syslist=`ls | sed -n -e 's/^[DCX].\(.*\).....$/\1/p' |\
+			sort | uniq | fgrep -v -f /etc/systemid`
+else
+	syslist=$*
+fi
+
+echo "System list: $syslist"
+
+: are there systems to call?
+
+if [ -z "$syslist" ]
+then
+	exit		: nope!
+fi
+
+: check for user on tty01
+: if user on port the wait 3 min and check again
+: if after 10 check user still on line quit.
+
+user=`who | awk -e '$2 == "tty01" {print $1}'`
+for i in 1 2 3 4 5 6 7 8 9 0
+do
+	if [ -z "$user" ]
+	then
+		break;
+	fi
+	sleep 180
+	user=`who | awk -e '$2 == "tty01" {print $1}'`
+done
+
+if [ $i = "0" ]
+then
+	exit
+else
+	if grep "1.tty01" /etc/ttys > /dev/null
+	   then
+	      modem=on
+	      disable tty01
+	   else
+	      modem=
+	fi
+fi
+
+: check to see if disable worked
+:
+if grep "1.tty01" /etc/ttys > /dev/null
+   then
+      echo "Modem port still enabled--can't continue."
+      exit
+fi
+
+: set traps to enable tty01 if an interrupt or other signal is trapped
+: and tty01 was enabled when program started
+
+if [ $modem ]
+	then
+	   trap 'enable tty01; trap 0; exit' 0 1 2 3 15
+fi
+
+: for each system in $syslist
+
+for sys in $syslist
+do
+	for i in 1 2 3 4 5 6 7 8 9 0
+	do
+		if [ -s /usr/spool/uucp/LCK.XQT ]
+		then
+			sleep 180
+		else
+			break
+		fi
+	done
+
+: call each system 3 times or until call has succeeded
+
+	echo "Calling: $sys"
+	rm -f STST.$sys
+	/usr/lib/uucp/uucico -r1 $opt -S$sys
+	sleep 20
+
+	for i in 1 2
+	do
+		if [ -s STST.$sys ]
+		then
+			echo "Retry # $i on $sys"
+			rm -f STST.$sys
+			/usr/lib/uucp/uucico -r1 $opt -S$sys
+			sleep 10
+		else
+			break
+		fi
+	done
+
+: after 3 tries record the 4th try with a full trace
+
+	if [ -s STST.$sys ]
+	then
+		echo "Final retry on $sys"
+		rm -f STST.$sys
+		/usr/lib/uucp/uucico -r1 -S$sys -x9 2>/tmp/uucp$$
+	fi
+
+: get next system name until done
+
+done

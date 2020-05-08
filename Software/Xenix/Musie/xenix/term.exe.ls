@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3             144 Nov 12 14:29 1994 /usr/local/terminals
+-rw-r--r-- 3/3             521 Jan 21 01:52 1995 /usr/lib/Help/lib/L/terminals

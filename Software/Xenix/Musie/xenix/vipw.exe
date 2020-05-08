@@ -1,0 +1,80 @@
+#!/bin/sh
+#
+#   A "vipw" for the YP password file.
+#
+#   This program has only been run under Sun OS 4.1.  I make no guarantee
+#   that this program works on your system -- I haven't seen any problems,
+#   but you might want to look it over in any case.
+#
+#                            - Bill Heelan (wheelan@cs.mcgill.ca)
+#
+#
+#   This script has only been run under Sun OS 4.1.
+#
+#   'lockit' is a program that uses open(2) with O_EXCL to create a lock
+#   file.  /usr/socs/etc is where we have it on our system...
+#
+#
+#   This script was edited extensively by Steve Scrivano on a Tandy 6000:
+#   (sscrivan@nyx.cs.du.edu) to coincide with the same files "chsh" uses
+#   if you have configured it that way.  This script should not conflict
+#   and must use the same lock, backup, and tmp files.  The way the 
+#   /etc/passwd file gets edited is very similar to the "chsh" program.
+#   This script also uses a program called lockit to create "ptmp.lock".
+#
+#
+PATH=:/bin:/usr/bin:/usr/local
+
+# Define the passwd files, locks, tmp, and backup here to coincide with
+# the program "chsh".  If "chsh" isn't defined this way, it needs to be.
+
+YPDIR=/etc
+YPDB=/etc/passwd
+YPPASSWD=$YPDIR/passwd.bak
+YPLOCK=$YPDIR/ptmp.lock
+YPTMP=$YPDIR/ptmp.tmp
+
+rval=0
+updated=0
+trap "rm -f $YPLOCK ; exit 2" 1 2 3 15
+if lockit $YPLOCK ; then
+    chmod 644 $YPLOCK
+    cp $YPDB $YPPASSWD
+    if cp $YPPASSWD $YPTMP ; then
+        ${EDITOR:-/bin/vi} $YPTMP
+
+        echo -n "Update the YP password file? [y|n] "
+        read ans
+        case $ans in
+           Y*|y*)
+               cp $YPTMP $YPPASSWD
+               updated=1
+               break ;;
+
+           N*|n*)
+               echo "YP password file unchanged."
+               rm -f $YPLOCK $YPTMP
+               break ;;
+
+           *)
+               echo "Invalid response -- YP password file unchanged."
+               rm -f $YPTMP $YPPASSWD $YPLOCK
+               rval=1
+               break ;;
+        esac
+    else
+        echo "Error copying to lock file -- YP password file unchanged."
+        rm -f $YPLOCK $YPTMP
+        rval=1
+    fi
+else
+    echo "The YP password file is busy ($YPLOCK exists) -- try again later."
+    rval=1
+fi
+
+if [ $rval = 0 -a $updated = 1 ] ; then
+    echo ""
+    echo "Making the YP password dbm file."
+    ln $YPPASSWD $YPDB;rm $YPTMP $YPPASSWD $YPLOCK
+fi
+exit $rval

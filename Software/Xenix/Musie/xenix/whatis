@@ -1,0 +1,13 @@
+# whatis program identifier
+if [ "$1" = "-f" ] 
+then
+less /usr/lib/Help/lib/.keylines
+exit
+fi
+if [ "$1" = "" ]
+then
+echo "Usage: whatis filename"
+echo "Usage: whatis -f (to display the entire key file)"
+exit
+fi
+help -k $1

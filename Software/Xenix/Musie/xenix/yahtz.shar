@@ -1,0 +1,891 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  Makefile README game.c key.c main.c screen.c types.h
+# Wrapped by steve@coupon on Wed Sep  7 22:36:56 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'Makefile' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Makefile'\"
+else
+echo shar: Extracting \"'Makefile'\" \(245 characters\)
+sed "s/^X//" >'Makefile' <<'END_OF_FILE'
+XOBJECTS	=	main.o game.o key.o screen.o
+XCFLAGS	=	-O -DXENIX
+XLIBS	=	-lcurses -ltermlib -lx
+X
+Xyahtzee:	${OBJECTS}
+X	cc -s -o yahtzee ${OBJECTS} ${LIBS}
+X
+Xmain.o:		main.c types.h
+Xgame.o:		game.c types.h
+Xkey.o:		key.c types.h
+Xscreen.o:	screen.c types.h
+END_OF_FILE
+if test 245 -ne `wc -c <'Makefile'`; then
+    echo shar: \"'Makefile'\" unpacked with wrong size!
+fi
+# end of 'Makefile'
+fi
+if test -f 'README' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'README'\"
+else
+echo shar: Extracting \"'README'\" \(1426 characters\)
+sed "s/^X//" >'README' <<'END_OF_FILE'
+XThis version of yahtzee is inspired by an IBM PC basica version
+Xof the same program.  It currently runs on BSD4.[23] and Microsoft
+XXenix.  Don't know about SYS V.  Only the controls of the game
+Xare described here, not the entire rules/strategies of yahtzee.  Sorry.
+X
+XAfter the game starts, enter the player names.  Then, each player in
+Xturn will "roll" the dice, keeping the ones he wants, and re-rolling the
+Xothers.
+X
+XTo move the selector in front of the dice, use the up and down arrow keys.
+XIf you want to freeze the die pointed to by the indicator, use the 'X' key
+X(case unimportant).  To clear the die, press the space bar.  Frozen dice
+Xwill be indicated so by an 'X' in front of it.  To roll the remaining dice,
+Xpress the return key.
+X
+XAfter three rounds of rolling, (or if all 5 dice are frozen) you must choose
+Xwhich score category you want this roll to count towards.  This is done the
+Xsame way...Use the up and down arrow key to move the indicator to the
+Xdesired category.  Then, press the return key and your score will be
+Xregistered.  If you choose a category that doesn't fit what the dice show,
+Xa 0 will be entered as the score (example: the dice show 3-3-3-3-5, and
+Xyou choose yahtzee, you will receive 0 instead of 50).
+X
+XPlay continues until each score category has been filled.  The player with
+Xthe highest combined score is declared the winner.
+X
+XIf you wish to exit the game, press the ESC key twice in a row.
+END_OF_FILE
+if test 1426 -ne `wc -c <'README'`; then
+    echo shar: \"'README'\" unpacked with wrong size!
+fi
+# end of 'README'
+fi
+if test -f 'game.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'game.c'\"
+else
+echo shar: Extracting \"'game.c'\" \(6373 characters\)
+sed "s/^X//" >'game.c' <<'END_OF_FILE'
+X#include "types.h"
+X
+Xextern Game player[];
+X
+Xstatic int dice[5];
+Xstatic int mark[5];
+Xstatic int ys[] = {1, 2, 3, 4, 5, 6, 8, 10, 11, 12, 13, 14, 15, 16};
+Xstatic char *more = " is the winner.  Play another game (Y/N) ? ";
+X
+Xstatic char *cd[] = {
+X	"-------",
+X	"|     |",
+X	"|  o  |",
+X	"|     |",
+X	"-------",
+X	"-------",
+X	"|o    |",
+X	"|     |",
+X	"|    o|",
+X	"-------",
+X	"-------",
+X	"|o    |",
+X	"|  o  |",
+X	"|    o|",
+X	"-------",
+X	"-------",
+X	"|o   o|",
+X	"|     |",
+X	"|o   o|",
+X	"-------",
+X	"-------",
+X	"|o   o|",
+X	"|  o  |",
+X	"|o   o|",
+X	"-------",
+X	"-------",
+X	"|o   o|",
+X	"|o   o|",
+X	"|o   o|",
+X	"-------"
+X};
+X
+Xclrroll()
+X{
+X	int i;
+X
+X	for(i=0; i<5; i++) {
+X		mark[i] = 0;
+X		mvaddstr(i*4+2, 58, " ");
+X	}
+X	refresh();
+X}
+X
+Xroll()
+X{
+X	int i;
+X
+X	for(i=0; i<5; i++) {
+X		if(mark[i] == 0) {
+X			dice[i] = get_rand();
+X			spot(i,dice[i]-1);
+X		}
+X	}
+X	refresh();
+X}
+X
+Xspot(i,n)
+Xint i,n;
+X{
+X	int j,k,m;
+X
+X	j = i*4;
+X	m = n*5;
+X	for(k=0; k<5; k++) mvaddstr(j+k, 60, cd[m+k]);
+X}
+X
+Xchoose()
+X{
+X	int c,choice,old,i;
+X
+X	for(choice=0; choice<5; choice++) if(mark[choice] == 0) break;
+X	mvaddstr(choice*4+2, 53, "->");
+X	refresh();
+X	old = choice;
+X	while(1) {
+X		c = key();
+X		if(c == '\r') {
+X			mvaddstr(choice*4+2, 53, "  ");
+X			refresh();
+X			break;
+X		}
+X		switch (c) {
+X		case 'X':
+X		case 'x':
+X			mark[choice] = 1;
+X			mvaddstr(choice*4+2, 58, "X");
+X			refresh();
+X			if(++choice == 5) choice = 0;
+X			break;
+X		case ' ':
+X			mark[choice] = 0;
+X			mvaddstr(choice*4+2, 58, " ");
+X			refresh();
+X		case 'j':
+X		case 'J':
+X		case DN_ARROW:
+X			if(++choice == 5) choice = 0;
+X			break;
+X		case 'k':
+X		case 'K':
+X		case UP_ARROW:
+X			if(--choice < 0) choice = 4;
+X			break;
+X		default:
+X			DisplayBeep(0);
+X			break;
+X		}
+X		mvaddstr(old*4+2, 53, "  ");
+X		mvaddstr(choice*4+2, 53, "->");
+X		refresh();
+X		old = choice;
+X	}
+X	for(i=0; i<5; i++) if(mark[i] == 0) return(0);
+X	return(1);
+X}
+X
+Xmakechoice(n)
+Xint n;
+X{
+X	int c, choice, old, count, counts[6], f1, f2, f3, f4, f5, i, j;
+X	char s[4];
+X
+X	for(choice=0; choice<NS; choice++)
+X		if(player[n].score[choice] == -1) break;
+X	mvaddstr(ys[choice], 0, "->");
+X	refresh();
+X	old = choice;
+X	while(1) {
+X		c = key();
+X		if(c == '\r') {
+X			mvaddstr(ys[old], 0, "  ");
+X			refresh();
+X			break;
+X		}
+X		switch (c) {
+X		case 'k':
+X		case 'K':
+X		case UP_ARROW:
+X			do {
+X				if(--choice < 0) choice = NS-1;
+X			} while(player[n].score[choice] >= 0 || choice == 6);
+X			break;
+X		case 'j':
+X		case 'J':
+X		case DN_ARROW:
+X			do {
+X				if(++choice == NS) choice = 0;
+X			} while(player[n].score[choice] >= 0 || choice == 6);
+X			break;
+X		default:
+X			DisplayBeep(0);
+X			break;
+X		}
+X		mvaddstr(ys[old], 0, "  ");
+X		mvaddstr(ys[choice], 0, "->");
+X		refresh();
+X		old = choice;
+X	}
+X	player[n].score[choice] = 0;
+X	for(j=1; j<=6; j++) {
+X		count = 0;
+X		for(i=0; i<5; i++)
+X			if(dice[i] == j) count++;
+X		if(count == 5) player[n].ycount++;
+X	}
+X	switch (choice) {
+X	case 0: case 1: case 2: case 3: case 4: case 5:		/* points */
+X		for(i=0; i<5; i++)
+X			if(dice[i] == choice+1)
+X				player[n].score[choice] += dice[i];
+X		f1=1;
+X		count = 0;
+X		for(i=0; i<6; i++)
+X			if(player[n].score[i] >=0)
+X				count += player[n].score[i];
+X			else f1=0;
+X		sprintf(s,"%d",count);
+X		mvaddstr(ys[5]+1, FC+n*COLW, "   ");
+X		mvaddstr(ys[5]+1, FC+n*COLW, s);
+X		refresh();
+X		if(f1) {
+X			if(count >= 63) {
+X				player[n].score[6] = 35;
+X				mvaddstr(ys[6], FC+n*COLW, "35");
+X				refresh();
+X			} else player[n].score[6] = 0;
+X		}
+X		break;
+X	case 13:		/* chance */
+X		for(i=0; i<5; i++) player[n].score[13] += dice[i];
+X		break;
+X	case 7:			/* 3 of a kind */
+X	case 8:			/* 4 of a kind */
+X	case 12:		/* yahtzee */
+X		for(j=1; j<=6; j++) {
+X			count = 0;
+X			for(i=0; i<5; i++)
+X				if(dice[i] == j) count++;
+X			if(choice == 7) {
+X				if(count >= 3)
+X					for(i=0; i<5; i++) player[n].score[7] += dice[i];
+X			} else if(choice == 8) {
+X				if(count >= 4)
+X					for(i=0; i<5; i++) player[n].score[8] += dice[i];
+X			} else {
+X				if(count == 5) player[n].score[12] = 50;
+X			}
+X		}
+X		break;
+X	case 9:			/* full house */
+X		for(j=0; j<6; j++) {
+X			counts[j] = 0;
+X			for(i=0; i<5; i++)
+X				if(dice[i] == j+1) counts[j] += 1;
+X		}
+X		f1 = f2 = 0;
+X		for(i=0; i<6; i++) if(counts[i] == 3) f1 = 1;
+X		for(i=0; i<6; i++) if(counts[i] == 2) f2 = 1;
+X		if(f1 && f2) player[n].score[9] = 25;
+X		break;
+X	case 10:		/* small straight */
+X		f1 = f2 = f3 = f4 = 0;
+X		for(i=0; i<5; i++) {
+X			if(dice[i] == 1) f1 = 1;
+X			if(dice[i] == 2) f2 = 1;
+X			if(dice[i] == 3) f3 = 1;
+X			if(dice[i] == 4) f4 = 1;
+X		}
+X		if(f1 && f2 && f3 && f4) {
+X			player[n].score[10] = 30;
+X			break;
+X		}
+X		f1 = f2 = f3 = f4 = 0;
+X		for(i=0; i<5; i++) {
+X			if(dice[i] == 2) f1 = 1;
+X			if(dice[i] == 3) f2 = 1;
+X			if(dice[i] == 4) f3 = 1;
+X			if(dice[i] == 5) f4 = 1;
+X		}
+X		if(f1 && f2 && f3 && f4) {
+X			player[n].score[10] = 30;
+X			break;
+X		}
+X		f1 = f2 = f3 = f4 = 0;
+X		for(i=0; i<5; i++) {
+X			if(dice[i] == 3) f1 = 1;
+X			if(dice[i] == 4) f2 = 1;
+X			if(dice[i] == 5) f3 = 1;
+X			if(dice[i] == 6) f4 = 1;
+X		}
+X		if(f1 && f2 && f3 && f4) {
+X			player[n].score[10] = 30;
+X			break;
+X		}
+X		break;
+X	case 11:
+X		f1 = f2 = f3 = f4 = f5 = 0;
+X		for(i=0; i<5; i++) {
+X			if(dice[i] == 2) f1 = 1;
+X			if(dice[i] == 3) f2 = 1;
+X			if(dice[i] == 4) f3 = 1;
+X			if(dice[i] == 5) f4 = 1;
+X			if(dice[i] == 6) f5 = 1;
+X		}
+X		if(f1 && f2 && f3 && f4 && f5) {
+X			player[n].score[11] = 40;
+X			break;
+X		}
+X		f1 = f2 = f3 = f4 = f5 = 0;
+X		for(i=0; i<5; i++) {
+X			if(dice[i] == 1) f1 = 1;
+X			if(dice[i] == 2) f2 = 1;
+X			if(dice[i] == 3) f3 = 1;
+X			if(dice[i] == 4) f4 = 1;
+X			if(dice[i] == 5) f5 = 1;
+X		}
+X		if(f1 && f2 && f3 && f4 && f5) {
+X			player[n].score[11] = 40;
+X			break;
+X		}
+X		break;
+X	}
+X	sprintf(s,"%d",player[n].score[choice]);
+X	mvaddstr(ys[choice], FC+n*COLW, s);
+X	refresh();
+X}
+X
+Xwinner(n)
+Xint n;
+X{
+X	int i,j,k1,k2,k3,tots[4],max;
+X	char s[4];
+X
+X	for(i=0; i<n; i++) {
+X		k3 = (player[i].ycount - 1) * 100;
+X		if(k3) {
+X			sprintf(s,"%d",k3);
+X			mvaddstr(17, FC+i*COLW, s);
+X		}
+X		k1 = 0;
+X		for(j=0; j<7; j++) k1 += player[i].score[j];
+X		sprintf(s, "%d", k1);
+X		mvaddstr(19, FC+i*COLW, s);
+X		k2 = 0;
+X		for(j=7; j<NS; j++) k2 += player[i].score[j];
+X		sprintf(s,"%d",k2);
+X		mvaddstr(20, FC+i*COLW, s);
+X		tots[i] = k1 + k2 + k3;
+X		sprintf(s,"%d",tots[i]);
+X		mvaddstr(22, FC+i*COLW, s);
+X	}
+X	refresh();
+X	max = tots[0];
+X	j = 0;
+X	for(i=1; i<n; i++)
+X		if(tots[i] > max) {
+X			j = i;
+X			max = tots[i];
+X		}
+X	sprintf(s, "%d", max);
+X	mvaddstr(22, FC+j*COLW, s);
+X	move(23,0);
+X	clrtoeol();
+X	addstr(player[j].name);
+X	addstr(more);
+X	refresh();
+X	k1 = strlen(player[j].name) + strlen(more);
+X	return(yes(23,k1));
+X}
+END_OF_FILE
+if test 6373 -ne `wc -c <'game.c'`; then
+    echo shar: \"'game.c'\" unpacked with wrong size!
+fi
+# end of 'game.c'
+fi
+if test -f 'key.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'key.c'\"
+else
+echo shar: Extracting \"'key.c'\" \(2229 characters\)
+sed "s/^X//" >'key.c' <<'END_OF_FILE'
+X#include "types.h"
+X#include <ctype.h>
+X#include <fcntl.h>
+X#include <sys/types.h>
+X#include <sys/timeb.h>
+X
+X
+Xstatic int esc_used,sg;
+Xstatic char refr=12;
+Xstatic char *ku,*kd,*kl,*kr,*ks,*ke,*so,*se;
+X
+Xstatic myout(c) char c; { putchar(c); }
+X
+Xstatic
+Xreadkey()
+X{
+X	char c;
+X	int i;
+X
+X	i = read(0, &c, 1);
+X	if(i < 0) return(i);
+X	else return(c);
+X}
+X
+Xkey()
+X{
+X	int i=1,j;
+X	char c,ttt[10];
+X	struct timeb begin,end;
+X	int x,y;
+X
+X	while(1) {
+X		c=readkey();
+X		if(c == refr) wrefresh(curscr);
+X		if(c != -1 && c != refr) break;
+X	}
+X	ttt[0] = c;
+X	ttt[1] = 0;
+X	if(c == 033 && esc_used) {
+X		while(1) {
+X			ftime(&begin);
+X			while((c=readkey()) == -1) {
+X				ftime(&end);
+X				if(timeout(&begin,&end))
+X					if(c==ESC || i==1) return(ESC);
+X					else return(ERR_KEY);
+X			}
+X			ttt[i++]=c;
+X			ttt[i]=0;
+X			if(!strcmp(ttt,ku)) return(UP_ARROW);
+X			else if(!strcmp(ttt,kd)) return(DN_ARROW);
+X			else if(!strcmp(ttt,kl)) return(LF_ARROW);
+X			else if(!strcmp(ttt,kr)) return(RT_ARROW);
+X		}
+X	} else {
+X		if(!strcmp(ttt,ku)) return(UP_ARROW);
+X		else if(!strcmp(ttt,kd)) return(DN_ARROW);
+X		else if(!strcmp(ttt,kl)) return(LF_ARROW);
+X		else if(!strcmp(ttt,kr)) return(RT_ARROW);
+X		else return(c);
+X	}
+X}
+X
+Xtimeout(b,e)
+Xstruct timeb *b,*e;
+X{
+X	long c,d;
+X
+X	if(b->time == e->time) {
+X		if((e->millitm - b->millitm) > 500) return(1);
+X		else return(0);
+X	} else {
+X		c = ((e->time - b->time) * 1000) + e->millitm;
+X		d = (long) b->millitm;
+X		if((c-d) > 500) return(1);
+X		else return(0);
+X	}
+X}
+X
+Xinitkey(del1,del2)
+Xchar *del1, *del2;
+X{
+X	char *malloc(), *getenv(), *tgetstr(), *p, *op;
+X	int myout(),i;
+X
+X	i = fcntl(0, F_GETFL, 0);
+X	fcntl(0, F_SETFL, i);
+X	*del1 = 8;
+X	*del2 = 127;
+X	op = malloc(400);
+X	p = malloc(1024);
+X	tgetent(p, getenv("TERM"));
+X	ku = tgetstr("ku", &op);
+X	kd = tgetstr("kd", &op);
+X	kl = tgetstr("kl", &op);
+X	kr = tgetstr("kr", &op);
+X	ks = tgetstr("ks", &op);
+X	ke = tgetstr("ke", &op);
+X	so = tgetstr("so", &op);
+X	se = tgetstr("se", &op);
+X	sg = tgetnum("sg");
+X	if(ks) tputs(ks, 1, myout);
+X	free(p);
+X	esc_used = (ku[0] == 033);
+X	if(kr[0]==8  || kl[0]==8  || ku[0]==8  || kd[0]==8) *del1 = 127;
+X	if(kr[0]==12 || kl[0]==12 || ku[0]==12 || kd[0]==12) refr = 18;
+X}
+X
+Xendkey()
+X{
+X	int myout(),i;
+X
+X	if(ke) tputs(ke, 1, myout);
+X	i = fcntl(0, F_GETFL, 0);
+X	i = fcntl(0, F_SETFL, i);
+X}
+END_OF_FILE
+if test 2229 -ne `wc -c <'key.c'`; then
+    echo shar: \"'key.c'\" unpacked with wrong size!
+fi
+# end of 'key.c'
+fi
+if test -f 'main.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'main.c'\"
+else
+echo shar: Extracting \"'main.c'\" \(3019 characters\)
+sed "s/^X//" >'main.c' <<'END_OF_FILE'
+X#include "types.h"
+X#include <signal.h>
+X#ifdef BSD42
+X#include <sys/time.h>
+X#endif
+XGame player[4];
+Xchar DELETE1, DELETE2;
+X
+Xmain()
+X{
+X	int np, clean();
+X
+X	seedrand();
+X	initscr();
+X	initkey(&DELETE1, &DELETE2);
+X	signal(SIGINT, clean);
+X	crmode();
+X	noecho();
+X	nonl();
+X	np = getnames();
+X	while(1) {
+X		init(np);
+X		if(playgame(np) == 0) break;
+X		move(23,0);
+X		clrtoeol();
+X		addstr("Same Players? (Y/N) ");
+X		refresh();
+X		if(yes(23,21)) continue;
+X		else np = getnames();
+X	}
+X	clean();
+X}
+X
+Xclean()
+X{
+X	clear();
+X	refresh();
+X	endwin();
+X	endkey();
+X	exit(0);
+X}
+X
+Xyes(y,x)
+Xint y,x;
+X{
+X	char s[2];
+X
+X	while(1) {
+X		getstring(s,1,0,  y,x);
+X		s[0] |= 040;
+X		if(s[0] == 'y') return(1);
+X		else if(s[0] == 'n') return(0);
+X		else {
+X			DisplayBeep(0);
+X			mvaddstr(y,x+1," ");
+X			move(y,x+1);
+X			refresh();
+X		}
+X	}
+X}
+X
+Xinit(n)
+Xint n;
+X{
+X	int i,j;
+X
+X	for(i=0; i<n; i++)
+X		for(j=0; j<NS; j++) player[i].score[j] = -1;
+X	player[i].ycount = 0;
+X}
+X
+Xplaygame(n)
+Xint n;
+X{
+X	int which = 0, old = 0, i, j;
+X
+X	drawscreen(n);
+X	while(gameon(n)) {
+X		setname(old,which);
+X		roll();
+X		for(i=0; i<2; i++) {
+X			if(choose()) break;
+X			roll();
+X		}
+X		clrroll();
+X		makechoice(which);
+X		old = which;
+X		if(++which == n) which=0;
+X	}
+X	return(winner(n));
+X}
+X
+Xgameon(n)
+X{
+X	int i,j;
+X
+X	for(i=0; i<n; i++)
+X		for(j=0; j<NS; j++) {
+X			if(j == 6) continue;
+X			if(player[i].score[j] == -1) return(1);
+X		}
+X	return(0);
+X}
+X
+Xgetnames()
+X{
+X	int n,i;
+X	char s[7];
+X
+X	clear();
+X	mvaddstr(0,0,"How many players: ");
+X	refresh();
+X	while(1) {
+X		move(0,18);
+X		clrtoeol();
+X		refresh();
+X		getstring(s,1,1,0,18);
+X		if((n=atoi(s)) >= 1 && n <= 4) break;
+X		DisplayBeep(0);
+X	}
+X	for(i=0; i<n; i++) {
+X		mvaddstr(i+1,0,"Enter name: ");
+X		refresh();
+X		move(i+1,12);
+X		clrtoeol();
+X		getstring(s, 6, 0,  i+1, 12);
+X		strcpy(player[i].name, s);
+X	}
+X	return(n);
+X}
+X
+Xgetstring(s,n,flag,y,x)
+Xchar *s;
+Xint n,flag,y,x;
+X{
+X	int c,i=0;
+X
+X	while(1) {
+X		c = key();
+X		if(c < 0 && c!=LF_ARROW) DisplayBeep(0);
+X		else if(c == 8 || c == LF_ARROW) {
+X			if(i == 0) DisplayBeep(0);
+X			else {
+X				s[--i] = 0;
+X				addch(8);
+X				addch(' ');
+X				addch(8);
+X				refresh();
+X				x--;
+X			}
+X		} else if(c == '\r') {
+X			s[i]=0;
+X			return;
+X		} else {
+X			if(i < n) {
+X				if(flag) {
+X					if(c<'0' || c>'9') {
+X						DisplayBeep(0);
+X						continue;
+X					}
+X				}
+X				s[i++] = c;
+X				x++;
+X				addch(c);
+X				refresh();
+X			} else DisplayBeep(0);
+X		}
+X	}
+X}
+X
+X/*
+X * seed the random number generator
+X *
+X */
+Xseedrand()
+X{
+X#ifdef BSD42
+X	struct timeval tp;
+X	struct timezone tpz;
+X
+X	gettimeofday(&tp,&tpz);
+X	srandom((int)tp.tv_sec);
+X#endif
+X#ifdef BSD29
+X	randomize();
+X#endif
+X#ifdef SYSV
+X	long seed;
+X	long time();
+X	void srand48();
+X
+X	time(&seed);
+X	srand48(seed);
+X#endif
+X#ifdef XENIX
+X	long seed;
+X	long time();
+X
+X	time(&seed);
+X	srand(seed);
+X#endif
+X}
+X
+X/*
+X * get_rand - return a random number 1-6
+X *
+X */
+Xget_rand()
+X{
+X#ifdef BSD42
+X	long random();
+X	return( (int) random() % 6 + 1);
+X#endif
+X#ifdef BSD29
+X	double ranm();
+X	return( (int) (ranm() * 6.0) + 1.0);
+X#endif
+X#ifdef SYSV
+X	double drand48();
+X	return( (int) (drand48() * 6.0) + 1.0);
+X#endif
+X#ifdef XENIX
+X	return( rand() % 6 + 1);
+X#endif
+X}
+END_OF_FILE
+if test 3019 -ne `wc -c <'main.c'`; then
+    echo shar: \"'main.c'\" unpacked with wrong size!
+fi
+# end of 'main.c'
+fi
+if test -f 'screen.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'screen.c'\"
+else
+echo shar: Extracting \"'screen.c'\" \(1939 characters\)
+sed "s/^X//" >'screen.c' <<'END_OF_FILE'
+X#include "types.h"
+X
+Xextern Game player[];
+X
+Xchar *scrn[] = {
+X/*  0 */  "   Player         |       |       |        |       |",
+X/*  1 */  "   Aces           |       |       |        |       |",
+X/*  2 */  "   Twos           |       |       |        |       |",
+X/*  3 */  "   Threes         |       |       |        |       |",
+X/*  4 */  "   Fours          |       |       |        |       |",
+X/*  5 */  "   Fives          |       |       |        |       |",
+X/*  6 */  "   Sixes          |       |       |        |       |",
+X/*  7 */  "   Total          |       |       |        |       |",
+X/*  8 */  "   Bonus for 63   |       |       |        |       |",
+X/*  9 */  "   ---------------|-------|-------|--------|-------|",
+X/* 10 */  "   3 of a kind    |       |       |        |       |",
+X/* 11 */  "   4 of a kind    |       |       |        |       |",
+X/* 12 */  "   Full house     |       |       |        |       |",
+X/* 13 */  "   Small straight |       |       |        |       |",
+X/* 14 */  "   Large straight |       |       |        |       |",
+X/* 15 */  "   Yahtzee        |       |       |        |       |",
+X/* 16 */  "   Chance         |       |       |        |       |",
+X/* 17 */  "   Yahtzee Bonus  |       |       |        |       |",
+X/* 18 */  "   ---------------|-------|-------|--------|-------|",
+X/* 19 */  "   Total top      |       |       |        |       |",
+X/* 20 */  "   Total bottom   |       |       |        |       |",
+X/* 21 */  "   ---------------|-------|-------|--------|-------|",
+X/* 22 */  "   Grand Total    |       |       |        |       |",
+X
+XNULL
+X};
+X
+Xdrawscreen(n)
+Xint n;
+X{
+X	int i;
+X
+X	clear();
+X	for(i=0; i<10; i++) mvaddstr(i,0,scrn[i]);
+X	refresh();
+X	for(i=10; scrn[i]; i++) mvaddstr(i,0,scrn[i]);
+X	refresh();
+X	for(i=0; i<n; i++) mvaddstr(0, FC+(i*COLW), player[i].name);
+X	refresh();
+X}
+X
+Xsetname(old,new)
+Xint old,new;
+X{
+X	mvaddch(0, FC-1+(old*COLW), ' ');
+X	mvaddch(0, FC-1+(new*COLW), '*');
+X	refresh();
+X}
+END_OF_FILE
+if test 1939 -ne `wc -c <'screen.c'`; then
+    echo shar: \"'screen.c'\" unpacked with wrong size!
+fi
+# end of 'screen.c'
+fi
+if test -f 'types.h' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'types.h'\"
+else
+echo shar: Extracting \"'types.h'\" \(752 characters\)
+sed "s/^X//" >'types.h' <<'END_OF_FILE'
+X#include <curses.h>
+X
+X#define DisplayBeep(n)		(putchar(n+7),fflush(stdout))
+X
+X#define ESC		27
+X#define	LF_ARROW	-10
+X#define RT_ARROW	-11
+X#define UP_ARROW	-12
+X#define DN_ARROW	-13
+X#define HELP		-14
+X#define ERR_KEY		-15
+X
+X#define COLW		8		/* column width of score card */
+X#define FC		20		/* beginning of first score column */
+X
+X#define NS		14
+X
+X/*
+X *   0       1        2        3        4        5         6
+X * aces,   twos,   threes,   fours,   fives,   sixes,    bonus,
+X *
+X *   7       8       9        10       11        12        13
+X * threek, fourk,   full,    small,   large,   yahtzee,  chance
+X *
+X */
+X
+Xtypedef struct xxx {
+X	int score[NS];			/* various scores */
+X	char name[7];			/* player name */
+X	int ycount;			/* extra yahtzee bonus count */
+X} Game;
+END_OF_FILE
+if test 752 -ne `wc -c <'types.h'`; then
+    echo shar: \"'types.h'\" unpacked with wrong size!
+fi
+# end of 'types.h'
+fi
+echo shar: End of shell archive.
+exit 0

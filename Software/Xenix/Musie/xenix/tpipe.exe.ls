@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3            6542 Aug 16 20:02 1994 /usr/local/tpipe
+-rw-r--r-- 3/3            3210 Aug 16 19:49 1994 /usr/lib/Help/lib/L/tpipe

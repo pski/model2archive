@@ -1,0 +1,141 @@
+As you make your journey on the internet, you will find many new library
+functions to add to your "C" libraries.  This utility makes it easy to
+manage and update your libraries as your collection grows.  You should also
+use selection #6 on the menu to update SYMDEF on a newly installed
+Xenix system. If SYMDEF is not up-to-date, your compiler can't find the
+functions in your library archives.  Each archive library contains an
+index called SYMDEF.
+
+Steve Scrivano (sscrivan@nyx.cs.du.edu)
+
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  mkobjects
+# Wrapped by steve@coupon on Mon May  1 10:49:07 1995
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'mkobjects' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'mkobjects'\"
+else
+echo shar: Extracting \"'mkobjects'\" \(2304 characters\)
+sed "s/^X//" >'mkobjects' <<'END_OF_FILE'
+X
+XPROG=/usr/local/mkobjects
+XMSG1="Press <ENTER> to continue"
+Xtrap 'echo ""; exec $PROG' 1 2 3 15 
+X#
+X# Print Main Menu
+X#
+X# Clear the screen if you have clear
+Xclear
+Xcat <<!
+X
+X
+X
+X			  Object file/archive utility 
+X			--------------------------------
+X			 0. View Current Directory
+X			 1. List archive directory in /lib /usr/lib
+X			 2. List the contents of an archive
+X			 3. Make an object file
+X		 	 4. Add an object file to the archive
+X		 	 5. Run ranlib on the archive file
+X			 6. Run ranlib on all archive files
+X
+X		 	 q  quit
+X			 x  return to top menu
+X			-------------------------------
+X
+X
+X
+X
+X!
+Xecho -n "		    > Select option: "
+Xread reply
+Xcase $reply in
+X0)	lc|more -w
+X	exec $PROG
+X	;;
+X1)	echo "Archives in /lib are:"
+X	ls /lib|grep "\.a"|more -w
+X	echo "Archives in /usr/lib are:"
+X	ls /usr/lib|grep "\.a"|more -w
+X	exec $PROG
+X	;;
+X2)	echo -n "Exact pathname of archive file > "
+X	read path
+X	ar t $path|more -w
+X	exec $PROG
+X	;;
+X3)	echo -n "Name of C program > "
+X	read program
+X	cc -+ -O Dvoid=int -c $program
+X	echo -n "Press Enter to Return to Menu > "
+X	read response
+X	exec $PROG
+X	;;
+X4)      echo "pathname example: /lib/libc.a or ?"
+X	echo -n "Exact pathname of archive file > "
+X	read archive
+X	echo -n "Exact name of object file > "
+X	read object
+X	echo "Adding" $object "to:" $archive
+X	ar r $archive $object
+X	echo "Updating SYMDEF in " $archive  "with ranlib"
+X	ranlib $archive
+X	echo -n "Press Enter to Return to Menu > "
+X	read response
+X	exec $PROG
+X	;;
+X5)      echo "Enter pathname example: /lib/libc.a or ?"
+X	echo -n "Exact pathname of archive file > "
+X	read archive
+X	echo "Updating SYMDEF on " $archive  "with ranlib"
+X	ranlib $archive
+X	echo -n "Press Enter to Return to Menu > "
+X	read response
+X	exec $PROG
+X	;;
+X6)	echo "This function updates all library .a files in /lib & /usr/lib." 
+X	echo "Always run this function on a newly installed Xenix system."
+X	echo -n "Press break to abort, enter to continue"
+X	read answer
+X	echo "Updating SYMDEF in library files one moment........."
+X	cd /lib
+X	for i in `ls *.a`
+X	do
+X	ranlib $i
+X	done
+X	cd /usr/lib
+X	for i in `ls *.a`
+X	do
+X	ranlib $i
+X	done
+X	echo "Done!"
+X	sleep 5
+X	echo -n "Press Enter to Return to Menu > "
+X	read response
+X	exec $PROG
+X	;;
+Xq | Q)	
+X	;;
+Xx | X)	exec $PROG
+X	;;
+X*)	echo -n "\nPlease choose from the displayed options -- ${MSG1}: "
+X	read dummy
+X	exec $PROG
+X	;;
+Xesac
+END_OF_FILE
+echo shar: 6 control characters may be missing from \"'mkobjects'\"
+if test 2304 -ne `wc -c <'mkobjects'`; then
+    echo shar: \"'mkobjects'\" unpacked with wrong size!
+fi
+# end of 'mkobjects'
+fi
+echo shar: End of shell archive.
+exit 0

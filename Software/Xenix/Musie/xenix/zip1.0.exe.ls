@@ -1,0 +1,10 @@
+-rwxr-xr-x 3/3           23942 Aug  4 02:03 1994 /usr/local/ship
+-rwxr-xr-x 3/3           35748 Dec 16 14:27 1990 /usr/local/unzip
+-rwxr-xr-x 3/3            1004 Sep 14 15:14 1994 /usr/local/zforce
+-rwxr-xr-x 3/3           74956 Aug  4 01:45 1994 /usr/local/zip
+-rwxr-xr-x 3/3           33936 Aug  4 01:55 1994 /usr/local/zipcloak
+-rwxr-xr-x 3/3           30796 Aug  4 01:52 1994 /usr/local/zipnote
+-rwxr-xr-x 3/3           33080 Aug  4 01:57 1994 /usr/local/zipsplit
+-rw-r--r-- 3/3            3965 Dec 16 14:28 1990 /usr/lib/Help/lib/L/unzip
+-rw-r--r-- 3/3            1131 Sep 14 12:43 1994 /usr/lib/Help/lib/L/zforce
+-rw-r--r-- 3/3           25561 Aug 16 02:16 1994 /usr/lib/Help/lib/L/zip

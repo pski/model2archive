@@ -1,0 +1,49 @@
+From ogicse!zephyr.ens.tek.com!tektronix!percy!nosun!techbook!fzsitvay Mon Dec 17 15:06:01 CST 1990
+Article: 2866 of comp.sys.tandy
+Path: plains!ogicse!zephyr.ens.tek.com!tektronix!percy!nosun!techbook!fzsitvay
+From: fzsitvay@techbook.com (Frank Zsitvay)
+Newsgroups: comp.sys.tandy
+Subject: Re: Tandy 6000 Keyboards
+Message-ID: <1990Dec15.045105.5838@techbook.com>
+Date: 15 Dec 90 04:51:05 GMT
+References: <538@camco.Celestial.COM>
+Organization: TECHbooks of Beaverton Oregon - Public Access Unix
+Lines: 34
+Posted: Fri Dec 14 20:51:05 1990
+
+In article <538@camco.Celestial.COM> bill@camco.Celestial.COM (Bill Campbell) writes:
+>Can I use an old style (Model II, Model 16) keyboard on a Tandy
+>6000?  I know I have to change the cable.  If it can be used, do
+>I just have to make a straight connector cable or change the
+>pin-outs?
+>
+   yes, you can...   use a model 2 cable, and route the conductors
+this way...
+ 
+           connector on video/keyboard board
+       
+                 O  O  O  O  X  O
+                 1  2  3  4     6 
+
+           colors of the wires in the model 2 cable...
+ 
+                 white   ->   pin 1
+                 red     ->   pin 2
+                 black   ->   pin 3
+                 green   ->   pin 4
+                 yellow  ->   pin 6
+
+>-- 
+>INTERNET:  bill@Celestial.COM   Bill Campbell; Celestial Software
+>UUCP:   ...!thebes!camco!bill   6641 East Mercer Way
+>             uunet!camco!bill   Mercer Island, WA 98040; (206) 947-5591
+
+   would you by any chance have a xenix 3.2.3 development system package
+for sale, cheap??
+
+-- 
+fzsitvay@techbook.COM - but don't quote me on that....
+
+American Oil Company motto - Bend over, We'll pump!!!
+
+

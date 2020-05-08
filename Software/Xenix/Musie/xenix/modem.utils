@@ -1,0 +1,245 @@
+These are 3 different shell scripts that utilize Chuck Forsbergs
+rz/sz package as well as kermit in a user friendly manner for the
+purposes of uploading/downloading.  Unpacking this package will
+install it in /usr/local.
+
+
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  /usr/local/xmodem /usr/local/ymodem /usr/local/zmodem
+# Wrapped by root@coupon on Fri Nov  4 23:50:04 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f '/usr/local/xmodem' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'/usr/local/xmodem'\"
+else
+echo shar: Extracting \"'/usr/local/xmodem'\" \(816 characters\)
+sed "s/^X//" >'/usr/local/xmodem' <<'END_OF_FILE'
+X#!/bin/sh
+XPATH="$PATH:/bin:/usr/bin"
+X
+X# do binary mode by default
+Xmode=binary
+X
+Xset -- `getopt abit $*`
+X
+Xfor f in $*
+Xdo
+X	case $f in
+X
+X	-i|-b)	# -i like kermit or b for binary
+X		mode=binary
+X		shift
+X		;;
+X
+X	-a|-t)	# a for ascii of t for text
+X		mode=text
+X		shift
+X		;;
+X
+X	--)	# end of arg list shift
+X		;;
+X
+X	*)	# files to send
+X		files="$files $f"
+X		;;
+X	esac
+Xdone
+X
+Xif [ ! "$files" = "" ]; then
+X	cmd="sx"		# file args -- direction is send
+Xelse				# ask
+X	echo "(s)end file or (r)eceive file? \c"
+X	read ans
+X	case $ans in
+X		r)
+X			cmd="rx"
+X			;;
+X		s)
+X			cmd="sx"
+X			echo "Filenames to send? \c"
+X			read files
+X			;;
+X	esac
+X
+X	echo "(b)inary or (t)ext? \c"
+X	read ans
+X	case $ans in
+X		b) mode=binary ;;
+X		t) mode=text ;;
+X	esac
+Xfi
+X
+Xif [ $mode = text ]; then
+X	flags="$flags -a"
+Xelse
+X	flags="$flags -b"	# binary
+Xfi
+X
+Xexec $cmd $flags $files
+END_OF_FILE
+if test 816 -ne `wc -c <'/usr/local/xmodem'`; then
+    echo shar: \"'/usr/local/xmodem'\" unpacked with wrong size!
+fi
+chmod +x '/usr/local/xmodem'
+# end of '/usr/local/xmodem'
+fi
+if test -f '/usr/local/ymodem' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'/usr/local/ymodem'\"
+else
+echo shar: Extracting \"'/usr/local/ymodem'\" \(1021 characters\)
+sed "s/^X//" >'/usr/local/ymodem' <<'END_OF_FILE'
+X#!/bin/sh
+XPATH="$PATH:/bin:/usr/bin"
+X
+X# do binary mode by default
+Xmode=binary
+X
+Xset -- `getopt abit $*`
+X
+Xfor f in $*
+Xdo
+X	case $f in
+X
+X	-i|-b)	# -i like kermit or b for binary
+X		mode=binary
+X		shift
+X		;;
+X
+X	-a|-t)	# a for ascii or t for text
+X		mode=text
+X		shift
+X		;;
+X
+X	--)	# end of arg list shift
+X		;;
+X
+X	*)	# files to send
+X		files="$files $f"
+X		;;
+X	esac
+Xdone
+X
+Xif [ ! "$files" = "" ]; then
+X	cmd="sb"		# file args -- direction is send
+X	flags="$flags -k"	# use 1k blocks
+Xelse				# ask
+X	echo "(s)end file or (r)eceive file? \c"
+X	read ans
+X	case $ans in
+X		r)
+X			cmd="rb"
+X			;;
+X		s)
+X			cmd="sb"
+X			flags="$flags -k"
+X			echo "Filenames to send? \c"
+X			read files
+X			;;
+X	esac
+X
+X	echo "(b)inary or (t)ext? \c"
+X	read ans
+X	case $ans in
+X		b) mode=binary ;;
+X		t) mode=text ;;
+X	esac
+Xfi
+X
+Xif [ $mode = text ]; then
+X	flags="$flags -a"
+Xelse
+X	flags="$flags -b"	# binary
+Xfi
+X
+Xecho "*** NOTE *** for procomm: Ignore instructions about 'sb' and do this:"
+Xecho "***	PgDn/PgUp (to select down/upload), select # 6, ymodem batch"
+X
+Xexec $cmd $flags $files
+END_OF_FILE
+if test 1021 -ne `wc -c <'/usr/local/ymodem'`; then
+    echo shar: \"'/usr/local/ymodem'\" unpacked with wrong size!
+fi
+chmod +x '/usr/local/ymodem'
+# end of '/usr/local/ymodem'
+fi
+if test -f '/usr/local/zmodem' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'/usr/local/zmodem'\"
+else
+echo shar: Extracting \"'/usr/local/zmodem'\" \(816 characters\)
+sed "s/^X//" >'/usr/local/zmodem' <<'END_OF_FILE'
+X#!/bin/sh
+XPATH="$PATH:/bin:/usr/bin"
+X
+X# do binary mode by default
+Xmode=binary
+X
+Xset -- `getopt abit $*`
+X
+Xfor f in $*
+Xdo
+X	case $f in
+X
+X	-i|-b)	# -i like kermit or b for binary
+X		mode=binary
+X		shift
+X		;;
+X
+X	-a|-t)	# a for ascii of t for text
+X		mode=text
+X		shift
+X		;;
+X
+X	--)	# end of arg list shift
+X		;;
+X
+X	*)	# files to send
+X		files="$files $f"
+X		;;
+X	esac
+Xdone
+X
+Xif [ ! "$files" = "" ]; then
+X	cmd="sz"		# file args -- direction is send
+Xelse				# ask
+X	echo "(s)end file or (r)eceive file? \c"
+X	read ans
+X	case $ans in
+X		r)
+X			cmd="rz"
+X			;;
+X		s)
+X			cmd="sz"
+X			echo "Filenames to send? \c"
+X			read files
+X			;;
+X	esac
+X
+X	echo "(b)inary or (t)ext? \c"
+X	read ans
+X	case $ans in
+X		b) mode=binary ;;
+X		t) mode=text ;;
+X	esac
+Xfi
+X
+Xif [ $mode = text ]; then
+X	flags="$flags -a"
+Xelse
+X	flags="$flags -b"	# binary
+Xfi
+X
+Xexec $cmd $flags $files
+END_OF_FILE
+if test 816 -ne `wc -c <'/usr/local/zmodem'`; then
+    echo shar: \"'/usr/local/zmodem'\" unpacked with wrong size!
+fi
+chmod +x '/usr/local/zmodem'
+# end of '/usr/local/zmodem'
+fi
+echo shar: End of shell archive.
+exit 0

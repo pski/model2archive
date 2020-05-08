@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3          228074 Sep  4 22:59 1994 /usr/local/qterm
+-rw-r--r-- 3/3            4726 Sep  4 12:36 1994 /usr/lib/Help/lib/L/qterm

@@ -1,0 +1,229 @@
+#! /bin/sh
+# This is a shell archive, meaning:
+# 1. Remove everything above the #! /bin/sh line.
+# 2. Save the resulting text in a file.
+# 3. Execute the file with /bin/sh (not csh) to create the files:
+#	uroff.c
+# This archive created: Thu Aug  1 18:33:02 1985
+export PATH; PATH=/bin:$PATH
+echo shar: extracting "'uroff.c'" '(4824 characters)'
+if test -f 'uroff.c'
+then
+	echo shar: will not over-write existing file "'uroff.c'"
+else
+sed 's/^	X//' << \SHAR_EOF > 'uroff.c'
+	X/*T uroff - produce nroff underlining for not-so-smart printers */
+	X/*S introduction */
+	X/*H uroff ----------------------------------------------------------- **
+	X**
+	X** uroff - produce underlining for nroff documents for printers that
+	X** 	   do not do backspacing.
+	X**
+	X** This program was written to reduce frustration with the use of the
+	X** Printronix P-series printers and nroff.  It was enough that we
+	X** couldn't have bold, italics, or anything resembling correspondence
+	X** or word-processing quality print.  But NO UNDERLINING either was too
+	X** much.  This program works with any printer that can handle text
+	X** followed by carriage return followed by some spaces and underscores.
+	X** Like the P-series with an IGP!
+	X**
+	X** This program is simple-minded, but quick.  It uses buffered I/O and
+	X** classes characters into very simple categories.
+	X**
+	X** usage: uroff [ file... ]
+	X**
+	X** Uroff filters reverse screen backspace codes found in text that
+	X** has been formatted with nroff (.ul) underline codes such as what
+	X** is found in man pages so it will be suitable for paper printout.
+	X**
+	X** If no file names are specified, it will filter standard input.
+	X** If a file name is dash (-), standard input will be read at that
+	X** point.
+	X**
+	X** Permission is granted for use and distribution, as long as you 
+	X** include the following notice:
+	X**
+	X** (c) 1985    Steven M. List
+	X**             Benetics Corporation, Mt. View, CA
+	X**             {cdp,greipa,idi,oliveb,sun,tolerant}!bene!luke!itkin
+	X**
+	X** ------------------------------------------------------------------ */
+	X/*E*/
+	X#include	<stdio.h>
+	X
+	Xchar	*pgm;
+	X
+	X#ifdef BSD
+	X#define strrchr rindex
+	X#endif
+	Xextern char *strrchr ();
+	X/*S main - control loop */
+	X/*Page Eject*/
+	Xmain (ac, av)
+	Xint		ac;
+	Xchar	**av;
+	X{
+	X	register FILE	*in;			/* input stream				*/
+	X
+	X	/* ------------------------------------------------------------ */
+	X	/* set the basename of the program name for logging             */
+	X	/* ------------------------------------------------------------ */
+	X
+	X	if (pgm = strrchr (av[0], '/')) pgm++;
+	X	else pgm = av[0];
+	X
+	X	ac--; av++;
+	X
+	X	/* ------------------------------------------------------------ */
+	X	/* arguments are file names - if none, use standard input       */
+	X	/* ------------------------------------------------------------ */
+	X
+	X	if (ac == 0)
+	X	{
+	X		dofile (stdin);
+	X	}
+	X	else while (ac--)
+	X	{
+	X		if (!strcmp (*av, "-"))
+	X		{
+	X			in = stdin;
+	X		}
+	X		else if (!(in = fopen (*av, "r")))
+	X		{
+	X			fprintf (stderr,
+	X				"%s: cannot open %s for read\n", pgm, *(av-1));
+	X		}
+	X
+	X		av++;
+	X
+	X		if (in)
+	X		{
+	X			dofile (in);
+	X			if (in != stdin) fclose (in);
+	X		}
+	X	}
+	X
+	X	exit (0);
+	X}
+	X/*S dofile - process an input file */
+	X/*H dofile ***********************************************************
+	X*
+	X*                                   dofile
+	X*
+	X* Read each character from the input file.  Put it into the buffer
+	X* appropriate for the type.  Flush the buffers on newline or eof.
+	X*
+	X*********************************************************************/
+	X/*E*/
+	Xdofile (stream)
+	Xregister FILE *stream;
+	X{
+	X	/* ------------------------------------------------------------ */
+	X	/* some convenient defines                                      */
+	X	/* ------------------------------------------------------------ */
+	X
+	X#	define BUFSIZE 256
+	X#	define BACKSPACE '\b'
+	X#	define NEWLINE '\n'
+	X#	define FORMFEED '\f'
+	X#	define RETURN '\r'
+	X#	define UNDERSCORE '_'
+	X#	define TAB '\t'
+	X#	define SPACE ' '
+	X#	define NUL '\0'
+	X
+	X	register unsigned char anyund = 0;
+	X	register unsigned char backup = 0;
+	X	register char	c;
+	X	register int	i;
+	X	register char	*tp;
+	X	register char	*up;
+	X
+	X	char	tbuf[BUFSIZE];
+	X	char	ubuf[BUFSIZE];
+	X
+	X	/* ------------------------------------------------------------ */
+	X	/* initialize BOTH buffers to all spaces                        */
+	X	/* ------------------------------------------------------------ */
+	X
+	X	for (i = 0, tp = tbuf, up = ubuf; i < BUFSIZE; i++)
+	X		*(tp++) = *(up++) = SPACE;
+	X	tp = tbuf; up = ubuf;
+	X	
+	X	/* ------------------------------------------------------------ */
+	X	/* process each character in the input file                     */
+	X	/* ------------------------------------------------------------ */
+	X
+	X	while ((c = getc (stream)) != EOF)
+	X	{
+	X		switch (c)
+	X		{
+	X			case	BACKSPACE:
+	X				backup = 1;
+	X				break;
+	X			case	UNDERSCORE:
+	X				if (backup) *(up-1) = c;
+	X				else
+	X				{
+	X					*up = c;
+	X					up++; tp++;
+	X				}
+	X				anyund = 1;
+	X				backup = 0;
+	X				break;
+	X			case	NEWLINE:
+	X				*tp = *up = NUL;
+	X				fputs (tbuf, stdout);
+	X				if (anyund)
+	X				{
+	X					putchar (RETURN);
+	X					fputs (ubuf, stdout);
+	X				}
+	X				putchar (NEWLINE);
+	X				anyund = 0;
+	X				for (i = 0, tp = tbuf, up = ubuf; i < BUFSIZE; i++)
+	X					*(tp++) = *(up++) = SPACE;
+	X				tp = tbuf; up = ubuf;
+	X				break;
+	X			case	SPACE:
+	X			case	TAB:
+	X			case	FORMFEED:
+	X				*(up++) = *(tp++) = c;
+	X				break;
+	X			default:
+	X				if (backup) *(tp-1) = c;
+	X				else
+	X				{
+	X					*tp = c;
+	X					up++; tp++;
+	X				}
+	X				backup = 0;
+	X				break;
+	X		}
+	X	}
+	X
+	X	if (tp != tbuf)
+	X	{
+	X		*tp = *up = NUL;
+	X		fputs (tbuf, stdout);
+	X		if (anyund)
+	X		{
+	X			putchar (RETURN);
+	X			fputs (ubuf, stdout);
+	X		}
+	X		putchar (NEWLINE);
+	X	}
+	X
+	X	return;
+	X}
+SHAR_EOF
+if test 4824 -ne "`wc -c < 'uroff.c'`"
+then
+	echo shar: error transmitting "'uroff.c'" '(should have been 4824 characters)'
+fi
+fi # end of overwriting check
+#	End of shell archive
+exit 0
+
+
+

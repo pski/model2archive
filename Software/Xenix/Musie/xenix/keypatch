@@ -1,0 +1,218 @@
+
+This is a patch created by "cdiff" to correct a problem with:
+/usr/lib/Help/makekeyfile
+Once you start growing your system and adding many local preformatted
+man pages, you will run into problems that exceed the capacity of
+your system to create a ".keyfile" for your on-line help utility.
+After this patch, "makekeyfile" will assume that all of your local
+help file additions reside in the directory: /usr/lib/Help/lib/L.
+
+
+To apply this patch, use the Public Domain "patch" program as follows:
+
+patch < keypatch
+
+After patching, read the comments in /usr/lib/Help/makekeyfile.
+
+Compliments of:
+
+Steve Scrivano (sscrivan@nyx.cs.du.edu)
+
+*** /usr/lib/Help/makekeyfile	Thu Jul 27 21:21:40 1995
+--- /usr/local/makekeyfile	Thu Jul 27 21:21:15 1995
+***************
+*** 1,7 ****
+! : Run this file with "sh", not "csh"
+  #
+! #  "makekeyfile" -  create a keywords file for "help"
+! #
+  
+  umask 022
+  myname="$0"
+--- 1,22 ----
+! #!/bin/sh
+  #
+! #  "makekeyfile" -  create a larger keywords file for "help"
+! #  This is a replacement for the Xenix "makekeyfile" that is incapable of
+! #  of building ".keylines" when too many help files are present on your
+! #  system.   "awk" has it's limitations and this utility reduces the
+! #  size of the process so "key.awk" doesn't fail.  Before installing
+! #  any preformatted local "man" pages on your system, always remove any "tab"
+! #  indent characters (ctrl I's) from the description line following "Name" or 
+! #  "NAME" of your man pages.  In unformatted manpages you will find a backslash
+! #  next to the brief description of your man pages that causes this tab 
+! #  character and it should be removed before formatting for example: 
+! #  "cdiff \-" should be just "cdiff -". "makekeyfile" and "key.awk" doesn't 
+! #  know how to deal with tabs and can result in your ".keylines" file being 
+! #  built with missing keylines.  This can be considered a bug of these 
+! #  utilities which will foul up your attempts to install an accurate .keyline 
+! #  file when adding local additions to your man page libraries.  This utility 
+! #  doesn't solve the tab problem, but it builds each section separately instead
+! #  of trying to do it all at once which causes "awk" to fail.
+  
+  umask 022
+  myname="$0"
+***************
+*** 48,73 ****
+  # We set "keyfile" and "awkfile" here because -D or -A may change them
+  keyfile="$helpdir/lib/.keylines"
+  awkfile="$awkdir/key.awk"
+! 
+  if [ ! ${verbse-foo} = "foo" ]; then
+  	echo "cd $helpdir/lib"
+  fi
+  
+  cd $helpdir/lib
+  if [ ${files-foo} = "foo" ]; then
+! 	set */*
+  fi
+  if [ $# -lt 1  -o  $# -eq 1  -a  "$1" = "*/*" ]; then
+  	echo "${myname}: No help directories found."
+  	exit 1;
+  fi
+  
+- # '^[ 	]*[a-z0-9 ,]*\ -\ [A-Za-z0-9].*\.$'
+  if [ ! ${debug-foo} = "foo" -o ! ${verbse-foo} = "foo" ]; then
+! 	echo "awk -f $awkfile" $@ "| sort  > $keyfile"
+  fi
+  if [ ${debug-foo} = "foo" ]; then
+! 	awk -f $awkfile $@ > /tmp/$$.tmp
+! 	sort  /tmp/$$.tmp > $keyfile
+  	rm -f /tmp/$$.tmp
+  fi
+--- 63,197 ----
+  # We set "keyfile" and "awkfile" here because -D or -A may change them
+  keyfile="$helpdir/lib/.keylines"
+  awkfile="$awkdir/key.awk"
+! rm $keyfile
+  if [ ! ${verbse-foo} = "foo" ]; then
+  	echo "cd $helpdir/lib"
+  fi
+  
+  cd $helpdir/lib
+  if [ ${files-foo} = "foo" ]; then
+! 	set L/*
+  fi
+  if [ $# -lt 1  -o  $# -eq 1  -a  "$1" = "*/*" ]; then
+  	echo "${myname}: No help directories found."
+  	exit 1;
+  fi
+  
+  if [ ! ${debug-foo} = "foo" -o ! ${verbse-foo} = "foo" ]; then
+! 	echo "awk -f $awkfile" $@ "|sort  > $keyfile"
+  fi
+  if [ ${debug-foo} = "foo" ]; then
+! 	awk -f $awkfile $@|sed '/	/s// /g' > /tmp/$$.tmp
+! 	cat /tmp/$$.tmp|sed '/^ */s///g'|sort >> $keyfile
+  	rm -f /tmp/$$.tmp
+  fi
++ # Do the next directory
++ cd $helpdir/lib
++ if [ ${files-foo} = "foo" ]; then
++ 	set C/*
++ fi
++ if [ $# -lt 1  -o  $# -eq 1  -a  "$1" = "*/*" ]; then
++ 	echo "${myname}: No help directories found."
++ 	exit 1;
++ fi
++ 
++ if [ ! ${debug-foo} = "foo" -o ! ${verbse-foo} = "foo" ]; then
++ 	echo "awk -f $awkfile" $@ "|sort  > $keyfile"
++ fi
++ if [ ${debug-foo} = "foo" ]; then
++ 	awk -f $awkfile $@|sed '/	/s// /g' > /tmp/$$.tmp
++ 	cat /tmp/$$.tmp|sed '/^ */s///g'|sort >> $keyfile
++ 	rm -f /tmp/$$.tmp
++ fi
++ # Do the next directory
++ cd $helpdir/lib
++ if [ ${files-foo} = "foo" ]; then
++ 	set M/*
++ fi
++ if [ $# -lt 1  -o  $# -eq 1  -a  "$1" = "*/*" ]; then
++ 	echo "${myname}: No help directories found."
++ 	exit 1;
++ fi
++ 
++ if [ ! ${debug-foo} = "foo" -o ! ${verbse-foo} = "foo" ]; then
++ 	echo "awk -f $awkfile" $@ "|sort  > $keyfile"
++ fi
++ if [ ${debug-foo} = "foo" ]; then
++ 	awk -f $awkfile $@|sed '/	/s// /g' > /tmp/$$.tmp
++ 	cat /tmp/$$.tmp|sed '/^ */s///g'|sort >> $keyfile
++ 	rm -f /tmp/$$.tmp
++ fi
++ # Do the next directory
++ cd $helpdir/lib
++ if [ ${files-foo} = "foo" ]; then
++ 	set S/*
++ fi
++ if [ $# -lt 1  -o  $# -eq 1  -a  "$1" = "*/*" ]; then
++ 	echo "${myname}: No help directories found."
++ 	exit 1;
++ fi
++ 
++ if [ ! ${debug-foo} = "foo" -o ! ${verbse-foo} = "foo" ]; then
++ 	echo "awk -f $awkfile" $@ "|sort  > $keyfile"
++ fi
++ if [ ${debug-foo} = "foo" ]; then
++ 	awk -f $awkfile $@|sed '/	/s// /g' > /tmp/$$.tmp
++ 	cat /tmp/$$.tmp|sed '/^ */s///g'|sort >> $keyfile
++ 	rm -f /tmp/$$.tmp
++ fi
++ # Do the next directory
++ cd $helpdir/lib
++ if [ ${files-foo} = "foo" ]; then
++ 	set F/*
++ fi
++ if [ $# -lt 1  -o  $# -eq 1  -a  "$1" = "*/*" ]; then
++ 	echo "${myname}: No help directories found."
++ 	exit 1;
++ fi
++ 
++ if [ ! ${debug-foo} = "foo" -o ! ${verbse-foo} = "foo" ]; then
++ 	echo "awk -f $awkfile" $@ "|sort  > $keyfile"
++ fi
++ if [ ${debug-foo} = "foo" ]; then
++ 	awk -f $awkfile $@|sed '/	/s// /g' > /tmp/$$.tmp
++ 	cat /tmp/$$.tmp|sed '/^ */s///g'|sort >> $keyfile
++ 	rm -f /tmp/$$.tmp
++ fi
++ # Do the next directory
++ cd $helpdir/lib
++ if [ ${files-foo} = "foo" ]; then
++ 	set CT/*
++ fi
++ if [ $# -lt 1  -o  $# -eq 1  -a  "$1" = "*/*" ]; then
++ 	echo "${myname}: No help directories found."
++ 	exit 1;
++ fi
++ 
++ if [ ! ${debug-foo} = "foo" -o ! ${verbse-foo} = "foo" ]; then
++ 	echo "awk -f $awkfile" $@ "|sort  > $keyfile"
++ fi
++ if [ ${debug-foo} = "foo" ]; then
++ 	awk -f $awkfile $@|sed '/	/s// /g' > /tmp/$$.tmp
++ 	cat /tmp/$$.tmp|sed '/^ */s///g'|sort >> $keyfile
++ 	rm -f /tmp/$$.tmp
++ fi
++ # Do the next directory
++ cd $helpdir/lib
++ if [ ${files-foo} = "foo" ]; then
++ 	set CP/*
++ fi
++ if [ $# -lt 1  -o  $# -eq 1  -a  "$1" = "*/*" ]; then
++ 	echo "${myname}: No help directories found."
++ 	exit 1;
++ fi
++ 
++ if [ ! ${debug-foo} = "foo" -o ! ${verbse-foo} = "foo" ]; then
++ 	echo "awk -f $awkfile" $@ "|sort  > $keyfile"
++ fi
++ if [ ${debug-foo} = "foo" ]; then
++ 	awk -f $awkfile $@|sed '/	/s// /g' > /tmp/$$.tmp
++ 	cat /tmp/$$.tmp|sed '/^ */s///g'|sort >> $keyfile
++ 	rm -f /tmp/$$.tmp
++ fi
++ sort $keyfile > /tmp/$$.tmpkey
++ mv /tmp/$$.tmpkey $keyfile

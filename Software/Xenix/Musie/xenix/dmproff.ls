@@ -1,0 +1,4 @@
+-rw-r--r-- 0/0            1443 May 24 01:28 1995 README
+-rwxr-xr-x 0/0            2671 May 24 01:26 1995 dmproff
+-rw-r--r-- 0/0            2377 May 24 01:24 1995 dmproff.man
+-rw-r--r-- 0/0            3529 May 22 14:41 1995 sample

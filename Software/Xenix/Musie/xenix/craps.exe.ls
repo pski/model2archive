@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3           86398 Sep  7 23:46 1994 /usr/games/craps
+-rw-r--r-- 3/3            2025 Sep  8 00:19 1994 /usr/lib/Help/lib/L/craps

@@ -1,0 +1,1290 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  Makefile README customize.h direct.c hash.c hash.h
+#   patchlevel.h vtree.1 vtree.c
+# Wrapped by root@coupon on Thu Sep 15 02:18:28 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'Makefile' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Makefile'\"
+else
+echo shar: Extracting \"'Makefile'\" \(2469 characters\)
+sed "s/^X//" >'Makefile' <<'END_OF_FILE'
+X#	Build VTREE
+X#
+X#	Define the type of system we're working with.  Three
+X# choices:
+X#
+X#   1.	BSD Unix 4.2 or 4.3.  Directory read support in the
+X# standard library, so we don't have to do much.  Select BSD.
+X#
+X#   2.	System V.  I depend on Doug Gwyn's directory reading
+X# routines.  They were posted to Usenet "comp.sources" early in
+X# May 1987.  They're worth the effort to get, if you don't have
+X# them already.  Select SYS_V.  Be sure to define NLIB to be the
+X# 'cc' option to include the directory library.
+X#
+X#   3.  System III, or machines without any directory read
+X# packages.  I have a minimal kludge.  Select SYS_III.
+X#
+X#   4.  SCO Xenix 386.  See the comments for System V.
+X#
+X#   5.  SCO Xenix 286.  See the comments for System V.
+X#
+X
+X# Case 1:
+X#VTREE=vtree
+X#SYS=	-DBSD
+X#NLIB=	-lgetopt
+X
+X# Case 2:
+XVTREE=vtree
+XSYS=	-DSYS_V
+X#NLIB=	-lndir
+X
+X# Case 3:
+X#VTREE=vtree
+X#SYS=	-DSYS_III
+X#NLIB=
+X
+X# Case 4: sco Xenix-386
+X# VTREE=vtree
+X#SYS=	-Ox -CSON -DSCO_XENIX 
+X#NLIB=	-lmalloc -lx
+X
+X# Case 5: sco Xenix-286
+X#VTREE=vtreeL
+X#SYS=	-Ox -CSON -DSCO_XENIX  -DMEMORY_BASED -Ml2 -F 8000
+X#NLIB=	-lmalloc -lx
+X
+X
+X#	Standard things you may wish to change:
+X#
+X#	INSTALL		directory to install vtree in
+X
+XINSTALL	=	/usr/local/bin
+X
+X#	MANDIR		manual page directoryr
+X#			(the .L is used on Xenix systems.  Other systems will
+X#			be different)
+X
+XMANDIR =	/u/man/man.L
+X
+X#	MANEND		end of man page file name
+X
+XMANEND =	L
+X
+X#	The following OPTIONS may be defined:
+X#
+X#	LSTAT		we have the lstat(2) system call (BSD only)
+X#	HSTATS		print hashing statistics at end of run
+X#	ONEPERLINE	On the first line only, if there are more than
+X#			one directory listed, print it on a line by itself
+X#			and print the last subdirectory on the first line
+X#			of the tree
+X#	MEMORY_BASED	Keep the tree structure in memory for added speed.
+X#
+X#	Compile time options:
+X
+X# OPTIONS	= -DMEMORY_BASED
+X
+X#  END OF USER-DEFINED OPTIONS
+X
+X
+XCFLAGS=	-O $(SYS) $(OPTIONS)
+XSRCS=		vtree.c	hash.c	direct.c	\
+X		hash.h	customize.h	patchlevel.h
+XOBJS=		vtree.o	hash.o
+X
+X$(VTREE):		$(OBJS)
+X		$(CC) -o $(VTREE) $(CFLAGS) $(OBJS) $(NLIB)
+X
+Xinstall:	$(VTREE)
+X		cp $(VTREE) $(INSTALL)
+X		cp vtree.1 $(MANDIR)/vtree.$(MANEND)
+X#		chown local $(INSTALL)/$(VTREE)
+X#		chgrp pd $(INSTALL)/$(VTREE)
+X#		chmod 755 $(INSTALL)/$(VTREE)
+X
+Xclean:
+X		rm -f $(OBJS) $(VTREE)
+X
+Xvtree.o:	vtree.c direct.c hash.h customize.h patchlevel.h
+X
+Xhash.o:		hash.c hash.h customize.h patchlevel.h
+X
+Xshar:		;
+X		rm -f *.o vtree *- vtree.shr
+X		shar * >/tmp/vtree.shr
+X		mv /tmp/vtree.shr .
+X
+END_OF_FILE
+if test 2469 -ne `wc -c <'Makefile'`; then
+    echo shar: \"'Makefile'\" unpacked with wrong size!
+fi
+# end of 'Makefile'
+fi
+if test -f 'README' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'README'\"
+else
+echo shar: Extracting \"'README'\" \(4068 characters\)
+sed "s/^X//" >'README' <<'END_OF_FILE'
+X*****************************************************************************
+X
+X	To compile vtree examine the makefile and set the appropiate options.
+X
+X	type "make" to compile it, and "make install" to install it.
+X
+X*****************************************************************************
+X
+XVtree version 1.1 notes
+X
+XThe following changes were made:
+X
+X** Patches were received from the following people:
+X**
+X**	1.	Mike Howard, (...!uunet!milhow1!how)
+X**		Mike's patches included changes to the Makefile to
+X**		customize vtree to SCO Xenix for the 286 as well as the
+X**		386.  He also added external definitions to hash.c
+X**
+X**	2.	Andrew Weeks, (...!uunet!mcvax!doc.ic.ac.uk!aw)
+X**		Andrew sent me diffs to make vtree work properly under BSD
+X**		He also pointed out that you will need one of the PD getopt
+X**		packages for BSD.
+X**
+X**	3.	Ralph Chapman, (...uunet!ihnp4!ihuxy!chapman)
+X**		Ralph sent me changes (not diffs unfortunately) to make
+X**		vtree work properly under the SYS_III option.  His changes
+X**		were in direct.c and vtree.c
+X**
+X**	4.	David Eckelkamp notified me of a bug when printing the
+X**		visual tree.  The bug occured when a directory name
+X**		was too long.  It caused vtree to mess up the tree
+X**		being printed.
+X
+X
+X	The vtree program can now be compiled in a memory-based
+Xversion. This option will force vtree to read an entire directory
+Xbefore doing anything with it.  This will prevent vtree from reading a
+Xdirectory 2 times for certain operations.  Strangely enough, the
+Xmemory-based version doesn't seem to be much faster than the disk-based
+Xversion.  If anybody has any suggestions as to why I would appreciate
+Xthem.
+X
+X	A minor compile-time option has been added to control the format
+Xof the first line.  If specified, then vtree checks the first line to
+Xmake sure it is only one directory name (no "/"s).  If not then vtree
+Xwill print the first line by itself, and then print the LAST subdir on
+Xthe next line to begin the tree.
+X
+X	Two new runtime options have been added. The "-o" option will now
+Xsort the directories before processing them.  It is only available with
+Xthe memory-based version of the program.  The "-f" option specifies
+Xfloating column widths.  The width of each column will be only as wide
+Xas necessary.
+X
+X	The visual display has been cleaned up a bit.
+X
+X*****
+X
+X	I did the development for vtree on an SCO Xenix 386 system. 
+XThe System III  routines and the BSD routines are untested by myself. 
+XBased on the replies I received from Andrew Weeks and Ralph Chapman it
+Xshould compile and execute on those systems.  If you have to make any
+Xlocal modifications to the program to make it work I would appreciate
+Xhearing about them so I can keep the program up to date.
+X
+X
+X
+XJonathan B. Bayer
+XIntelligent Software Products, Inc.
+XRockville Centre, NY   11570
+XPhone: (516) 766-2867
+Xusenet:	uunet!ispi!root
+X
+X
+X*****************************************************************************
+XVtree version 1.0 notes
+X
+X	This is the first release of the VTREE (please pronounce this
+XV-TREE, for "visual files") program.  The program is designed to show
+Xthe layout of a directory tree or filesystem.  It has options to show
+Xthe amount of storage being taken up in each directory, count the number
+Xof inodes, etc.
+X
+X	VTREE is dependent on the UCB directory reading routines. 
+XPublic-domain routines for System V have been released to the Usenet
+X(comp.sources.unix) by Doug Gwyn (gwyn@brl.mil).  If you don't have
+Xthem, they're worth your trouble to get.  Still, you may be able to use
+Xthe System III configuration of the Makefile as a stopgap measure. 
+X
+X
+X	The program was originally the program AGEF, written by David S.
+XHayes.  As it stands now the hashing routines are untouched by myself,
+Xbut most of the rest of the program is different.  The System III
+Xroutines are also his.
+X
+X
+X	I hope this program will be useful to you.  If you find bugs in
+Xit or have any suggestions for improvements, I'd like to hear about
+Xthem.
+X
+XJonathan B. Bayer
+XIntelligent Software Products, Inc.
+XRockville Centre, NY   11570
+XPhone: (516) 766-2867
+Xusenet:	uunet!ispi!root
+X
+END_OF_FILE
+if test 4068 -ne `wc -c <'README'`; then
+    echo shar: \"'README'\" unpacked with wrong size!
+fi
+# end of 'README'
+fi
+if test -f 'customize.h' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'customize.h'\"
+else
+echo shar: Extracting \"'customize.h'\" \(951 characters\)
+sed "s/^X//" >'customize.h' <<'END_OF_FILE'
+X/* 
+X   This is the customizations file.  It changes our ideas of
+X   how to read directories.
+X*/
+X
+X#define NAMELEN	512		/* max size of a full pathname */
+X
+X#ifdef BSD
+X#	include		<sys/dir.h>
+X#	define	OPEN	DIR
+X#	define	READ	struct direct
+X#	define	NAME(x)	((x).d_name)
+X#endif
+X
+X#ifdef SCO_XENIX
+X#	include <sys/ndir.h>
+X#	define	OPEN	DIR
+X#	define	READ	struct direct
+X#	define	NAME(x)	((x).d_name)
+X#endif
+X
+X#ifdef SYS_V
+X /* Customize this.  This is part of Doug Gwyn's package for */
+X /* reading directories.  If you've put this file somewhere */
+X /* else, edit the next line. */
+X
+X#	include		<sys/dirent.h>
+X
+X#	define	OPEN	struct direct
+X#	define	READ	struct dirent
+X#	define	NAME(x)	((x).d_name)
+X#endif
+X
+X#ifdef SYS_III
+X#	define	OPEN	FILE
+X#	define	READ	struct direct
+X#	define	NAME(x)	((x).d_name)
+X#	define	INO(x)	((x).d_ino)
+X
+X#	include		"direct.c"
+X
+X#endif
+X
+X#if !(defined(BSD) || !defined(SYS_V) || !defined(SYS_III) || !defined(SCO_XENIX))
+X"This is an Error"
+X#endif
+END_OF_FILE
+if test 951 -ne `wc -c <'customize.h'`; then
+    echo shar: \"'customize.h'\" unpacked with wrong size!
+fi
+# end of 'customize.h'
+fi
+if test -f 'direct.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'direct.c'\"
+else
+echo shar: Extracting \"'direct.c'\" \(1051 characters\)
+sed "s/^X//" >'direct.c' <<'END_OF_FILE'
+X/* direct.c
+X  
+X   SCCS ID	@(#)direct.c	1.6	7/9/87
+X  
+X *
+X *	My own substitution for the berkeley reading routines,
+X *	for use on System III machines that don't have any other
+X *	alternative.
+X */
+X
+X#define NAMELENGTH	14
+X#ifdef	SYS_III
+X	FILE	*opendir(name)	{ return (fopen(name,"r") ); }
+X#else
+X	#define opendir(name)	fopen(name, "r")
+X#endif
+X#define closedir(fp)	fclose(fp)
+X
+Xstruct dir_entry {		/* What the system uses internally. */
+X    ino_t           d_ino;
+X    char            d_name[NAMELENGTH];
+X};
+X
+Xstruct direct {			/* What these routines return. */
+X    ino_t           d_ino;
+X    char            d_name[NAMELENGTH];
+X    char            terminator;
+X};
+X
+X
+X /*
+X  * Read a directory, returning the next (non-empty) slot. 
+X  */
+X
+XREAD           *
+Xreaddir(dp)
+X    OPEN           *dp;
+X{
+X    static READ     direct;
+X
+X    /* This read depends on direct being similar to dir_entry. */
+X
+X    while (fread(&direct, sizeof(struct dir_entry), 1, dp) != 0) {
+X	direct.terminator = '\0';
+X	if (INO(direct) != 0)
+X	    return &direct;
+X    };
+X
+X    return (READ *) NULL;
+X}
+END_OF_FILE
+if test 1051 -ne `wc -c <'direct.c'`; then
+    echo shar: \"'direct.c'\" unpacked with wrong size!
+fi
+# end of 'direct.c'
+fi
+if test -f 'hash.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'hash.c'\"
+else
+echo shar: Extracting \"'hash.c'\" \(4504 characters\)
+sed "s/^X//" >'hash.c' <<'END_OF_FILE'
+X/* hash.c
+X  
+X   SCCS ID	@(#)hash.c	1.6	7/9/87
+X  
+X * Hash table routines for AGEF.  These routines keep the program from
+X * counting the same inode twice.  This can happen in the case of a
+X * file with multiple links, as in a news article posted to several
+X * groups.  The use of a hashing scheme was suggested by Anders
+X * Andersson of Uppsala University, Sweden.  (enea!kuling!andersa) 
+X */
+X
+X/* hash.c change history:
+X 28 March 1987		David S. Hayes (merlin@hqda-ai.UUCP)
+X	Initial version.
+X*/
+X
+X#include <stdio.h>
+X#include <sys/types.h>
+X#include "hash.h"
+X
+Xstatic struct htable *tables[TABLES];
+Xextern char *malloc();		/* added 6/17/88 */
+Xextern char *realloc();		/* added 6/17/88 */
+Xextern char *calloc();		/* added 6/17/88 */
+X
+X/* These are for statistical use later on. */
+Xstatic int      hs_tables = 0,	/* number of tables allocated */
+X                hs_duplicates = 0,	/* number of OLD's returned */
+X                hs_buckets = 0,	/* number of buckets allocated */
+X                hs_extensions = 0,	/* number of bucket extensions */
+X                hs_searches = 0,/* number of searches */
+X                hs_compares = 0,/* total key comparisons */
+X                hs_longsearch = 0;	/* longest search */
+X
+X
+X /*
+X  * This routine takes in a device/inode, and tells whether it's been
+X  * entered in the table before.  If it hasn't, then the inode is added
+X  * to the table.  A separate table is maintained for each major device
+X  * number, so separate file systems each have their own table. 
+X  */
+X
+Xh_enter(dev, ino)
+X    dev_t           dev;
+X    ino_t           ino;
+X{
+X    static struct htable *tablep = (struct htable *) 0;
+X    register struct hbucket *bucketp;
+X    register ino_t *keyp;
+X    int             i;
+X
+X    hs_searches++;		/* stat, total number of calls */
+X
+X    /*
+X     * Find the hash table for this device. We keep the table pointer
+X     * around between calls to h_enter, so that we don't have to locate
+X     * the correct hash table every time we're called.  I don't expect
+X     * to jump from device to device very often. 
+X     */
+X    if (!tablep || tablep->device != dev) {
+X	for (i = 0; tables[i] && tables[i]->device != dev;)
+X	    i++;
+X	if (!tables[i]) {
+X	    tables[i] = (struct htable *)  malloc(sizeof(struct htable));
+X	    if (tables[i] == NULL) {
+X		perror("can't malloc hash table");
+X		return NEW;
+X	    };
+X#ifdef BSD
+X	    bzero(tables[i], sizeof(struct htable)); 
+X#else
+X	    memset((char *) tables[i], '\0', sizeof (struct htable));
+X#endif
+X	    tables[i]->device = dev;
+X	    hs_tables++;	/* stat, new table allocated */
+X	};
+X	tablep = tables[i];
+X    };
+X
+X    /* Which bucket is this inode assigned to? */
+X    bucketp = &tablep->buckets[ino % BUCKETS];
+X
+X    /*
+X     * Now check the key list for that bucket.  Just a simple linear
+X     * search. 
+X     */
+X    keyp = bucketp->keys;
+X    for (i = 0; i < bucketp->filled && *keyp != ino;)
+X	i++, keyp++;
+X
+X    hs_compares += i + 1;	/* stat, total key comparisons */
+X
+X    if (i && *keyp == ino) {
+X	hs_duplicates++;	/* stat, duplicate inodes */
+X	return OLD;
+X    };
+X
+X    /* Longest search.  Only new entries could be the longest. */
+X    if (bucketp->filled >= hs_longsearch)
+X	hs_longsearch = bucketp->filled + 1;
+X
+X    /* Make room at the end of the bucket's key list. */
+X    if (bucketp->filled == bucketp->length) {
+X	/* No room, extend the key list. */
+X	if (!bucketp->length) {
+X	    bucketp->keys = (ino_t *) calloc(EXTEND, sizeof(ino_t));
+X	    if (bucketp->keys == NULL) {
+X		perror("can't malloc hash bucket");
+X		return NEW;
+X	    };
+X	    hs_buckets++;
+X	} else {
+X	    bucketp->keys = (ino_t *)
+X		realloc(bucketp->keys,
+X			(EXTEND + bucketp->length) * sizeof(ino_t));
+X	    if (bucketp->keys == NULL) {
+X		perror("can't extend hash bucket");
+X		return NEW;
+X	    };
+X	    hs_extensions++;
+X	};
+X	bucketp->length += EXTEND;
+X    };
+X
+X    bucketp->keys[++(bucketp->filled)] = ino;
+X    return NEW;
+X}
+X
+X
+X /* Buffer statistics functions.  Print 'em out. */
+X
+X#ifdef HSTATS
+Xvoid
+Xh_stats()
+X{
+X    fprintf(stderr, "\nHash table management statistics:\n");
+X    fprintf(stderr, "  Tables allocated: %d\n", hs_tables);
+X    fprintf(stderr, "  Buckets used: %d\n", hs_buckets);
+X    fprintf(stderr, "  Bucket extensions: %d\n\n", hs_extensions);
+X    fprintf(stderr, "  Total searches: %d\n", hs_searches);
+X    fprintf(stderr, "  Duplicate keys found: %d\n", hs_duplicates);
+X    if (hs_searches)
+X	fprintf(stderr, "  Average key search: %d\n",
+X		hs_compares / hs_searches);
+X    fprintf(stderr, "  Longest key search: %d\n", hs_longsearch);
+X    fflush(stderr);
+X}
+X
+X#endif
+END_OF_FILE
+if test 4504 -ne `wc -c <'hash.c'`; then
+    echo shar: \"'hash.c'\" unpacked with wrong size!
+fi
+# end of 'hash.c'
+fi
+if test -f 'hash.h' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'hash.h'\"
+else
+echo shar: Extracting \"'hash.h'\" \(625 characters\)
+sed "s/^X//" >'hash.h' <<'END_OF_FILE'
+X/* Defines for the agef hashing functions.
+X
+X   SCCS ID	@(#)hash.h	1.6	7/9/87
+X */
+X
+X#define BUCKETS		257	/* buckets per hash table */
+X#define TABLES		50	/* hash tables */
+X#define EXTEND		100	/* how much space to add to a bucket */
+X
+Xstruct hbucket {
+X    int             length;	/* key space allocated */
+X    int             filled;	/* key space used */
+X    ino_t          *keys;
+X};
+X
+Xstruct htable {
+X    dev_t           device;	/* device this table is for */
+X    struct hbucket  buckets[BUCKETS];	/* the buckets of the table */
+X};
+X
+X#define OLD	0		/* inode was in hash already */
+X#define NEW	1		/* inode has been added to hash */
+END_OF_FILE
+if test 625 -ne `wc -c <'hash.h'`; then
+    echo shar: \"'hash.h'\" unpacked with wrong size!
+fi
+# end of 'hash.h'
+fi
+if test -f 'patchlevel.h' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'patchlevel.h'\"
+else
+echo shar: Extracting \"'patchlevel.h'\" \(99 characters\)
+sed "s/^X//" >'patchlevel.h' <<'END_OF_FILE'
+X/*
+X**
+X** Patchlevel for VTREE
+X**
+X*/
+X
+X#define PATCHLEVEL 	V1.2
+X#define	VERSION		"VTREE	1.2	9/17/88"
+END_OF_FILE
+if test 99 -ne `wc -c <'patchlevel.h'`; then
+    echo shar: \"'patchlevel.h'\" unpacked with wrong size!
+fi
+# end of 'patchlevel.h'
+fi
+if test -f 'vtree.1' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'vtree.1'\"
+else
+echo shar: Extracting \"'vtree.1'\" \(1803 characters\)
+sed "s/^X//" >'vtree.1' <<'END_OF_FILE'
+X.TH VTREE 1 local
+X.SH NAME
+Xvtree \- print a visual tree of a directory structure
+X.SH SYNOPSIS
+X.B vtree
+X[ \-d ] [ \-f ] [ \-h # ] [ \-i ] [ \-o ] [ \-s ] [ \-q ] [ \-v ] [ \-V ] 
+X.SH DESCRIPTION
+X.IP 
+XVtree is a program which scans directories/filesystems and displays the structure on the
+Xstandard output.   Normally it will ignore duplicate inodes.
+X.IP "\-d "
+XInstructs the program to include the duplicate inodes in the totals.
+X.PP
+X.IP "\-f "
+XSpecifies floating column widths.  The widths of each column will be as narrow
+Xas possible to conserve space.
+X.PP
+X.IP "\-h #"
+XSpecifies how many levels down to display.
+X.PP
+X.IP \-i 
+Xdisplays the number of inodes (excluding directories) in each directory 
+X.PP
+X.IP \-o
+Xcauses vtree to sort the directories before processing.  It is only
+Xavailable for the memory-based version.  Use the "-V" option to find out
+Xwhat version you are running.
+X.PP
+X.IP \-s 
+XInstructs the program to continue counting inodes and file sizes when it
+Xhas exceeded the levels specified.
+X.PP
+X.IP \-t 
+XDisplays totals at the end of the report
+X.PP
+X.IP \-q
+XQuick display.  No totals of any kind are kept.
+X.PP
+X.IP \-v
+XVisual display.  Normally the program displays one directory on a line,
+Xindenting lines to indicate subdirectories.  The visual display builds
+Xa tree on the screen showing the actual directory structure.  This method
+Xof display excludes any totals other than the final totals.
+X.PP
+X.IP \-V
+XShows current version.  Specifying 2 Vs (-VV) will also show all options in
+Xforce.
+X.SH AUTHOR
+XJonathan B. Bayer
+X.PP
+XIntelligent Software Products, Inc.
+X.PP
+XRockville Centre, NY   11570
+X.SH ACKNOWLEDGMENTS
+XThe program uses the directory routines written and released to the
+Xpublic domain by Doug Gwyn.
+XThe program is originally based on a program called AGEF written by
+XDavid S. Hayes.
+END_OF_FILE
+if test 1803 -ne `wc -c <'vtree.1'`; then
+    echo shar: \"'vtree.1'\" unpacked with wrong size!
+fi
+# end of 'vtree.1'
+fi
+if test -f 'vtree.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'vtree.c'\"
+else
+echo shar: Extracting \"'vtree.c'\" \(14878 characters\)
+sed "s/^X//" >'vtree.c' <<'END_OF_FILE'
+X/* vtree
+X  
+X   +=======================================+
+X   | This program is in the public domain. |
+X   +=======================================+
+X  
+X   This program shows the directory structure of a filesystem or 
+X   part of one.  It also shows the amount of space taken up by files
+X   in each subdirectory. 
+X  
+X   Call via
+X  
+X	vtree fn1 fn2 fn3 ...
+X  
+X   If any of the given filenames is a directory (the usual case),
+X   vtree will recursively descend into it, and the output line will
+X   reflect the accumulated totals for all files in the directory.
+X   
+X   This program is based upon "agef" written by David S. Hayes at the 
+X   Army Artificial Intelligence Center at the Pentagon.
+X   
+X   This program is dependent upon the new directory routines written by
+X   Douglas A. Gwyn at the US Army Ballistic Research Laboratory at the
+X   Aberdeen Proving Ground in Maryland.
+X*/
+X/*
+X** Patches were received from the following people:
+X**
+X**	1.	Mike Howard, (...!uunet!milhow1!how)
+X**		Mike's patches included changes to the Makefile to
+X**		customize vtree to SCO Xenix for the 286 as well as the
+X**		386.  He also added external definitions to hash.c
+X**
+X**	2.	Andrew Weeks, (...!uunet!mcvax!doc.ic.ac.uk!aw)
+X**		Andrew sent me diffs to make vtree work properly under BSD
+X**		He also pointed out that you will need one of the PD getopt
+X**		packages for BSD.
+X**
+X**	3.	Ralph Chapman, (...uunet!ihnp4!ihuxy!chapman)
+X**		Ralph sent me changes (not diffs unfortunately) to make
+X**		vtree work properly under the SYS_III option.  His changes
+X**		were in direct.c and vtree.c
+X**
+X**	4.	David Eckelkamp notified me of a bug when printing the
+X**		visual tree.  The bug occured when a directory name
+X**		was too long.  It caused vtree to mess up the tree
+X**		being printed.
+X*/
+X
+X#include "patchlevel.h"
+X
+X#include <ctype.h>
+X#include <sys/types.h>
+X#include <sys/stat.h>
+X/*#include <sys/param.h>*/
+X#include <stdio.h>
+X#ifdef	BSD
+X#include <strings.h>
+X#else
+X#include <strings.h>
+X#endif
+X
+X#include "customize.h"
+X#include "hash.h"
+X
+X
+X#ifdef	SYS_III
+X	#define	rewinddir(fp)	rewind(fp)
+X#endif
+X
+X#define SAME		0	/* for strcmp */
+X#define BLOCKSIZE	512	/* size of a disk block */
+X
+X#define K(x)		((x + 1023)/1024)	/* convert stat(2) blocks into
+X					 * k's.  On my machine, a block
+X					 * is 512 bytes. */
+X
+X#define	TRUE	1
+X#define	FALSE	0
+X#define	V_CHAR	"|"	/*	Vertical character	*/
+X#define	H_CHAR	"-"	/*	Horizontal character	*/
+X#define	A_CHAR	">"	/*	Arrow char		*/
+X#define	T_CHAR	"+"	/*	Tee char		*/
+X#define	L_CHAR	"\\"	/*	L char, bottom of a branch	*/
+X
+X#define	MAX_COL_WIDTH	15
+X#define	MAX_V_DEPTH	256		/* max depth for visual display */
+X
+X#ifdef	MEMORY_BASED
+Xstruct RD_list {
+X	READ		entry;
+X	struct RD_list	*fptr;
+X	struct RD_list	*bptr;
+X};
+X#endif
+X
+X
+X
+Xint		indent = 0,		/* current indent */
+X		depth = 9999,		/* max depth */
+X		cur_depth = 0,	
+X		sum = FALSE,		/* sum the subdirectories */
+X		dup = FALSE,		/* use duplicate inodes */
+X		floating = FALSE,	/* floating column widths */
+X		sort = FALSE,
+X		cnt_inodes = FALSE,	/* count inodes */
+X		quick = FALSE,		/* quick display */
+X		visual = FALSE,		/* visual display */
+X		version = 0,		/* = 1 display version, = 2 show options */
+X		sub_dirs[MAX_V_DEPTH],
+X		sub_dirs_indents[MAX_V_DEPTH];
+X
+Xstruct	stat	stb;			/* Normally not a good idea, but */
+X					/* this structure is used through- */
+X					/* out the program		   */
+X
+Xextern char    *optarg;			/* from getopt(3) */
+Xextern int      optind,
+X                opterr;
+X
+X
+Xchar           *Program;		/* our name */
+Xshort           sw_follow_links = 1;	/* follow symbolic links */
+Xshort           sw_summary;		/* print Grand Total line */
+X
+Xint             total_inodes, inodes;	/* inode count */
+Xlong            total_sizes, sizes;	/* block count */
+X
+Xchar            topdir[NAMELEN];	/* our starting directory */
+X
+X
+X
+X/*
+X** Find the last field of a string.
+X*/
+Xchar *lastfield(p,c)
+Xchar *p;	/* Null-terminated string to scan */
+Xint   c;	/* Separator char, usually '/' */
+X{
+Xchar *r;
+X
+X	r = p;
+X	while (*p)			/* Find the last field of the name */
+X		if (*p++ == c)
+X			r = p;
+X	return r;
+X} /* lastfield */
+X
+X
+X
+X
+X /*
+X  * We ran into a subdirectory.  Go down into it, and read everything
+X  * in there. 
+X  */
+Xint	indented = FALSE;	/* These had to be global since they */
+Xint	last_indent = 0;	/* determine what gets displayed during */
+Xint	last_subdir = FALSE;	/* the visual display */
+X
+X
+X
+Xdown(subdir)
+Xchar	*subdir;
+X{
+XOPEN	*dp;			/* stream from a directory */
+XOPEN	*opendir ();
+Xchar	cwd[NAMELEN], tmp[NAMELEN];
+Xchar	*sptr;
+XREAD	*file;			/* directory entry */
+XREAD	*readdir ();
+Xint	i, x;
+Xstruct	stat	stb;
+X
+X#ifdef	MEMORY_BASED
+Xstruct RD_list	*head = NULL, *tail, *tmp_RD, *tmp1_RD;		/* head and tail of directory list */
+Xstruct RD_list	sz;
+XREAD		tmp_entry;
+X#endif
+X
+X	if ( (cur_depth == depth) && (!sum) )
+X		return;
+X
+X/* display the tree */
+X
+X	if (cur_depth < depth) {
+X		if (visual) {
+X			if (!indented) {
+X				for (i = 1; i <cur_depth; i++) {
+X					if (floating) x = sub_dirs_indents[i] + 1;
+X						else x = MAX_COL_WIDTH - 3;
+X					if (sub_dirs[i]) {
+X						printf("%*s%s   ",x - 1," ",V_CHAR);
+X					} else printf("%*s   ",x," ");
+X				}
+X				if (cur_depth>0) {
+X					if (floating) x = sub_dirs_indents[cur_depth] + 1;
+X						else x = MAX_COL_WIDTH - 3;
+X					if (sub_dirs[cur_depth] == 0) {
+X						printf("%*s%s%s%s ",x - 1," ",L_CHAR,H_CHAR,A_CHAR);
+X						last_subdir = cur_depth;
+X					}
+X					else printf("%*s%s%s%s ",x - 1," ",T_CHAR,H_CHAR,A_CHAR);
+X				}
+X			} else {
+X				if (!floating)
+X					for (i = 1; i<MAX_COL_WIDTH-last_indent-3; i++)
+X						printf("%s",H_CHAR);
+X				printf("%s%s%s ",T_CHAR,H_CHAR,A_CHAR);
+X			}
+X
+X	/* This is in case a subdir name is too big.  It is then displayed on
+X	** two lines, the first line is the full name, the second line is
+X	** truncated.  Any subdirs displayed for the current subdir will be
+X	** appended to the second line.  This keeps the columns in order
+X	*/
+X
+X#ifndef	ONEPERLINE
+X			if (  ( strlen(subdir) > MAX_COL_WIDTH - 3 && !floating )	) {
+X#else
+X			if (  ( strlen(subdir) > MAX_COL_WIDTH - 3 && !floating ) ||
+X			    lastfield(subdir,'/') != subdir) {
+X#endif
+X
+X				printf("%s\n",subdir);
+X				for (i = 1; i <=cur_depth; i++) {
+X					if (sub_dirs[i]) {
+X						printf("%*s%s   ",MAX_COL_WIDTH-4," ",V_CHAR);
+X					}
+X					else printf("%*s   ",MAX_COL_WIDTH-3," ");
+X				}
+X				strcpy(tmp,lastfield(subdir,'/'));
+X				tmp[MAX_COL_WIDTH - 4] = 0;
+X				printf("%s",tmp);
+X#ifdef	ONEPERLINE
+X				if (floating || strlen(tmp) < MAX_COL_WIDTH - 4) printf(" ");
+X#endif
+X				sub_dirs_indents[cur_depth + 1] = last_indent = strlen(tmp) + 1;
+X			}
+X			else {
+X				printf("%s",subdir);
+X				sub_dirs_indents[cur_depth + 1] = last_indent = strlen(subdir)+1;
+X				if (floating || strlen(subdir) < MAX_COL_WIDTH - 4) 
+X					printf(" ");
+X			}
+X			indented = TRUE;
+X		}
+X		else printf("%*s%s",indent," ",subdir);
+X	}
+X
+X/* open subdirectory */
+X
+X	if ((dp = opendir(subdir)) == NULL) {
+X		printf(" - can't read %s\n", subdir);
+X		indented = FALSE;
+X		return;
+X	}
+X
+X	cur_depth++;
+X	indent+=3;
+X
+X#ifdef BSD
+X	getwd(cwd);				/* remember where we are */
+X#else
+X	getcwd(cwd, sizeof(cwd));		/* remember where we are */
+X#endif
+X	chdir(subdir);				/* go into subdir */
+X
+X
+X#ifdef	MEMORY_BASED
+X
+X	for (file = readdir(dp); file != NULL; file = readdir(dp)) {
+X		if ((!quick && !visual ) ||
+X 		    ( strcmp(NAME(*file), "..") != SAME &&
+X		     strcmp(NAME(*file), ".") != SAME &&
+X		     chk_4_dir(NAME(*file)) ) ) {
+X			tmp_RD = (struct RD_list *) malloc(sizeof(sz));
+X			memcpy(&tmp_RD->entry, file, sizeof(tmp_entry));
+X			tmp_RD->bptr = head;
+X			tmp_RD->fptr = NULL;
+X			if (head == NULL) head = tmp_RD;
+X				else tail->fptr = tmp_RD;
+X			tail = tmp_RD;
+X		}
+X	}
+X
+X				/* screwy, inefficient, bubble sort	*/
+X				/* but it works				*/
+X	if (sort) {
+X		tmp_RD = head;
+X		while (tmp_RD) {
+X			tmp1_RD = tmp_RD->fptr;
+X			while (tmp1_RD) {
+X				if (strcmp(NAME(tmp_RD->entry), NAME(tmp1_RD->entry)) >0) {
+X					/* swap the two */
+X					memcpy(&tmp_entry, &tmp_RD->entry, sizeof(tmp_entry));
+X					memcpy(&tmp_RD->entry, &tmp1_RD->entry, sizeof(tmp_entry));
+X					memcpy(&tmp1_RD->entry, &tmp_entry, sizeof(tmp_entry));
+X				}
+X				tmp1_RD = tmp1_RD->fptr;
+X			}
+X			tmp_RD = tmp_RD->fptr;
+X		}
+X	}
+X
+X#endif
+X
+X	if ( (!quick) && (!visual) ) {
+X
+X		/* accumulate total sizes and inodes in current directory */
+X
+X
+X#ifdef	MEMORY_BASED
+X		tmp_RD = head;
+X		while (tmp_RD) {
+X			file = &tmp_RD->entry;
+X			tmp_RD = tmp_RD->fptr;
+X#else
+X		
+X		for (file = readdir(dp); file != NULL; file = readdir(dp)) {
+X#endif
+X			if (strcmp(NAME(*file), "..") != SAME) 
+X				get_data(NAME(*file),FALSE);
+X		}
+X
+X		if (cur_depth<depth) {
+X			if (cnt_inodes) printf("   %d",inodes);
+X			printf(" : %ld\n",sizes);
+X			total_sizes += sizes;
+X			total_inodes += inodes;
+X			sizes = 0;
+X			inodes = 0;
+X		}
+X#ifndef	MEMORY_BASED
+X		rewinddir(dp);
+X#endif
+X	} else if (!visual) printf("\n");
+X
+X	if (visual) {
+X
+X/* count subdirectories */
+X
+X
+X#ifdef	MEMORY_BASED
+X		tmp_RD = head;
+X		while (tmp_RD) {
+X			file = &tmp_RD->entry;
+X			tmp_RD = tmp_RD->fptr;
+X#else
+X		for (file = readdir(dp); file != NULL; file = readdir(dp)) {
+X			if ( (strcmp(NAME(*file), "..") != SAME) &&
+X			     (strcmp(NAME(*file), ".") != SAME) ) {
+X				if (chk_4_dir(NAME(*file))) {
+X#endif
+X					sub_dirs[cur_depth]++;
+X#ifndef	MEMORY_BASED
+X				}
+X			}
+X#endif
+X		}
+X#ifndef	MEMORY_BASED
+X		rewinddir(dp);
+X#endif
+X	}
+X	
+X/* go down into the subdirectory */
+X
+X#ifdef	MEMORY_BASED
+X	tmp_RD = head;
+X	while (tmp_RD) {
+X		file = &tmp_RD->entry;
+X		tmp_RD = tmp_RD->fptr;
+X#else
+X	for (file = readdir(dp); file != NULL; file = readdir(dp)) {
+X#endif
+X		if ( (strcmp(NAME(*file), "..") != SAME) &&
+X		     (strcmp(NAME(*file), ".") != SAME) ) {
+X			if (chk_4_dir(NAME(*file))) 
+X				sub_dirs[cur_depth]--;
+X			get_data(NAME(*file),TRUE);
+X		}
+X	}
+X
+X	if ( (!quick) && (!visual) ) {
+X
+X/* print totals */
+X
+X		if (cur_depth == depth) {
+X			if (cnt_inodes) printf("   %d",inodes);
+X			printf(" : %ld\n",sizes);
+X			total_sizes += sizes;
+X			total_inodes += inodes;
+X			sizes = 0;
+X			inodes = 0;
+X		}
+X	}
+X
+X#ifdef	MEMORY_BASED
+X				/* free the allocated memory */
+X	tmp_RD = head;
+X	while (tmp_RD) {
+X		tmp_RD = tmp_RD->fptr;
+X		free(head);
+X		head = tmp_RD;
+X	}
+X#endif	
+X
+X	if (visual && indented) {
+X		printf("\n");
+X		indented = FALSE;
+X		if (last_subdir>=cur_depth-1) {
+X			for (i = 1; i <cur_depth; i++) {
+X				if (sub_dirs[i]) {
+X					if (floating)
+X						printf("%*s%s   ",sub_dirs_indents[i]," ",V_CHAR);
+X					else printf("%*s%s   ",MAX_COL_WIDTH-4," ",V_CHAR);
+X				} else {
+X					if (floating)
+X/*ZZZ*/						printf("%*s   ",sub_dirs_indents[i] + 1," ");
+X 					else printf("%*s   ",MAX_COL_WIDTH-3," ");
+X 				}
+X			}
+X			printf("\n");
+X			last_subdir = FALSE;
+X		}
+X	}
+X	indent-=3;
+X	sub_dirs[cur_depth] = 0;
+X	cur_depth--;
+X
+X	chdir(cwd);			/* go back where we were */
+X	closedir(dp);			/* shut down the directory */
+X
+X
+X} /* down */
+X
+X
+X
+Xint	chk_4_dir(path)
+Xchar	*path;
+X{
+X	if (is_directory(path)) return TRUE;
+X	else return FALSE;
+X		
+X} /* chk_4_dir */
+X
+X
+X
+X/* Is the specified path a directory ? */
+X
+Xint	is_directory(path)
+Xchar           *path;
+X{
+X
+X#ifdef LSTAT
+X	if (sw_follow_links)
+X		stat(path, &stb);	/* follows symbolic links */
+X	else
+X		lstat(path, &stb);	/* doesn't follow symbolic links */
+X#else
+X	stat(path, &stb);
+X#endif
+X
+X	if ((stb.st_mode & S_IFMT) == S_IFDIR)
+X		return TRUE;
+X	else return FALSE;
+X} /* is_directory */
+X
+X
+X
+X /*
+X  * Get the aged data on a file whose name is given.  If the file is a
+X  * directory, go down into it, and get the data from all files inside. 
+X  */
+X
+Xget_data(path,cont)
+Xchar           *path;
+Xint		cont;    
+X{
+X/* struct	stat	stb; */
+Xint		i;
+X
+X	if (cont) { 
+X		if (is_directory(path)) 
+X			down(path);
+X	}
+X	else {
+X		if (is_directory(path)) return;
+X
+X		    /* Don't do it again if we've already done it once. */
+X
+X		if ( (h_enter(stb.st_dev, stb.st_ino) == OLD) && (!dup) )
+X			return;
+X		inodes++;
+X		sizes+= K(stb.st_size);
+X	}
+X} /* get_data */
+X
+X
+X
+Xmain(argc, argv)
+Xint	argc;
+Xchar	*argv[];
+X{
+Xint	i,
+X	j,
+X	err = FALSE;
+Xint	option;
+Xint	user_file_list_supplied = 0;
+X
+X	Program = *argv;		/* save our name for error messages */
+X
+X    /* Pick up options from command line */
+X
+X	while ((option = getopt(argc, argv, "dfh:iostqvV")) != EOF) {
+X		switch (option) {
+X			case 'f':	floating = TRUE; break;
+X			case 'h':	depth = atoi(optarg);
+X					while (*optarg) {
+X						if (!isdigit(*optarg)) {
+X							err = TRUE;
+X							break;
+X						}
+X						optarg++;
+X					}
+X					break;
+X			case 'd':	dup = TRUE;
+X					break;	
+X			case 'i':	cnt_inodes = TRUE;
+X					break;
+X			case 'o':	sort = TRUE; break;	
+X			case 's':	sum = TRUE;
+X					break;
+X			case 't':	sw_summary = TRUE;
+X					break;
+X			case 'q':	quick = TRUE;
+X					dup = FALSE;
+X					sum = FALSE;
+X					cnt_inodes = FALSE;
+X					break;
+X			case 'v':	visual = TRUE;
+X					break;
+X			case 'V':	version++;
+X					break;
+X			default:	err = TRUE;
+X		}
+X		if (err) {
+X			fprintf(stderr,"%s: [ -d ] [ -h # ] [ -i ] [ -o ] [ -s ] [ -q ] [ -v ] [ -V ]\n",Program);
+X			fprintf(stderr,"	-d	count duplicate inodes\n");
+X			fprintf(stderr,"	-f	floating column widths\n");
+X			fprintf(stderr,"	-h #	height of tree to look at\n");
+X			fprintf(stderr,"	-i	count inodes\n");
+X			fprintf(stderr,"	-o	sort directories before processing\n");
+X			fprintf(stderr,"	-s	include subdirectories not shown due to -h option\n");
+X			fprintf(stderr,"	-t	totals at the end\n");
+X			fprintf(stderr,"	-q	quick display, no counts\n");
+X			fprintf(stderr,"	-v	visual display\n");
+X			fprintf(stderr,"	-V	show current version\n");
+X			fprintf(stderr,"		(2 Vs shows specified options)\n");
+X			exit(-1);
+X		}
+X	
+X	}
+X
+X	if (version > 0 ) {
+X
+X#ifdef	MEMORY_BASED
+X		printf("%s memory based\n",VERSION);
+X#else
+X		printf("%s disk based\n",VERSION);
+X#endif
+X
+X		if (version>1) {
+X			printf("Tree height:	%d\n",depth);
+X			if (dup) printf("Include duplicate inodes\n");
+X			if (cnt_inodes) printf("Count inodes\n");
+X			if (sum) printf("Include unseen subdirectories in totals\n");
+X			if (sw_summary) printf("Print totals at end\n");
+X			if (quick) printf("Quick display only\n");
+X			if (visual) printf("Visual tree\n");
+X			if (sort) printf("Sort directories before processing\n");
+X		}
+X	}
+X	
+X    /* If user didn't specify targets, inspect current directory. */
+X
+X	if (optind >= argc) {
+X		user_file_list_supplied = 0;
+X	} else {
+X		user_file_list_supplied = 1;
+X	}
+X
+X#ifdef BSD
+X	getwd(topdir);				/* find out where we are */
+X#else
+X	getcwd(topdir, sizeof (topdir));	/* find out where we are */
+X#endif
+X
+X    /* Zero out grand totals */
+X	total_inodes = total_sizes = 0;
+X    /* Zero out sub_dirs */
+X	for (i=0; i<=MAX_V_DEPTH; i++) {
+X		sub_dirs[i] = 0;
+X		sub_dirs_indents[i] = 0;
+X	}
+X		
+X    /* Inspect each argument */
+X	for (i = optind; i < argc || (!user_file_list_supplied && i == argc); i++) {
+X		cur_depth = inodes = sizes = 0;
+X
+X		chdir(topdir);		/* be sure to start from the same place */
+X		get_data(user_file_list_supplied?argv[i] : topdir, TRUE);/* this may change our cwd */
+X
+X		total_inodes += inodes;
+X		total_sizes += sizes;
+X	}
+X
+X	if (sw_summary) {
+X		printf("\n\nTotal space used: %ld\n",total_sizes);
+X		if (cnt_inodes) printf("Total inodes: %d\n",inodes);
+X	}
+X	
+X#ifdef HSTATS
+X	fflush(stdout);
+X	h_stats();
+X#endif
+X
+X	exit(0);
+X} /* main */
+X
+X
+END_OF_FILE
+if test 14878 -ne `wc -c <'vtree.c'`; then
+    echo shar: \"'vtree.c'\" unpacked with wrong size!
+fi
+# end of 'vtree.c'
+fi
+echo shar: End of shell archive.
+exit 0

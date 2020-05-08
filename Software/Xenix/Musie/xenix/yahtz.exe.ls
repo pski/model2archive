@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3           34730 Sep  7 23:27 1994 /usr/games/yahtzee
+-rw-r--r-- 3/3            1588 Aug 22 17:54 1994 /usr/lib/Help/lib/L/yahtzee

@@ -1,0 +1,3 @@
+-rwxr-xr-x 3/3           95177 Oct 25 03:13 1994 /usr/local/ee
+-rw-r--r-- 0/0              25 Oct 25 02:33 1994 /usr/local/lib/init.ee
+-rw-r--r-- 3/3           23878 Oct 25 02:27 1994 /usr/lib/Help/lib/L/ee

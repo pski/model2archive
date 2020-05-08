@@ -1,0 +1,195 @@
+
+
+
+
+SMARTMODEM(L)            XENIX Programmer's Manual           SMARTMODEM(L)
+
+
+
+Name
+     smartmodem - HAYES 2400 SmartModem External Command Summary
+                           
+ * denotes default  
+                         
+ Command        Description
+ 
+  AT            Command line prefix (ATtention code); precedes command 
+                lines except +++ (escape) and A/ (repeat) commands
+                
+  A/            Re-execute last command line; (A/ is not followed by 
+                carriage return)
+                
+  A             Off-hook in answer mode
+ 
+  B             Selects CCITT V.22 operation when communicating at 1200bps
+ *B1            Selects Bell 212A operation when communicating at 1200bps
+ 
+  C0            Transmit carrier always off (Returns ERROR; Not allowed)
+ *C1            Normal transmit carrier switching
+ 
+  D             Dial number which follows D in the command line
+ 
+  E             Modem does not "echo" commands back to terminal
+ *E1            Modem "echos" commands back to terminal
+ 
+  F0            On-line character echo enabled (Returns ERROR; Not allowed)
+ *F1            On-line character echo disabled
+ 
+  H             On Hook (hang up)
+  H1            Operates switch-hook and auxilary relay
+ 
+  I             Request Product Identification Code
+  I1            Performs checksum on firmware ROM; return checksum
+  I2            Performs Checksum on firmware ROM; returns OK or ERROR
+  I3            Query ROM level
+  
+  L0,L1         Low speaker volume
+ *L2            Medium speaker volume
+  L3            High speaker volume
+  
+  M0            Speaker off
+  M1            Speaker on until carrier detected
+ *M2            Speaker always on
+  M3            Speaker on until carrier detected except during dialing
+ 
+  O             Return to on-line state
+  O1            Return to on-line state and initiate equalizer retrain
+ 
+ *Q             Modem returns result codes
+  Q1            Modem does not return result codes
+ 
+  Sr=n          Set register r to the value n
+  Sr?           Request contents of register r
+ 
+  V             Short form numeric result codes
+ *V1            Full word result codes
+          
+  X             Smartmodem 300 compatibility mode; CONNECT result code 
+                enabled
+  X1            Modem blind dials; all CONNECT XXXX result codes enabled;
+                busy signal not detected
+  X2            Modem waits for dial tone before dialing; All CONNECT XXXX
+                result codes; busy signal not detected
+  X3            Modem blind dials; all CONNECT XXXX result codes enabled;
+                modem sends BUSY result code if busy signal detected
+ *X4            Modem waits for dial tone before dialing; all CONNECT XXXX
+                result codes enabled; modem sends BUSY result code if busy 
+                signal detected
+                
+ *Y             Long space disconnect enabled
+  Y1            Long Space disconnect disabled
+  
+  Z             Reset and load profile 0
+  Z1            Reset and load profile 1
+  
+ *&C            DCD always On
+  &C1           DCD ON indicates presence of carrier
+  
+ *&D            Modem ignores DTR
+  &D1           Modem assumes command state when ON to OFF transition on 
+                DTR 
+  &D2           Modem hangs up, assumes command state and disables auto 
+                answer upon detecting ON to OFF transition on DTR
+  &D3           Modem assumes initialization state upon detecting an ON to
+                OFF transition on DTR
+                
+  &F            Load factory configuration profile
+  
+ *&G            No guard tone
+  &G1           550 Hz guard tone
+  &G2           1800 Hz guard tone
+  
+ *&J            RJ-11/RJ-41S/RJ-45S telco jack
+  &J1           RJ-12/RJ-13 telco jack type
+  
+ *&Q            Asynchronous mode
+  &Q1           Synchronous mode 1 (Sync/Async modem) 
+  &Q2           Synchronous mode 2 (Dial Stored Number mode)
+  &Q3           Synchronous mode 3 (DTR control of Data/Talk)
+  &Q4           Autosync
+  
+ *&P            Pulse dial make/break ratio = 39/61 (USA/Canada)
+  &P1           Pulse dial make/break ratio = 33/67 (UK/HK)
+  
+ *&R            CTS follows RTS
+  &R1           Modem ignores RTS;CTS always ON
+  
+ *&S            DSR always ON
+  &S1           DSR operates in accordance with EIA RS-232C specification
+  
+  &T            Terminate test in progress
+  &T1           Initiate Local Analog Loopback test
+  &T3           Initiate Didital Loopback
+  &T4           Modem grants request from remote modem for RDL
+  &T5           Modem denies request from remote modem for RDL
+  &T6           Initiate Remote Digital Loopback test
+  &T7           Initiate Remote Digital Loopback with self test
+  &T8           Initiate Local Analog Loopback with self test
+  
+  &V            Display active profile and stored profiles
+  
+  &W            Store active profile in location 0
+  &W1           Store active profile in location 1
+ *&X            Modem sources transmit clock for synchronous modes
+  &X1           Data terminal sources transmit clock for synchronous modes
+  &X2           Modem derives transmit clock for synchronous operation
+                from receive carrier (slave operation)
+                
+  &Z            Store telephone number                                                                                                                                  
+ 
+ 
+ 
+ 
+ 
+                             Dial Modifiers
+                             
+ Command        Description
+ 
+ P              Pulse dial
+ T              Tone dial
+ ,              Pause
+ !              Flash
+ @              Wait for silence
+ W              Wait for second dial tone
+ ;              Return to command state after dialing
+ R              Originate call in answer mode
+ S              Dial stored number
+ 
+ 
+ 
+ 
+                           S-Register Summary
+                           
+ Register    Range                  Description
+ 
+ S0        0-255 rings          Select ring to answer on
+ S1        0-255 rings          Ring count (incremented with each ring)
+ S2        0-127 ASCII          Define escape sequence character
+ S3        0-127 ASCII          Define carrage return character
+ S4        0-127 ASCII          Define line feed character
+ S5        0-32,127 ASCII       Define back space character
+ S6        2-255 sec            Select wait time before blind dialing
+ S7        1-255 sec            Select wait time for carrier/dial tone
+ S8        0-255 sec            Select duration for comma
+ S9        1-255 1/10 sec.      Carrier detect response time
+ S10       1-255 1/10 sec.      Select delay between carrier loss/hangup
+ S11       50-255 msec.         Define duration/spacing of tones
+ S12       20-255 1/50 sec.     Define escape sequence guard time
+ S13                            Reserved
+ S14                            Reserved
+ S15                            Reserved
+ S16                            Reserved
+ S17                            Reserved
+ S18       0-255 sec.           Select test timer
+ S19                            Reserved
+ S20                            Reserved
+ S21                            Reserved
+ S22                            Reserved
+ S23                            Reserved
+ S23                            Reserved
+ S24                            Reserved
+ S25       0-255 1/100 sec.     Select DTR change detect time
+ S26       0-255 1/255 sec.     Select RTS to Cts delay
+ S27                            Reserved         
+ 
+

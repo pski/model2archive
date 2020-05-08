@@ -1,0 +1,13 @@
+-rw-r--r-- 3/3           17138 Aug  7 14:03 1994 /usr/lib/Help/lib/L/ispell1
+-rw-r--r-- 3/3            7882 Aug  7 14:04 1994 /usr/lib/Help/lib/L/ispell4
+-rwxr-xr-x 3/3           49957 Aug  7 14:02 1994 /usr/local/ispell
+-rw-r--r-- 3/3            1451 Aug  7 14:02 1994 /usr/local/lib/ispell/isexp1.sed
+-rw-r--r-- 3/3            1281 Aug  7 14:02 1994 /usr/local/lib/ispell/isexp2.sed
+-rw-r--r-- 3/3            1451 Aug  7 14:02 1994 /usr/local/lib/ispell/isexp3.sed
+-rw-r--r-- 3/3            1290 Aug  7 14:02 1994 /usr/local/lib/ispell/isexp4.sed
+-rwxr-xr-x 3/3            8252 Aug  7 14:02 1994 /usr/local/lib/ispell/icombine
+-rw-r--r-- 3/3          578352 Dec  2 21:34 1989 /usr/local/lib/ispell/ispell.hash
+-rwxr-xr-x 0/0            2514 Aug  7 14:01 1994 /usr/local/bin/ispell/fixdict
+-rwxr-xr-x 0/0           18021 Aug  7 14:01 1994 /usr/local/bin/ispell/buildhash
+-rwxr-xr-x 0/0            5943 Aug  7 14:02 1994 /usr/local/bin/ispell/munchlist
+-rwxr-xr-x 0/0             964 Aug  7 14:01 1994 /usr/local/bin/ispell/makedict

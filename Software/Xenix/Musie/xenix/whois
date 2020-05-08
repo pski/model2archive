@@ -1,0 +1,7 @@
+
+if [ "$1" = "" ]
+then
+echo "Usage: whois username"
+exit
+fi
+cut -d: -f1,5 /etc/passwd | grep $1 | sed '/:/s// is /'

@@ -1,0 +1,4 @@
+-rwxr-xr-x 3/3           17417 Oct  8 23:14 1994 /usr/local/uud
+-rwxr-xr-x 3/3            9942 Oct  8 23:13 1994 /usr/local/uue
+-rw-r--r-- 3/3            1397 Jul  1 00:18 1994 /usr/lib/Help/lib/L/uue
+-rw-r--r-- 3/3             899 Jul  1 00:13 1994 /usr/lib/Help/lib/L/uud

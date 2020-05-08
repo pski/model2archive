@@ -1,0 +1,8 @@
+-rw-r--r-- 0/0             418 May  9 23:02 1995 INSTALL
+-rw-r--r-- 0/0             213 May  9 22:49 1995 Makefile
+-rw-r--r-- 0/0            2865 May  9 18:09 1995 README
+-rwxr-xr-x 0/0           55148 May  9 23:03 1995 chess
+-rw-r--r-- 0/0             163 May  9 18:10 1995 chess.001
+-rw-r--r-- 0/0           47733 May  9 22:38 1995 chess.c
+-rw-r--r-- 0/0            9500 May  9 18:10 1995 chess.opn
+-rw-r--r-- 0/0              21 May  9 18:09 1995 patchlevel.h

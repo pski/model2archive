@@ -1,0 +1,5 @@
+-rw-r--r-- 0/0             133 Mar 30 13:05 1995 readme
+-rwxr-xr-x 0/0           11910 Mar 30 12:54 1995 undos
+-rw-r--r-- 163/10         2174 Mar 30 13:00 1995 undos.1
+-rw-r--r-- 163/10         3544 Feb 26 14:41 1989 undos.c
+-rw-r--r-- 0/0            3763 Mar 30 13:01 1995 undos.man

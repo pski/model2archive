@@ -1,0 +1,2 @@
+-rw-r--r-- 0/0             190 Oct 16 17:22 1994 ccstrip.c
+-rw-r--r-- 0/0             499 Oct 16 17:26 1994 ccstrip.man

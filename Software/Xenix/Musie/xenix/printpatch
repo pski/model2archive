@@ -1,0 +1,13 @@
+Are you tired of the irritating form feed when you do a printout?  Did
+you ever wonder how you could print single labels like from Profile 16
+without this problem?  Why in the hell did Profile 16 provide form printing
+from a screen when you can't control the form feed.  Here is the answer:
+
+
+To change the printer device to clp:
+Patch /usr/lib/lpd
+Patch bytes 398b to 63
+            398c to 6c
+            398d to 70
+
+Steve Scrivano(sscrivan@nyx.cs.du.edu)

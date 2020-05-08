@@ -1,0 +1,3 @@
+-rwxr-xr-x 3/3           10878 Mar  5 10:45 1994 /usr/local/caps
+-rwxr-xr-x 3/3           10918 Mar  5 10:58 1994 /usr/local/uncaps
+-rw-r--r-- 3/3             708 Aug 16 23:13 1994 /usr/lib/Help/lib/L/caps

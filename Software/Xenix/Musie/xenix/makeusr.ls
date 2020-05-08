@@ -1,0 +1,4 @@
+-rw-r--r-- 0/0             653 Oct 12 00:02 1994 Tandy6000
+-rw-r--r-- 0/0            3149 Sep 10 23:03 1994 makeuser.c
+-rw-r--r-- 0/0             600 Oct 11 23:56 1994 mkdir.o
+-rw-r--r-- 0/0             608 Oct 11 23:33 1994 stand.h.patch

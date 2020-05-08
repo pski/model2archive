@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3            3666 Apr 22 09:05 1994 /usr/local/ccstrip
+-rw-r--r-- 3/3             499 Oct 16 17:20 1994 /usr/lib/Help/lib/L/ccstrip

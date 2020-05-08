@@ -1,0 +1,123 @@
+: Shell script to copy formated disks while system is up
+: 
+trap "echo;echo 'Diskdupe aborted backup incomplete';exit" 2 1 4 5 3 15
+RUN=:
+while $RUN
+do
+LOOP=:
+while $LOOP
+do
+cat << END
+
+
+
+
+
+
+
+
+
+
+				Disk Copy
+				---------
+			---->>>   NOTE   <<<----
+			All floppies used in this
+			utility MUST be formated
+			with diskutil or else &^%&
+
+
+
+
+
+
+
+
+
+
+END
+NUMD=2
+case $NUMD in
+	1)
+		VAL="0"
+		LOOP=false ;;
+	2)
+		VAL="0-1"
+		LOOP=false ;;
+	3)
+		VAL="0-2"
+		LOOP=false ;;
+	4)
+		VAL="0-3"
+		LOOP=false ;;
+	*)
+		;;
+esac
+done
+
+LOOP=:
+SDRV="$1"
+DDRV="$2"
+if [ ! -z "$SDRV" -a -z "$DDRV" ]
+then
+	DDRV="$SDRV"
+fi
+while [ -z "$SDRV" ]
+do
+	echo "Source drive: \c"
+	read SDRV
+	case $SDRV in
+		0|1|2|3)
+			if [ "$SDRV" -gt "$NUMD" ]
+			then
+				SDRV=""
+			fi ;; 
+		*)
+			SDRV="";;
+	esac
+
+done
+LOOP=:
+while [ -z "$DDRV" ]
+do
+	echo "Destination drive: \c"
+	read DDRV
+	case $DDRV in
+		0|1|2|3)
+			if [ "$DDRV" -gt "$NUMD" ]
+			then
+				DDRV=""
+			fi ;;
+		*)
+			DDRV="";;
+	esac
+done
+: Start to copy soon very soon I promise
+if test "$SDRV" -eq "$DDRV"
+	then
+		echo -n "Insert source disk in drive $SDRV then (ENTER)"
+		read junk
+		dd if=/dev/rfd$SDRV of=/tmp/d$SDRV bs=150k >> /dev/null
+		dd if=/dev/fdbt$SDRV of=/tmp/d$SDRVb >> /dev/null
+		echo -n "Insert destination disk in drive $DDRV then (ENTER)"
+		read junk
+		dd if=/tmp/d$DDRV of=/dev/rfd$DDRV bs=150k >> /dev/null
+		dd if=/tmp/d$DDRVb of=/dev/fdbt$DDRV >> /dev/null
+		rm /tmp/d*
+	else
+		echo -n "Insert source disk in drive $SDRV then (ENTER) "
+		read junk
+		echo -n "Insert destination disk in drive $DDRV then (ENTER)"
+		read morejunk
+		dd if=/dev/rfd$SDRV of=/dev/rfd$DDRV bs=150k >> /dev/null
+		dd if=/dev/fdbt$SDRV of=/dev/fdbt$DDRV >> /dev/null
+fi
+echo
+echo "Copy completed"
+	
+echo -n "Copy another ? (y or n) "
+read ans
+case $ans in
+	y|Y) ;;
+	n|N) RUN=false ;;
+esac
+done

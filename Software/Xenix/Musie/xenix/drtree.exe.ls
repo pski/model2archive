@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3             278 Nov  2 22:52 1994 /usr/local/dirtree
+-rw-r--r-- 3/3             346 Aug 17 00:02 1994 /usr/lib/Help/lib/L/dirtree

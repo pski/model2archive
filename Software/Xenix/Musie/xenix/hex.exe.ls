@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3            6879 May 27 11:09 1994 /usr/local/hextoascii
+-rw-r--r-- 3/3             314 May 27 11:24 1994 /usr/lib/Help/lib/L/hextoascii

@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3            1567 Mar  1 01:05 1992 /usr/local/wegrep
+-rw-r--r-- 3/3             697 Aug 17 01:11 1993 /usr/lib/Help/lib/L/wegrep

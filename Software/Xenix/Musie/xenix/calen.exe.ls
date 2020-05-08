@@ -1,0 +1,2 @@
+-rw-r--r-- 3/3            1764 Oct 23 20:56 1994 /usr/lib/Help/lib/L/calen
+-rwxr-xr-x 3/3           14844 Aug 24 21:27 1989 /usr/local/calen

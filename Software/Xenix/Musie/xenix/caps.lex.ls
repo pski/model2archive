@@ -1,0 +1,3 @@
+-rw-r--r-- 0/0             708 Oct 11 01:50 1994 caps.man
+-rw-r--r-- 0/0             297 Oct 11 01:49 1994 caps.lex.gz
+-rw-r--r-- 0/0             301 Oct 11 01:49 1994 uncaps.lex.gz

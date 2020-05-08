@@ -1,0 +1,5 @@
+-rw-r--r-- 0/0             373 Jun  5 18:18 1995 Makefile
+-rwxr-xr-x 0/0           20010 Jun  5 18:20 1995 printf
+-rw-r--r-- 0/0            1419 Jun  5 18:26 1995 printf.1
+-rw-r--r-- 0/0            9040 Jun  5 18:09 1995 printf.c
+-rw-r--r-- 0/0            2322 Jun  5 18:27 1995 printf.man

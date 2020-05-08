@@ -1,0 +1,17 @@
+-rw-r--r-- 0/0             712 Feb 23 13:16 1995 README
+-rw-r--r-- 0/0             163 Feb 23 13:05 1995 bcmp.o
+-rw-r--r-- 0/0             164 Feb 23 13:05 1995 bcopy.o
+-rw-r--r-- 0/0             164 Feb 23 13:06 1995 bzero.o
+-rw-r--r-- 0/0             164 Feb 23 13:06 1995 index.o
+-rw-r--r-- 0/0             249 Feb 23 13:06 1995 memccpy.o
+-rw-r--r-- 0/0             220 Feb 23 13:06 1995 memchr.o
+-rw-r--r-- 0/0             228 Feb 23 13:06 1995 memcmp.o
+-rw-r--r-- 0/0             277 Feb 23 13:06 1995 memcpy.o
+-rw-r--r-- 0/0             298 Feb 23 13:13 1995 memory.h
+-rw-r--r-- 0/0             186 Feb 23 13:06 1995 memset.o
+-rw-r--r-- 0/0             166 Feb 23 13:06 1995 rindex.o
+-rw-r--r-- 0/0             269 Feb 23 13:06 1995 strerror.o
+-rw-r--r-- 0/0             808 Feb 23 13:13 1995 string.h
+-rw-r--r-- 0/0             937 Feb 23 13:06 1995 strsave.c
+-rw-r--r-- 0/0             696 Feb 23 13:06 1995 strsave.o
+-rw-r--r-- 0/0             291 Feb 23 13:06 1995 strstr.o

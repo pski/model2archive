@@ -1,0 +1,1235 @@
+     CONFIGURATION(M)		 XENIX 3.0	      CONFIGURATION(M)
+
+
+
+     Name
+	  configuration	- configurable items in	the XENIX kernel.
+
+     Description
+	  There	are many configuration parameters in the XENIX kernel
+	  that can be tuned to the user's requirements.	 Several
+	  different commands are used to set and examine these
+	  parameters.  This list identifies the	parameters, the
+	  appropriate command to use for setting it, and where to get
+	  more information.
+
+	  The configuration kit	documentation referred to below	comes
+	  with the XENIX 6000 Configuration Kit	(Cat. No. 700-3043).
+	  It also contains linkable object modules to build new
+	  kernels.
+
+	  A reboot is required after changing most of the parameters
+	  before the new value will take effect.
+
+	  Time Zone and	Daylight Savings Time
+	       The default time	zone and whether daylight savings time
+	       is in effect (at	the appropriate	time during the	year
+	       for the USA) or not can be set with the /etc/tz command
+	       or the configuration kit.  This information is used by
+	       many commands to	display	times when there is no TZ
+	       environment variable.  This information is initially
+	       set by /etc/tz when the core system is installed.
+	       /etc/tz takes no	arguments and prompts for the
+	       information required.  See /etc/tz and the
+	       configuration kit documentation (daylight and timezone
+	       parameters and instructions for installing a new
+	       kernel) for more	information.
+
+	  Maximum Process Size
+	       The maximum process size	is a limit on the sum of the
+	       text, data, and stack areas of a	running	process.  The
+	       maximum process size in distributed XENIX kernels is
+	       256K.  It can be	increased with the /etc/cfg command or
+	       the configuration kit.  See cfg(M) (maxmem=n parameter)
+	       and the configuration kit documentation (maxprocmem
+	       parameter) for more information.
+
+	  Maximum Number of Processes Per User
+	       There is	a set maximum on the number of processes that
+	       can be run by any one user id.  The user	"root" is
+	       exempt from the limit.  Logging in more than once or
+	       running at(C) jobs does not increase the	number of
+	       processes that can run under one	user id.  The default
+	       limit is	15 processes.  This can	be increased with the
+	       /etc/cfg	command	or the configuration kit.  See cfg(M)
+	       (maxprocs=n parameter) and the configuration kit
+	       documentation (maxproc parameter) for more information.
+
+	  Clock	Speed
+	       The time-of-day clock might run fast or slow on a given
+	       system, due to manufacturing tolerances,	temperature,
+	       and other variables.  The /etc/adj_clock	command	can be
+	       used to make fine adjustments to	the clock speed.
+	       These changes take effect immediately, without needing
+	       to reboot.  The default setting is an approximate value
+	       for the "average" system.  See adj_clock(C).
+
+	  Floppy Drive Configuration
+	       Different models	of computers have different types of
+	       floppy drives.  The system installation procedure
+	       provides	normal values for drive	step rate, whether to
+	       wait for	the motor to start up, and whether the drive
+	       can detect media	changes.  There	is one set of values
+	       for Model II systems and	another	for Models 12, 16, and
+	       6000.  The /etc/drive command is	used to	change the
+	       settings.  These	changes	take effect immediately,
+	       without needing to reboot.  See drive(C).
+
+	  Read-after-Write Verification
+	       Automatic read-after-write verification can be set for
+	       floppy drives, hard drives, and cartridges
+	       independently of	each other with	the /etc/verify
+	       command.	 These changes take effect immediately,
+	       without needing to reboot.  See verify(C).
+
+	  Automatic Reboot
+	       The autoboot(C) command controls	two features, autoboot
+	       and automatic reboot.  It can be	used to	set up
+	       automatic reboot, which reboots the system if there is
+	       a panic or the system is	shut down with haltsys(C). The
+	       autoboot	feature, which brings up the system after it
+	       is reset, is not	a kernel patch but involves installing
+	       different versions of the boot track.  These options
+	       can be set with the /etc/autoboot command.  The changes
+	       will take effect	immediately, without needing to
+	       reboot.	See autoboot(C).
+
+	  System Node Name
+	       The system node name is returned	by the uname(S)	system
+	       call, and the uname(C) command.	While most programs
+	       distributed with	XENIX determine	the system name	from
+	       the /etc/systemid file, some programs use the uname(S)
+	       system call.  The /etc/cfg command can be used to set
+	       the node	name.  The initial value is a zero-length
+	       string.	The uname(C) command prints it as "(empty)."
+	       See cfg(M) (nodename='name' parameter) for more
+	       information.
+
+	  Swap Device
+	       XENIX uses a disk partition for swapping	processes out
+	       of memory when they won't all fit.  This	partition is
+	       normally	the "back half"	of the boot device (Hard Drive
+	       0 or Floppy Drive 0).  It is sometimes desirable	to
+	       move the	swap area to a different drive for speed
+	       (reduce seeking between the root	and swap areas)	or
+	       space reasons.  See hd(M) for a description of hard
+	       disk partitions,	and execute "ls	-l /dev/hd*" to	see
+	       hard disk devices and their device numbers. The swap
+	       device (major and minor device number), offset from the
+	       beginning of the	partition (in blocks, and usually 0),
+	       and the length of the swap area (in blocks) must	be
+	       specified.  The swap device can be changed with the
+	       /etc/cfg	command	or the configuration kit. See cfg(M)
+	       (swapdev, swplo,	and nswap parameters) and the
+	       configuration kit documentation (swap parameter)	for
+	       more information.
+
+	  Disk Cache Buffers
+	       Disk cache buffers hold information from	disk that has
+	       been recently used.  If there are many buffers, disk
+	       reads can be avoided because recently accessed
+	       information is already in the buffers.  On the other
+	       hand, too many buffers result in	less memory for	user
+	       processes and more swapping.  The number	of disk	cache
+	       buffers can be set with the /etc/cfg command or the
+	       configuration kit.  The default number of buffers is
+	       based on	system memory size.  See cfg(M)	(buffers=n
+	       parameter) for more information and the table of
+	       defaults.  See the configuration	kit documentation
+	       (sabufs parameter) for further details.
+
+	  Maximum Open Inodes
+	       An "inode" is a kernel data structure that corresponds
+	       to an open file.	 The inode table in the	kernel must
+	       have room for an	entry for each different open file.
+	       The size	of the inode table can be set with the
+	       /etc/cfg	command	or the configuration kit.  The default
+	       number of inode table entries is	based on system	memory
+	       size.  See cfg(M) (inodes=n parameter) and the
+	       configuration kit documentation (inodes parameter) for
+	       more information.
+
+	  Maximum Open Files
+	       The open	file table in the kernel must have room	for an
+	       entry for each active file open.	 This is different
+	       from the	"Maximum Open Inodes" parameter	since several
+	       opens of	the same file count as one inode and several
+	       open files.  The	size of	the open file table can	be set
+	       with the	/etc/cfg command or the	configuration kit.
+	       The default number of file table	entries	is based on
+	       system memory size.  See	cfg(M) (files=n	parameter) and
+	       the configuration kit documentation (files parameter)
+	       for more	information.
+
+	  Maximum System Processes
+	       The system has a	maximum	number of processes that can
+	       be run at one time.  This number	can be changed with
+	       the /etc/cfg command or the configuration kit.  The
+	       default number of process table entries is based	on
+	       system memory size.  See	cfg(M) (procs=n	parameter) and
+	       the configuration kit documentation (procs parameter)
+	       for more	information.
+
+	  Character Buffers
+	       Console and serial data transmission require buffers
+	       called "clists" in the kernel.  The requirement for
+	       buffers increases with the number of terminals
+	       simultaneously in use and with the transmission speed.
+	       The number of character lists can be set	with the
+	       /etc/cfg	command	or the configuration kit. See cfg(M)
+	       (clists=n parameter) and	the configuration kit
+	       documentation (clists parameter)	for more information.
+
+	  Maximum File Locks
+	       The file	locking	facility requires an entry in the file
+	       lock table for each simultaneously active file lock.
+	       Very few	programs distributed with the XENIX Core
+	       System or Development System use	file locking.
+	       Applications might use it extensively.  The number of
+	       file locks can be set with the /etc/cfg command or the
+	       configuration kit.  See cfg(M) (locks=n parameter) and
+	       the configuration kit documentation (locks parameter)
+	       for more	information.
+
+	  Maximum Mounted File Systems
+	       There is	a limit	to the number of simultaneous mounted
+	       file systems (including the root	file system).  The
+	       default value is	8.  This value can be changed with the
+	       configuration kit.  See the configuration kit
+	       documentation (mounts parameter)	for more information.
+
+	  Maximum Pending Time Delays
+	       Drivers in the kernel require a "callout" table entry
+	       to re-activate a	driver after a time limit has passed.
+	       The requirement for callout entries is based mostly on
+	       the number of processes and the number of devices
+	       requiring timeouts (terminals especially).  The default
+	       maximum number of callout entries is 25.	 This value
+	       can be changed with the configuration kit.  See the
+	       configuration kit documentation (calls parameter) for
+	       more information.
+
+	  Root File System Device
+	       The root	file system is normally	the first partition on
+	       the drive that you boot from (Hard Drive	0 or Floppy
+	       Drive 0).  You can use the configuration	kit to change
+	       this.  Note that	you still have to boot from Hard Drive
+	       0 or Floppy Drive 0 and keep a copy of the new kernel
+	       on the boot drive and the new root drive.  You are
+	       responsible for setting up the new root file system.
+	       See the configuration kit documentation (root
+	       parameter) for more information.
+
+	  Pipe File System Device
+	       Pipes need temporary disk storage.  Normally the	pipe
+	       file system device is the same as the root file system
+	       device.	You can	use the	configuration kit to change
+	       this.   Normally	the pipe device	is the same as the
+	       (possibly moved)	root device or a device	used for
+	       temporary storage.  You must have a file	system on the
+	       pipe device before booting.  See	the configuration kit
+	       documentation (pipe parameter) for more information.
+
+
+			    XENIX 6000 Configuration Kit
+
+			      Catalog Number 700-3043
+
+
+	    The	XENIX 6000 Configuration Kit lets you customize	the
+	    kernel for your system by modifying	the files in the
+	    /usr/sys/conf directory.  To modify	the kernel, you	must
+	    first install the XENIX Software Development Tools of the
+	    XENIX Development System.
+
+	    There are 4	steps to building a new	kernel.	 They are:
+
+	       + Upgrading to Xenix 03.02.01, if needed
+
+	       + Installing the	configuration kit
+
+	       + Building the new XENIX	kernel
+
+	       + Installing the	new XENIX kernel
+
+	    Information	on the contents	of /usr/sys/conf is given in
+	    Section 5.	We strongly suggest that you thoroughly	read
+	    this document before attempting to customize your kernel.
+
+
+	    1.	Upgrading to Version 03.02.01
+
+	    Before installing your configuration kit, you must make sure
+	    that you are running Xenix Version 03.02.01.  One way to get
+	    the	version	number of your system is to type
+
+		 $ cat /etc/version
+
+	    and	note the result.  If you are running Xenix 03.02.00, you
+	    must upgrade to Xenix 03.02.01 first as follows.  If you are
+	    already running Xenix 03.02.01, skip to Section 2. If you
+	    are	running	an older version, you should obtain the	upgrade
+	    to Xenix 03.02.00 and install it and then upgrade to
+	    03.02.01 before installing the configuration kit.
+
+	    1.1	 Upgrade Procedure
+
+	    The	following patch	should be applied to the /xenix	V
+	    3.2(42).  This version code	is displayed when XENIX	boots.
+	    These changes create version 3.2(42b).  The	release	version
+	    number for XENIX will also change from 03.02.00 to 03.02.01
+	    in /etc/version.
+
+	    Note: Blank	lines in the following procedure are for
+	    readability	and will not appear on the screen.   You will
+	    enter the keystrokes that are in heavy type	in response to
+	    the	prompts	shown.
+
+
+	      1.  You should apply the following changes while in
+		  maintenance mode.  Before applying the patch,	make a
+		  copy of the original program:
+
+		    # cp /xenix	/xenix.342  ENTER
+
+	      2.  If you make a	mistake	while typing in	the following
+		  patch, exit the patch	utility	and repeat the following
+		  procedure.  The original version of xenix is stored in
+		  xenix.342.
+
+		    # cd /  ENTER
+		    # cp xenix.342 xenix.342b  ENTER
+		    # patch xenix.342b	ENTER
+		    byte offset	(<ENTER> to exit)? 34b9	 ENTER
+		    34b9: 80 |.| > d5  ENTER
+		    34ba: ff |.| > q  ENTER
+
+		    byte offset	(<ENTER> to exit)? 41dd	 ENTER
+		    41dd: 7e |~| > 5f  ENTER
+		    41de: 4e |N| > q  ENTER
+
+		    byte offset	(<ENTER> to exit)? 56fc	 ENTER
+		    56fc: 2b |+| > 4e  ENTER
+		    56fd: 6e |n| > b9  ENTER
+		    56fe: 00 |.| >   ENTER
+		    56ff: 0c |.| > 01  ENTER
+		    5700: 00 |.| > 11  ENTER
+		    5701: 1e |.| > 7e  ENTER
+		    5702: 20 |.| > q  ENTER
+
+		    byte offset	(<ENTER> to exit)? d40f	 ENTER
+		    d40f: 80 |.| > e0  ENTER
+		    d410: 02 |.| > q  ENTER
+
+		    byte offset	(<ENTER> to exit)? d4a1	 ENTER
+		    d4a1: 07 |.| > 06  ENTER
+		    d4a2: 02 |.| > q  ENTER
+
+		    byte offset	(<ENTER> to exit)? 10fde  ENTER
+		    10fde: 29 |)| > 62	ENTER
+		    10fdf: 0d |.| > 29	ENTER
+		    10fe0: 0a |.| > q  ENTER
+
+		    byte offset	(<ENTER> to exit)? 111c8  ENTER
+		    111c8: 6f |o| > 2b	ENTER
+		    111c9: 75 |u| > 6e	ENTER
+		    111ca: 74 |t| > 00	ENTER
+		    111cb: 20 |	| > 0c	ENTER
+
+		    111cc: 6f |o| > 00	ENTER
+		    111cd: 66 |f| > 1e	ENTER
+		    111ce: 20 |	| > 2b	ENTER
+		    111cf: 73 |s| > 7c	ENTER
+
+		    111d0: 77 |w| > 00	ENTER
+		    111d1: 61 |a| > 00	ENTER
+		    111d2: 70 |p| > 02	ENTER
+		    111d3: 20 |	| > 00	ENTER
+
+		    111d4: 73 |s| > 00	ENTER
+		    111d5: 70 |p| > 16	ENTER
+		    111d6: 61 |a| > 4e	ENTER
+		    111d7: 63 |c| > 75	ENTER
+		    111d8: 65 |e| > q  ENTER
+		    byte offset	(<ENTER> to exit)?   ENTER
+		    #	ENTER
+
+
+	      3.  If there were	no errors in typing the	patch, copy the
+		  new version into position:
+
+		    # cp xenix.342b xenix  ENTER
+
+
+	      4.  Now, update the system version numbers.   (If
+		  /etc/motd has	been modified and no longer displays the
+		  version number, the file will	not be altered.)
+
+		    # echo 03.02.01 > /etc/version  ENTER
+
+		    # ed - /etc/logbook	 ENTER
+		    $a	ENTER
+		  In the following line, use the current date instead of
+		  "Fri Jan  1 00:00:00 1970", but use the same format.
+		    03.02.01 700-3030 CSB 6460-01 Mandatory Patch   Fri	Jan  1 00:00:00	1970  ENTER
+		    .  ENTER
+		    w  ENTER
+		    q  ENTER
+
+		    # ed - /etc/motd  ENTER
+		    g/Version/d	 ENTER
+		    w  ENTER
+		    q  ENTER
+
+	      5.  Now, reboot the system to allow the patch to take effect:
+
+		    # sync;/etc/haltsys	 ENTER
+
+		  Now, restart the system as usual.
+
+	    1.2	 If Something Goes Wrong
+
+	    If after applying the patch	and rebooting the system, the
+	    system does	not boot, or unusual behavior is noted,	the
+	    patch may have been	improperly applied.  Reset the system
+	    and	reboot on the old kernel by typing:
+
+	      Xenix Boot> xenix.342  ENTER
+
+	    Now, without going into multiuser mode, repeat Steps 2, 3,
+	    and	5 of the above procedure.
+
+	    Warning:	    The	first command you should repeat	is   cd	/.
+			    Do not copy	xenix to xenix.342 again.  This
+                            must not be done twice.
+
+
+	    2.	Installing the Configuration Kit
+
+	      1.  Log in as root at the	console.  (This	cannot be done
+		  in maintenance mode.)
+
+	      2.  Be sure that you do not have a file or directory named
+		  /usr/sys.  If	you do,	rename it using	the mv command,
+		  or remove it if you do not want to save it.
+
+	      3.  At the root prompt (#), type:
+
+			  install  ENTER
+
+		  The screen shows the Installation Menu:
+
+		       Installation Menu
+		       -----------------
+			 1. to install
+			 q. to quit
+
+
+	      4.  Type 1
+		   and press ENTER
+		   to install the configuration	kit.  The screen shows:
+
+		       Insert diskette in Drive	0 and press <ENTER>
+
+	      5.  Insert the Configuration Diskette into Drive 0, and
+		  press	ENTER .	 XENIX reads the files off the diskette.
+		  When all files are written to	the hard disk, the
+		  screen shows:
+
+	       Installation complete - Remove the diskette, and	press <ENTER>.
+
+	      6.  Remove the Configuration Diskette from Drive 0, and
+		  press	ENTER .	 The screen shows the Installation Menu
+		  again.
+
+	      7.  Type q
+		   and press ENTER
+		   to quit.
+
+	    Your configuration kit is now installed.  You can proceed to
+	    build a new	kernel by first	modifying the /usr/sys/conf/conf
+	    file.
+
+
+	    3.	Building the New XENIX Kernel
+
+	      1.  Again, log in	as root.  At the root prompt, type:
+
+		       cd /usr/sys/conf	ENTER
+
+	      2.  Using	any XENIX editor, modify the conf file and any
+		  other	files you wish to change.  Detailed information
+		  on the conf file is given in Section 5.1.
+
+	      3.  When you finish editing the configuration files, type:
+
+		       make ENTER
+
+		  XENIX	creates	a new file called "xenix" in the
+		  /usr/sys/conf	directory.  XENIX also displays	the size
+		  of the new "xenix."
+
+	      4.  If XENIX displays an error message, see the config(CP)
+		  and master(F)	manual pages in	your development system
+		  manuals for more information.	 Also see the
+		  intermediate source file c.c that is produced.
+
+	      5.  Correct any problems and start again from Step 3.
+
+	    The	kernel that you	build will be equivalent to the	kernel
+	    03.02.01 3(42b).  It will not match	exactly	in size	or
+	    contents.  Do not attempt to apply the patch to upgrade from
+	    3(42) to 3(42b).  This patch has already been applied.
+
+	    The	kernel you are running on your system probably has some
+	    patches made to it by the /etc/drive and /etc/tz commands
+	    that are run during	the system initialization procedure.
+	    This causes	a few additional bytes of data to be different
+	    between the	kernel you build and the kernel	you are	running.
+	    You	make these patches to your new kernel during the
+	    installation procedure.
+
+
+	    4.	Installing a New XENIX Kernel
+
+	    Before beginning, be sure that all users are logged	off the
+	    system.
+
+	    4.1	 Kernel	Installation
+
+	      1.  Log in as root.  At the root prompt, type:
+
+		       cd /usr/sys/conf	ENTER
+
+		  Note:	After the next step, the ps(C) command will not
+		  function properly. Ps(C) and certain other commands
+		  use the /xenix file to obtain	the addresses of
+		  variables in the kernel. These commands do not work
+		  properly if /xenix is	missing	or does	not contain the
+		  currently running kernel.  They will work again after
+		  the installation is complete.	 The qps(C) command
+		  continues to function.
+
+	      2.  Now, save the	old kernel, especially if it is	one
+		  distributed by Tandy or one that you were using
+		  successfully.	 This ensures that you have a good
+		  kernel to go back to if there	is a problem with the
+		  new one.  Save the kernel (/xenix) by	renaming it.
+		  For example:
+
+		       mv /xenix /xenix.32 ENTER
+
+		  If for some reason you do not	want to	save the old
+		  kernel, you can remove it using the rm(C) command.
+
+	      3.  Move the new kernel, created in the previous section,
+		  to the root directory.  Type:
+
+		       mv xenix	/xenix.32.new ENTER
+
+	      4.  Link the new kernel to /xenix	by typing:
+
+		       ln /xenix.32.new	/xenix ENTER
+
+	      5.  Shut down the	system using /etc/haltsys:
+
+		       sync; sync; sync; /etc/haltsys ENTER
+
+		  Do not use the shutdown command.
+
+
+	      6.  Reboot the system.  XENIX now	uses the new kernel.
+		  The ps command should	function properly at this point.
+
+	      7.  Use the /etc/drive command to	set the	appropriate
+		  speed	for the	floppy disk drives.  See the "System
+		  Defaults" chapter of the System Administrator's Guide
+		  to XENIX for information on using drives.
+
+	      8.  Use the /etc/tz command to set the proper time zone.
+		  Type:
+
+		       /etc/tz ENTER
+
+		  You are prompted for information on daylight savings
+		  time,	location (United States	or non-United States),
+		  and the appropriate time zone.  If you are in	the
+		  United States, you are prompted to enter a selection
+		  from a menu for the proper time zone.	 If you	are
+		  outside the United States, you are prompted to enter
+		  the time as minutes from Greenwich Mean Time.
+
+	    4.2	 Recovering From an Unusable Kernel
+
+	    If you cannot boot with the	new kernel, or if it does not
+	    perform properly, you can switch back to the old kernel:
+
+	      1.  If you can shut down the system normally, do so.
+		  Press	the Reset button.
+
+	      2.  At the boot prompt (Xenix Boot>), type the name of the
+		  old kernel previously	saved.	For example, type:
+
+		       xenix.32	ENTER
+
+	      3.  When prompted, enter system maintenance mode by
+		  entering the root password.
+
+	      4.  At the root prompt, type:
+
+		       rm /xenix ENTER
+
+	      5.  Link the old kernel to /xenix:
+
+		       ln /xenix.32 /xenix ENTER
+
+	      6.  If you changed /dev/swap from	the one	used with the
+		  previous kernel, restore the previous	version	of
+		  /dev/swap.  For example:
+
+		       mv /dev/swap.old	/dev/swap ENTER
+
+	      7.  Type CTRL D
+		   to start the	system normally.
+
+
+	    5.	Configuration
+
+	    The	conf file in /usr/sys/conf specifies the configuration.
+	    You	should edit this file to reconfigure your kernel.  Also
+	    included is	conf.std, which	is an extra copy of the	standard
+	    distribution configuration.	 Do not	change this file.  Use
+	    it only as an example of a valid configuration.
+
+	    For	more information on configuration, refer to config(CP)
+	    and	master(F) in your XENIX	development system manuals.  Any
+	    information	in this	document supersedes that in the
+	    development	system manuals.	 Also, the examples given in
+	    config(CP) and master(F) do	not apply directly to your
+	    computer.  There is	an example given in Section 5.2	that
+	    does apply to your computer.
+
+	    Master(F) refers to	a file /etc/master.  This file is
+	    /usr/sys/conf/master in your configuration kit.
+
+	    Config(CP) refers to a file	dfile.	This file is
+	    /usr/sys/conf/conf in your configuration kit.
+
+	    The	configuration kit is not intended to provide you with
+	    the	capability to write your own device drivers.  However,
+	    if you have	a device driver	you wish to add, some of the
+	    points you need to consider	are:
+
+	      1.  Add a	line to	the /usr/sys/conf/master file for the
+		  new device.
+
+	      2.  Include a line for the new device in the
+		  /usr/sys/conf/conf file.
+
+	      3.  Add the appropriate object file(s) to
+		  /usr/sys/io/libio.a using the	ar(CP) command.
+
+	      4.  Create entries in /dev using the mknod(C) command and
+		  the major device numbers for the device as listed in
+		  the /usr/sys/conf/master file.
+
+	      5.  Build	a new kernel and install it.
+
+
+	    5.1	 More on the Conf File
+
+	    You	can look at the	/usr/sys/conf/conf file	by using the
+	    more command:
+
+		 more /usr/sys/conf/conf ENTER
+
+	    The	file should look like this:
+
+		 **
+		 ***   Standard	distribution XENIX configuration file
+		 **
+		 disk	 1
+		 console 1
+		 printer 1
+		 screen	 1
+		 acu	 1
+		 *** note that the minor number	0377 causes the	kernel
+                 to autoconfigure
+		 root	 disk 0377
+		 pipe	 disk 0377
+		 swap	 disk 0377 0 8000
+		 *** tunables
+		 timezone (6*60)
+		 maxprocmem 256
+		 *** `0' causes	the kernel to autoconfigure the	number
+		 sabufs	    0
+		 inodes	    0
+		 files	    0
+		 procs	    0
+		 texts	    0
+		 clists	    0
+		 locks	    0
+
+	    5.1.1  Part	1 - Devices  This part specifies the devices
+	    that are present.  Disk, console, and printer are required.
+	    You	can remove the others if you do	not have the
+	    corresponding peripheral.  Removing	devices	saves memory.
+	    Remember that the device does not function if it is	removed
+	    from the configuration.
+
+	    The	following describes the	devices	that you can remove and
+	    how	much memory they occupy:
+
+	    acu	      This device refers to the	dialer devices
+		      (/dev/cul* and /dev/cua*).  This allows automatic
+		      dialing of Radio Shack modems.  The driver
+		      occupies about 1 3/4 Kbytes.
+
+	    screen    This device refers to the	screen-image memory for
+		      the console screen (/dev/screen) and the high-
+		      resolution graphics driver (/dev/graphics).  Some
+		      application programs use these devices.  The
+		      driver occupies about 1 1/2 Kbytes.
+
+	    5.1.2  Part	2 - Swap  This part specifies the devices to be
+	    used for root, pipe, and swap.  Normally, you do not want to
+	    change root	or pipe.  However, you might want to change
+	    swap.  For example,	by moving the swap device to a low-
+	    activity hard disk,	you might increase performance.
+
+	    We recommend that you do not set the swap device as	a floppy
+	    disk as this causes	very slow performance.
+
+	    Also, if you wish to change	only the size of the swap area
+	    on Drive 0,	you do not need	to reconfigure the kernel.  This
+	    is because the standard kernel uses	an autoconfiguration
+	    option.  Autoconfiguration tells XENIX to use the space
+	    after the file system on the device	from which you booted
+	    (Hard Drive	0 or Floppy Drive 0) as	the swap area.	To
+	    change the swap area, save all your	application and	user
+	    files on Hard Drive	0, reinstall XENIX, and	restore	the
+	    files.  During this	procedure, XENIX asks if you want to use
+	    a non-standard swap	area and builds	the root file system of
+	    the	correct	size.
+
+	    To create the swap area on any other drive,	specify	swap in
+	    the	form:
+
+		 swap	 disk	 device# offset	 swapsize
+
+	    The	device#	specifies the disk to be used for the swap area.
+	    The	device#	must be	in octal.  You can use the entire drive
+	    or the area	left after a file system.  The device numbers
+	    are:
+
+	    Hard Disk:
+
+Swap Area      	Drive 0		 Drive 1	  Drive	2	   Drive 3
+                Dec.   Octal     Dec.   Octal	Dec.   Octal	 Dec.	Octal
+________________________________________________________________________________
+Entire Drive     32     040	40     050	 48	060	  56	 070
+	    
+Space after      34     042	42     052	 50	062	  58	 072
+File System
+
+	    Floppy Disk:
+
+Swap Area		Drive 1		 Drive 2	  Drive	3
+_______________________________________________________________________________
+Entire Drive	       8      010	16     020	 24	030
+Space after            10     012	18     022	 26	032
+File System
+
+	    Use	the Octal device number	for the	conf file, and use the
+	    Decimal device number for the /etc/cfg command.
+
+	    You	can specify autoconfiguration for Drive	0 by using the
+	    device number 0377.	 If you	specify	autoconfiguration, the
+	    specified swap size	and offset are not used.  The standard
+	    kernel is set for autoconfiguration.
+
+	    Offset specifies the number	of blocks to reserve at	the
+	    beginning of the disk partition before the swap area.
+	    Usually, you specify 0 so that disk	space is not wasted.
+	    Offset is primarily	useful for systems that	do not have the
+	    "Space after File System" option available.
+
+	    If you elect to use	the "Space after File System" option,
+	    you	must first make	a file system.	You cannot make	a file
+	    system on a	drive that you are currently using.  That is,
+	    the	drive cannot be	mounted.  Also,	if the drive already
+	    contains a file system, the	file system will be overwritten
+	    with the new (empty) file system.
+
+	    To make the	file system, first use the diskstat command to
+	    determine the amount of available space on the disk.  Type:
+
+		 diskstat x ENTER
+
+	    Replace x with the hard disk drive number.	Note the number
+	    of blocks diskstat returns.
+
+	    You	must now decide	how many of those blocks to use	for
+	    swapsize and how many to use for the file system.  The
+	    number of blocks you select	must be	a multiple of 17 (1
+	    track).  You should	use at least 2006 blocks for swapsize.
+	    If you have	a large	system,	you should use at least	4097
+	    blocks as swapsize.	 You must create the file system prior
+	    to specifying the swap area.  Use the /etc/mkfs command:
+
+		 /etc/mkfs /dev/hdx nnnnn 9 17 ENTER
+
+	    Replace x with the drive number and	nnnnn with the number of
+	    blocks for the file	system.	 The file system size is the
+	    number of available	blocks (returned by diskstat) minus
+	    swapsize.
+
+	    Note: The maximum swapsize that can	be used	is 32759 blocks
+	    (16379K).
+
+	    If you elect to use	the "Entire Drive" option, use the
+	    diskstat command to	determine the amount of	available space
+	    on the disk.  Type:
+
+		 diskstat x ENTER
+
+	    Replace x with the drive number.  The number returned is the
+	    amount of available	space you can use for swapsize.	 You do
+	    not	have to	make a file system on the drive	with this
+	    option.
+
+	    After changing the swap device, you	must remake /dev/swap so
+	    that the ps	command	and other programs get the correct
+	    information	when looking at	the swap device.  You should
+	    first save the old /dev/swap:
+
+		 mv /dev/swap /dev/swap.old ENTER
+
+	    Then, use the mknod	command	to create the new /dev/swap:
+
+		 mknod /dev/swap b 01 device# ENTER
+
+	    Be sure to use the same device number that you used	earlier.
+	    Now, type these commands:
+
+		 chown sys /dev/swap ENTER
+		 chgrp sys /dev/swap ENTER
+		 chmod 640 /dev/swap ENTER
+
+	    Examples:
+
+		 swap	 disk	 0377	 0	 8000
+
+	    This is the	standard configuration for the swap space.  It
+	    uses the autoconfiguration mode to use the available space
+	    on the boot	drive.
+
+	    Suppose you	have a 15-meg hard disk	as Drive 2 and wish to
+	    use	it for swap space.  You	don't need the entire drive for
+	    swap space,	so you use the first part of the drive for a
+	    file system	and the	last part for swap.  The available space
+	    is 30770 blocks.  You decide on a swap space of 3400 blocks.
+	    You	then create a file system with the command:
+
+		 /etc/mkfs /dev/hd2 27370 9 17 ENTER
+
+	    You	can now	use the	swap specification:
+
+		 swap	 disk	 062	 0	 3400
+
+	    This example tells XENIX to	use 3400 blocks	after the file
+	    system on Drive 2 as the swap space.  The file system must
+	    already be created.	 You would now use the commands
+	    described earlier to remake	the /dev/swap device.
+
+	    In many cases, the kernel can be configured	without	using
+	    the	configuration kit, but using the /etc/cfg command.  To
+	    set	the swap device	to Hard	Drive 2	as in the example above,
+	    you	would use the command:
+
+		 /etc/cfg -n /xenix swapdev=1,50 swplo=0 nswap=3400 ENTER
+
+	    Note that the device number	must be	in decimal.  This
+	    modifies the installed kernel (/xenix) to use Hard Drive 2
+	    for	swap space.  The change	does not take effect until you
+	    reboot.  Before rebooting, you must	create a file system on
+	    Drive 2 and	remake /dev/swap.
+
+	    5.1.3  Part	3 - Tunable Parameters	This part specifies a
+	    number of parameters called	"tunables."  These parameters
+	    let	you set	defaults for your XENIX	system.	 The following
+	    describes each tunable and the default used	if you don't
+	    specify it.
+
+	    Most of these parameters are more conveniently set using
+	    /etc/cfg or	/etc/tz.
+
+	    daylight	   Sets	daylight savings time to on or off.  The
+			   value 1 indicates that daylight savings time
+			   applies during the appropriate part of the
+			   year.  The value 0 indicates	that daylight
+			   savings time	never applies. It is best to use
+			   /etc/tz to set "daylight" and "timezone"
+			   because /etc/tz also	sets the environment
+			   variables that XENIX	uses when displaying the
+			   date	and time.  In general, this value is
+			   only	used when there	is no TZ environment
+			   variable.  This parameter does not affect the
+			   size	of the kernel. Default = 1.
+
+	    timezone	   Specifies the number	of minutes west	of
+			   Greenwich Mean Time.	 Specify
+
+				8*60 for Pacific Standard Time
+				7*60 for Mountain Standard Time
+				6*60 for Central Standard Time
+				5*60 for Eastern Standard Time
+
+			   It is best to use /etc/tz to	set "daylight"
+			   and "timezone" because /etc/tz also sets the
+			   environment variables that XENIX uses when
+			   displaying the date and time.  In general,
+			   this	value is only used when	there is no TZ
+			   environment variable.  This parameter does
+			   not affect the size of the kernel. Default =
+			   6*60	(Central Standard Time).
+
+	    maxprocmem	   Sets	the maximum amount (Kbytes) of memory
+			   that	one process can	use.  This prevents a
+			   process from	using the entire system	memory.
+			   We recommend	that you do not	change this
+			   parameter.  However,	if you do, be sure that
+			   your	swap space is at least four times the
+			   amount you set for "maxprocmem."
+
+			   The maximum amount of memory	that any process
+			   can use is the total	user memory (displayed
+			   at boot time) minus 4K.  Do not set
+			   "maxprocmem"	higher than total user memory
+			   minus 4K.  If you set "maxprocmem" smaller
+			   than	256, you might not be able to run some
+			   programs or even boot the system.  This
+			   parameter does not affect the size of the
+			   kernel.  Default = 256.
+
+			   Maxprocmem can be more conveniently changed
+			   with	the command:
+
+				/etc/cfg -n /xenix maxmem=max ENTER
+
+			   where max is	the value of "maxprocmem" in
+			   Kbytes.
+
+	    maxproc	   Sets	the maximum number of processes	any one
+			   user	id can run at one time.	 This number
+			   includes all	processes, regardless of the
+			   number of terminals the user	might be using.
+			   This	parameter does not affect the size of
+			   the kernel.	Default	= 15.
+
+			   Maxproc can be more conveniently changed with
+			   the command:
+
+				/etc/cfg -n /xenix maxprocs=max	ENTER
+
+	    calls	   Sets	the maximum number of time delays that
+			   can be pending in the kernel	at any one time.
+			   Normally, you do not	need to	increase this
+			   value unless	you significantly increase the
+			   value for "procs."  The console message
+			   "Timeout table overflow" indicates that you
+			   need	to increase the	value of "calls."  Each
+			   callout structure occupies approximately 12
+			   bytes.  Default = 25.
+
+	    mounts	   Sets	the maximum number of file systems that
+			   can be mounted at any one time.  This number
+			   includes the	root, but does not include
+			   devices that	are not	currently mounted (for
+			   example, swap).  Different partitions of the
+			   same	disk that contain different mounted file
+			   systems use separate	mount structures.  Each
+			   mount structure occupies approximately 14
+			   bytes.  Default = 8.
+
+	    The	following parameters affect the	size of	various	kernel
+	    tables.  A value of	0 indicates autoconfiguration, and the
+	    value used depends on the total amount of memory at	boot
+	    time.  The default value in	all cases is autoconfiguration.
+	    Most of these parameters can also be set with /etc/cfg.  The
+	    examples using /etc/cfg modify the currently running kernel,
+	    /xenix.  You can modify a different	kernel by specifying a
+	    different file name	after -n.
+
+	    procs	   Sets	the maximum number of processes	that can
+			   run in the system at	one time.  This	number
+			   includes all	system processes:  swapper,
+			   /etc/init, /etc/cron, /etc/update, gettys
+			   (enabled lines), cron processes, etc.  If a
+			   user	program	or the shell returns a "No more
+			   processes" message, you might need to
+			   increase either "procs" or "maxproc."  Each
+			   process structure occupies approximately 46
+			   bytes.
+
+			   The procs parameter can also	be set with the
+			   command:
+
+				/etc/cfg -n /xenix procs=number	ENTER
+
+	    texts	   Sets	the maximum number of different	shared-
+			   text	programs that can be run at one	time.
+			   Programs with the "sticky bit" (chmod u+t)
+			   set count even if not currently executing.
+			   Almost every	distributed XENIX program is
+			   shared-text,	as well	as various shells (sh,
+			   csh,	csh10, vsh, and	tsh).  Shell scripts are
+			   not shared-text.  Several users running the
+			   same	program	simultaneously use one text
+			   structure for that program.	The console
+			   message "out	of text" indicates that	the
+			   value for "texts" needs to be increased.  The
+			   value of "texts" is fixed at	2/3 of "procs,"
+			   and increasing "texts" can be done only by
+			   increasing "procs."	Each text structure
+			   occupies approximately 14 bytes.
+
+	    coremap	   Contains information	about free memory.  The
+			   value of "coremap" is half of the value of
+			   "procs" and cannot be changed without
+			   changing "procs." The memory	used is	included
+			   in the figure for "procs."
+
+	    swapmap	   Contains information	about free swap	space.
+			   The value of	"swapmap" is half of the value
+			   of "procs" and cannot be changed without
+			   changing "procs." The memory	used is	included
+			   in the figure for "procs."
+
+	    inodes	   Sets	the maximum number of different	files
+			   that	can be open at one time.  This number
+			   includes mounted file systems, current
+			   working directories,	current	root
+			   directories,	special	device files,
+			   semaphores, pipes, shared-memory segments,
+			   tty devices,	directories, and ordinary files.
+			   Several processes opening the same file count
+			   as only one inode structure.	 If you	receive
+			   the console message "Inode table overflow,"
+			   you might need to increase the inode	value.
+			   If you receive the console message "Out of
+			   inodes on dev xx/yy," do not	increase the
+			   value for "inode."  This means that the disk
+			   ran out of space to store inodes.  Increasing
+			   the value of	"inode"	does not solve this
+			   problem.  (Delete some files	from the disk in
+			   question instead.)  Each inode structure
+			   occupies approximately 78 bytes.
+
+			   The inodes parameter	can also be set	with the
+			   command:
+
+				/etc/cfg -n /xenix inodes=number ENTER
+
+	    files	   Sets	the maximum number of opens that can be
+			   active at one time.	Each open to a file is
+			   counted as a	different file structure.
+			   However, open files passed from a parent
+			   process to a	child process use a single file
+			   structure.  Current working directories,
+			   current root	directories, and mounted file
+			   systems do not require a file structure.
+			   However, if a program opens a directory, it
+			   is counted as a file	structure.  Pipes
+			   require two file structures:	one for	each end
+			   of the pipe.	 If you	receive	the console
+			   message "no file" or	the error message "File
+			   table overflow," increase the value for
+			   "files."  Each file structure occupies
+			   approximately 10 bytes.  The	limit for
+			   "files" should be equal to or slightly
+			   greater than	the value set for "inodes."
+
+			   The files parameter can also	be set with the
+			   command:
+
+				/etc/cfg -n /xenix files=number	ENTER
+
+	    locks	   Sets	the maximum number of file locks that
+			   can be in effect at one time.  See locking(S)
+			   for more information	on file	locks.	Very few
+			   programs supplied with the XENIX Runtime
+			   (core) or Development System	use file
+			   locking.  Some applications might use
+			   extensive file locking.  Each lock structure
+			   occupies approximately 20 bytes.
+
+			   The locks parameter can also	be set with the
+			   command:
+
+				/etc/cfg -n /xenix locks=number	ENTER
+
+	    clists	   Sets	the maximum number of clists for the
+			   system.  Clists store characters that are
+			   waiting for input to	or output from a
+			   terminal.  Increasing the number of clists
+			   allowed increases the number	of characters
+			   that	the kernel can hold before the system
+			   starts to lose characters.  Remember	that
+			   transferring	a continuous high-speed	stream
+			   of data with	no character loss is only
+			   possible with flow control (^S/^Q) or a
+			   positive acknowledgement protocol arranged
+			   between the other system and	the program
+			   running on your XENIX system.  Each clist
+			   occupies approximately 30 bytes and holds
+			   from	1 to approximately 24 characters.
+
+			   The clists parameter	can also be set	with the
+			   command:
+
+				/etc/cfg -n /xenix clists=number ENTER
+
+	    sabufs	   Sets	the number of disk buffers available in
+			   the disk cache.  Increasing the value of
+			   "sabufs" might increase the performance of
+			   your	system.	 Each disk buffer occupies
+			   approximately 554 bytes.  (See also hashbuf.)
+			   The number of buffers is automatically
+			   increased to	use as much space as possible
+			   between the end of the kernel and the next
+			   multiple of 4096 bytes for buffers.
+
+			   The sabufs parameter	can also be set	with the
+			   command:
+
+				/etc/cfg -n /xenix buffers=number ENTER
+
+	    hashbuf	   Sets	the number of hash buffers available.
+			   Regardless of the value specified, hashbuf is
+			   the next higher power of 2 above the	value of
+			   "sabufs."  (For example, if you set "sabufs"
+			   to a	value between 64 and 127, inclusive,
+			   hashbuf is 128.)  This parameter is not
+			   configurable	except by changing "sabufs."
+			   Each	hashbuf	occupies approximately 12 bytes.
+
+	    Notes:
+
+	       + The variables daylight, timezone, maxprocmem, and
+		 maxproc do not	affect the size	of the kernel.
+
+	       + The variables coremap,	swapmap, texts,	and hashbuf
+		 cannot	be set directly.  Instead, they	are changed with
+		 another variable.  Changing the other variable	affects
+		 the memory used by these tables.
+
+	       + The variables procs, inodes, files, mounts, locks, and
+		 calls specify the size	of various system tables.
+		 Making	them larger (if	you are	not having any problems)
+		 does not increase system performance.	In fact, the
+		 larger	kernel can decrease system performance due to a
+		 smaller user memory and increased swapping.  If you are
+		 having	problems with table overflows, check what was
+		 happening at the time the problem occurred.  It is
+		 often better to avoid running tasks that use too many
+		 processes than	to attempt to reconfigure the kernel.
+		 Infinitely recursive shell scripts will eventually
+		 exceed	any limit.  Avoid starting dozens of background
+		 jobs simultaneously when they could be	run a few at a
+		 time.
+
+	       + The autoconfiguration values for sabufs, inodes, files,
+		 locks,	procs, and clists change with system memory
+		 size, according to the	following table.  The row marked
+		 "MINIMUMS" indicates the lowest value that can	be
+		 specified for that parameter.	If a lower number is
+		 specified, it is ignored and instead, the number
+		 appropriate for the system memory size	is used	for that
+		 parameter.  No	message	is given.
+
+		       Sabufs	Inodes	 Files	 Locks	 Procs	 Clists
+ ______________________________________________________________________
+ MINIMUMS		 32	  60	   60	   20	   20	   50
+ Memory	Sizes
+ 0.5 meg - 0.875 meg	 50	 100	  100	  200	   60	  200
+ 1.0 meg - 1.375 meg	100	 100	  100	  200	   60	  200
+ 1.5 meg - 1.875 meg	200	 120	  120	  240	   70	  200
+ 2.0 meg - 2.375 meg	300	 140	  140	  280	   80	  200
+ 2.5 meg - 2.875 meg	300	 160	  160	  320	   90	  200
+ 3.0 meg - up		300	 200	  200	  400	  100	  200
+
+		 Installing more than 1	meg of memory requires the 6000
+		 MMU (26-6020).
+
+	       + If the	kernel does not	have enough memory to have 256K
+		 of user memory	plus all of the	requested table	size
+		 parameters, it	displays the message "Warning:	Bad
+		 Configuration,	resetting to defaults" when the	system
+		 is booted and uses the	autoconfiguration values for all
+		 the table size	parameters.
+
+	       + The kernel's size is rounded up to the	next multiple of
+		 4096 bytes.  If the kernel can	fit more buffers in the
+		 otherwise unused area between the kernel and the next
+		 multiple of 4096 bytes, it increases the number of
+		 buffers automatically.
+
+	    5.2	 Example
+
+	    Suppose that your system has one hard drive, 512K of memory,
+	    and	no terminals.  The applications	you run	include	large
+	    MBASIC programs that need as much memory as	possible.  You
+	    do not have	a modem	or need	the screen device.  Speed is a
+	    consideration, but the system must be able to handle large
+	    processes.	Therefore, you want to raise the number	for
+	    "maxprocmem" to 420.
+
+	    Your system's users	also run complicated shell scripts that
+	    sometimes run over the process-per-user limit of 15.
+	    Therefore, you raise the limit of "maxproc"	to 25.
+
+	    After raising these	variables, you decide to cut the size of
+	    most system	tables in half or use the minimums if they are
+	    larger.  However, because file locking was apparently never
+	    used and there will	not be another user to lock out, you
+	    want to cut	the number of locks available to 20.
+
+	    The	resulting configuration	is:
+
+		 **
+		 ***   Custom Xenix configuration file for single-user system
+		 **
+		 disk	 1
+		 console 1
+		 printer 1
+		 *** note that the minor number	0377 causes the	kernel to
+                 autoconfigure
+		 root	 disk 0377
+		 pipe	 disk 0377
+		 swap	 disk 0377 0 8000
+		 *** tunables
+		 timezone (6*60)
+		 maxprocmem 404
+		 *** `0' causes	the kernel to autoconfigure the	number
+		 sabufs	    32
+		 inodes	    60
+		 files	    60
+		 mounts	    4
+		 procs	    30
+		 clists	    75
+		 locks	    20
+		 maxproc    25
+
+	    After building this	kernel,	you notice that	the kernel is
+	    approximately 12K smaller than the distribution kernel.
+	    However, this does not quite reach the goal	of running 420K
+	    processes.	The actual user	memory available is:
+
+		 512K -	120K = 392K
+
+	    The	largest	process	that can be run	is 4K less than	this.
+	    The	largest	value for "maxprocmem" in this case is 388K.  If
+	    it turns out that this is not large	enough,	you will have to
+	    reduce the size of the kernel further, or get some more
+	    memory.

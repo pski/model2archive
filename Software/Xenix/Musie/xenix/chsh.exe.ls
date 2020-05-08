@@ -1,0 +1,4 @@
+-rws--x--x 0/0           14721 Sep 11 00:33 1994 /usr/local/chsh
+-rws--x--x 0/0               0 Sep 11 00:33 1994 /usr/local/chfn link to /usr/local/chsh
+-rw-r--r-- 3/3            1726 Sep  3 23:30 1994 /usr/lib/Help/lib/L/chsh
+-rw-r--r-- 3/3            1551 Sep  3 23:30 1994 /usr/lib/Help/lib/L/chfn

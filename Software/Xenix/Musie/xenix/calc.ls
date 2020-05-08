@@ -1,0 +1,9 @@
+-rw-rw-rw- 3/3           11315 Aug  2 10:39 1994 calc/calc.c
+-rw-rw-rw- 3/3             199 Aug  2 11:32 1994 calc/Makefile
+-rw-rw-rw- 3/3             549 Aug  2 10:38 1994 calc/headings
+-rw-rw-rw- 3/3             110 Aug  2 10:39 1994 calc/machine.h
+-rw-rw-rw- 3/3            2812 Aug  2 10:39 1994 calc/mch_defines.c
+-rw-rw-rw- 3/3            5961 Aug  2 10:39 1994 calc/calc.man
+-rw-rw-rw- 3/3             225 Oct 20 17:44 1991 calc/index.c
+-rw-rw-rw- 3/3             528 Aug  2 12:08 1994 calc/Tandy6000
+-rw-rw-rw- 3/3             646 Aug  2 11:45 1994 calc/local.h

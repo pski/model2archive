@@ -1,0 +1,6 @@
+-rw-r--r-- 0/0              51 Feb 23 18:41 1995 Makefile
+-rw-rw-r-- 100/20          117 Oct 22 11:41 1988 ORIGIN
+-rwxr-xr-x 0/0           15684 Feb 23 18:43 1995 cchk
+-rw-rw-r-- 100/20         3366 Sep  4 16:19 1988 cchk.1
+-rw-rw-r-- 100/20        14541 Sep  5 10:49 1988 cchk.c
+-rw-r--r-- 0/0            5057 Feb 23 18:23 1995 cchk.man

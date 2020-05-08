@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3           17182 Aug 21 12:51 1994 /usr/games/lotto
+-rw-r--r-- 3/3             799 Aug 21 13:29 1994 /usr/lib/Help/lib/L/lotto

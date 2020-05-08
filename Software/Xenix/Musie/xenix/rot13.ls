@@ -1,0 +1,3 @@
+-rw-r--r-- 0/0              82 Nov  4 20:08 1994 rot13.c
+-rwxr-xr-x 0/0            3140 Nov  4 20:09 1994 rot13.exe
+-rw-r--r-- 0/0             799 Nov  4 20:08 1994 rot13.man

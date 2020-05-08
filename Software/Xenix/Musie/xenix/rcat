@@ -1,0 +1,66 @@
+From rogue!allan@cleese.apana.org.au Tue Aug 16 12:18:33 1994
+Return-Path: <rogue!allan@cleese.apana.org.au>
+Received: from cleese.apana.org.au by nyx.cs.du.edu (4.1/SMI-4.1)
+	id AA04291; Tue, 16 Aug 94 12:18:25 MDT
+X-Disclaimer: Nyx is a public access Unix system run by the University
+	of Denver.  The University has neither control over nor
+	responsibility for the opinions or correct identity of users.
+Received: from rogue.UUCP by cleese.apana.org.au with UUCP id AA29520
+  (5.67a/IDA-1.5 for nyx.cs.du.edu!sscrivan); Wed, 17 Aug 1994 03:52:29 +0930
+Received: by rogue.apana.org.au (smail2.5)
+	id AA16218; 16 Aug 94 22:00:33 OST (Tue)
+Subject: A little toy
+To: sscrivan@nyx.cs.du.edu (Steve Scrivano)
+Date: Tue, 16 Aug 94 22:00:23 OST
+From: Allan Gunn <rogue!allan@cleese.apana.org.au>
+Reply-To: allan@rogue.apana.org.au
+X-Mailer: ELM [version 2.3 PL11]
+Message-Id: <9408162200.AA16214@rogue.apana.org.au>
+Status: RO
+
+Here's a little bit of a toy for you, I called it rcat (probably should be
+called revcat), in that cats a file, in reverse - Last byte to first
+byte. Was part of the C programming course I did, de-ansi-fied.
+
+------ BEGIN ------
+#include <stdio.h>
+main(argc,argv)
+int argc;
+char *argv[];
+{
+	char ch;
+	FILE *fp;
+	long count,last;
+	if(argc !=2)
+	{
+		printf("Usage: %s file\n",argv[0]);
+		exit(1);
+	}
+	if((fp=fopen(argv[1],"r"))==NULL)
+	{
+		printf("%s can't open %s \n",argv[0],argv[1]);
+		exit(1);
+	}
+	fseek(fp,0L,2);
+	last=ftell(fp);
+	for(count=1L;count<=last;count++)
+	{
+		fseek(fp,-count,2);
+		ch=getc(fp);
+		if(ch!=EOF)
+			putchar(ch);
+	}
+	fclose(fp);
+	printf("\n");
+}
+
+------ END ------
+
+	Have fun .... Cheers .... Allan.
+-- 
+
+			-----------------------
+Send mail to:- allan@rogue.apana.org.au : Campbelltown S.Australia
+Voice (08) 3651087 : Data (08) 3651092 :- 9600 baud maximum
+A sad fact: 'mundane != "A job done right"' - Allan Gunn
+

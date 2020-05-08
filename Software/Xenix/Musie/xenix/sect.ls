@@ -1,0 +1,8 @@
+-rw-r--r-- 0/0              41 May 15 23:54 1995 CONTENTS
+-rw-r--r-- 0/0             847 May 15 23:55 1995 Makefile
+-rw-r--r-- 0/0             566 Jan  4 17:44 1995 README
+-rwxr-xr-x 0/0            7252 May 15 23:57 1995 sect
+-rw-r--r-- 0/0            2174 Jan  4 17:44 1995 sect.1
+-rw-r--r-- 0/0            4669 May  6 04:33 1995 sect.c
+-rw-r--r-- 0/0            3578 May 15 23:50 1995 sect.man
+-rw-r--r-- 0/0            3592 May 15 23:47 1995 sect2.c

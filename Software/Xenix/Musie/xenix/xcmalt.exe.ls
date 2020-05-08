@@ -1,0 +1,8 @@
+-rws--x--x 4/3           82512 Aug 10 11:11 1994 /usr/local/xcmalt
+-rw-r--r-- 0/0            3182 Aug  9 20:22 1994 /usr/local/lib/xcmalt/.autocis
+-rw-r--r-- 0/0            1153 Aug  9 20:22 1994 /usr/local/lib/xcmalt/.c24
+-rw-r--r-- 0/0             817 Aug  9 20:22 1994 /usr/local/lib/xcmalt/.callhq
+-rw-r--r-- 0/0              31 Aug  9 20:23 1994 /usr/local/lib/xcmalt/.exrc
+-rw-r--r-- 0/0             939 Aug  9 20:27 1994 /usr/local/lib/xcmalt/.phonelist
+-rw-r--r-- 0/0             116 Aug  9 20:28 1994 /usr/local/lib/xcmalt/.xcmalt
+-rw-r--r-- 3/3           36970 Jul 27 18:00 1994 /usr/lib/Help/lib/L/xcmalt

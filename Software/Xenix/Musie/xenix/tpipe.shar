@@ -1,0 +1,243 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  Makefile README tpipe.1 tpipe.c
+# Wrapped by root@coupon on Tue Aug 16 19:54:24 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'Makefile' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Makefile'\"
+else
+echo shar: Extracting \"'Makefile'\" \(224 characters\)
+sed "s/^X//" >'Makefile' <<'END_OF_FILE'
+X# When compiled under Tandy 6000 3.2 Xenix, an error will occur, but continues
+X# compiling with no apparent problems
+XCC =		cc
+XCFLAGS =	-O
+XTPIPE =		tpipe
+XCFILES =	tpipe.c
+X
+X$(TPIPE): $(CFILES)
+X	$(CC) $(CFLAGS) $(CFILES) -o $@
+END_OF_FILE
+if test 224 -ne `wc -c <'Makefile'`; then
+    echo shar: \"'Makefile'\" unpacked with wrong size!
+fi
+# end of 'Makefile'
+fi
+if test -f 'README' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'README'\"
+else
+echo shar: Extracting \"'README'\" \(2118 characters\)
+sed "s/^X//" >'README' <<'END_OF_FILE'
+X-------------------------------------------------------------
+Xtpipe --  replicate standard output to an additional pipeline
+X              version 1.02    6 Mar. 1990
+X-------------------------------------------------------------
+X
+Xtpipe is a simple utility program that can be used to split a unix
+Xpipeline into two pipelines. That is, the output of one pipeline can
+Xbe replicated and supplied as the input to two other pipelines
+Xexecuting simultaneously.
+X
+XLike tee(1), tpipe transcribes its standard input to its standard
+Xoutput. But where tee(1) writes an additional copy of its input to a
+Xfile, tpipe writes the additional copy to the input of another
+Xpipeline, which is specified as the argument to tpipe. In a typical
+Xuse, this pipeline will eventually write to a file. The standard
+Xoutput of tpipe is typically piped into another pipeline, whose output
+X(if any) may go to the user's terminal or anywhere at all.
+X
+XI wrote tpipe because I was processing image files (using pbmplus),
+Xand I wanted to apply more than one pipeline to the same input file,
+Xbut the early parts of the pipeline were the same. I did not want to
+Xhave to execute the early parts multiple times. I did not have enough
+Xdisk space to write what would have been a huge intermediate file.
+XFrankly, I did not know about teeing to named pipes, but anyway it's
+Xnice not to have to bother with them or worry about name conflicts,
+Xespecially if you have more than one job wanting to do this at the
+Xsame time...
+X
+XSee the manual page for tpipe(1) for information about its use,
+Xincluding an artificial example. 
+X
+XThis distribution contains four files:
+X  Readme (this is it)
+X  Makefile (it is trivial)
+X  tpipe.1  (the manual page)
+X  tpipe.c  (the code!)
+X
+XTo read the manual page, just `nroff -man tpipe.1'.
+X
+XTo compile tpipe, just `make'. Put tpipe.1 in the man1/ directory in
+Xyour MANPATH or the system man path.
+X
+X--
+XDavid B Rosen, Cognitive & Neural Systems                  rosen@bucasb.bu.edu
+XCenter for Adaptive Systems                 rosen%bucasb@{buacca,bu-it}.bu.edu
+XBoston University              {mit-eddie,harvard,uunet}!bu.edu!thalamus!rosen
+END_OF_FILE
+if test 2118 -ne `wc -c <'README'`; then
+    echo shar: \"'README'\" unpacked with wrong size!
+fi
+# end of 'README'
+fi
+if test -f 'tpipe.1' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'tpipe.1'\"
+else
+echo shar: Extracting \"'tpipe.1'\" \(2464 characters\)
+sed "s/^X//" >'tpipe.1' <<'END_OF_FILE'
+X.TH TPIPE 1  "29 January 1990"
+X.\" @(#)tpipe.1 1.0 90/01/29; David B Rosen (rosen@bucasb.bu.edu)
+X.SH NAME
+Xtpipe - replicate the standard output into an additional pipeline
+Xthat is run in a subshell
+X.SH SYNOPSIS
+X.B tpipe
+X[
+X.I pipeline
+X]
+X.IX  "tpipe command"  ""  "\fLtpipe\fP \(em copy standard output to many pipelines"
+X.IX  "copy" "standard output to many pipelines \(em \fLtpipe\fP"
+X.IX  "standard output"  "copy to many pipelines"  ""  "copy to many pipelines \(em \fLtpipe\fP"
+X.IX  pipelines  "copy standard output to many"  ""  "copy standard output to many \(em \fLtpipe\fP"
+X.SH DESCRIPTION
+X.B tpipe
+Xtranscribes the standard input to the
+Xstandard output and simultaneously writes an additional copy to
+Xa specified
+X.IR pipeline .
+X.PP
+Xtpipe is similar to tee(1) except that tpipe writes the duplicate copy
+Xof its standard input to a command or pipeline instead of a file. This
+Xcan help you avoid re-executing earlier commands in the pipeline,
+Xwriting temporary files, or resorting to the use of named pipes.
+X.PP
+XThe specified
+X.IR pipeline
+Xis always executed in a subshell by sh(1), regardless of your current
+Xshell.  If a non-empty string is supplied as the argument, it must be 
+Xa valid pipeline or command for sh(1). Normally, you will want to enclose
+Xthe
+X.IR pipeline
+Xargument in quotes ('' or "").  The type of quotes you choose
+Xwill affect variable substitution by your shell (see the man page 
+Xfor your shell, such as csh(1), for details).
+X.PP
+XIf the subshell pipeline writes to its standard output, this output
+Xwill go to the standard output of tpipe, where it will be interspersed
+Xin an unpredictable way with the other copy of standard input.
+XNormally, this is not what you want. Instead, you would typically
+Xspecify a subshell
+X.IR pipeline 
+Xwhose output is redirected to a file (as in the example
+Xbelow) or has some other effect.
+X.SH EXAMPLE
+X.IP
+X% cmd1 <infile | tpipe "cmd2 | cmd3 >outfile" | cmd4 
+X.PP
+Xwhich has the effect of running the output of command cmd1
+Xsimultaneously through two pipelines, "cmd2 | cmd3 >outfile" and cmd4.
+XDiagramatically, in this example (this will look wrong with
+Xa variable-spaced font):
+X
+X.nf
+X                     --> cmd2 --> cmd3 --> outfile
+X                   /
+Xinfile  --> cmd1 -<
+X                   \\
+X                     --> cmd4 -->  (standard output)
+X.fi
+X.SH SEE ALSO
+X.BR tee (1),
+X.BR sh (1),
+X.BR cat (1)
+X
+X.SH AUTHOR
+XDavid B Rosen
+X.PP
+XTHIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT EXPRESS OR IMPLIED WARRANTY.
+END_OF_FILE
+if test 2464 -ne `wc -c <'tpipe.1'`; then
+    echo shar: \"'tpipe.1'\" unpacked with wrong size!
+fi
+# end of 'tpipe.1'
+fi
+if test -f 'tpipe.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'tpipe.c'\"
+else
+echo shar: Extracting \"'tpipe.c'\" \(1603 characters\)
+sed "s/^X//" >'tpipe.c' <<'END_OF_FILE'
+X/* tpipe.c -- tee a pipeline into two pipelines. Like tee(1) but 
+X   argument is a command or pipeline rather than a file.
+X
+X   See the man page tpipe(1) supplied with this software.
+X
+X   This version uses the unix system calls popen(3), read(2), and
+X   write(2).  It uses write(2) to write directly to the fileno() of
+X   of the file pointer stream returned by popen.
+X
+X   I've tried it out under BSD, System V, and an older version of unix,
+X   but:
+X
+X   THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT EXPRESS OR IMPLIED 
+X   WARRANTY.
+X
+X   Version 1.02 (4 Mar 1989) (Use fileno())
+X
+X--
+XDavid B Rosen, Cognitive & Neural Systems                  rosen@bucasb.bu.edu
+XCenter for Adaptive Systems                 rosen%bucasb@{buacca,bu-it}.bu.edu
+XBoston University              {mit-eddie,harvard,uunet}!bu.edu!thalamus!rosen
+X
+X*/
+X
+X#include <stdio.h>
+X
+X/*#define NOHACK*/
+X
+X#ifndef BUFSIZ
+X#define BUFSIZ 2048
+X#endif /*BUFSIZ*/
+X
+Xint main(argc, argv)
+X     int argc;
+X     char *argv[];
+X{
+X  char buf[BUFSIZ];
+X  register FILE *subpipeline = NULL;
+X  register unsigned n;
+X
+X  if (argc == 2){
+X    if (*argv[1]) {
+X      if ((subpipeline = popen(argv[1],"w")) == NULL) {
+X	fprintf(stderr, "%s: can't create subpipeline %s\n", argv[0], argv[1]);
+X	exit(1);
+X      }
+X    }
+X  } else if (argc > 2) {
+X    fprintf(stderr, "usage: %s [pipeline]\n", argv[0]);
+X    exit(2);
+X  }
+X
+X  while ((n = read(0, buf, BUFSIZ)) > 0) {
+X    write(1, buf, n); /* write to standard output */
+X    if (subpipeline) {  /* write to subpipeline: */
+X      write((int)fileno(subpipeline), buf, n);
+X    }
+X  }
+X
+X  if (subpipeline) pclose(subpipeline);
+X  return 0;
+X}
+END_OF_FILE
+if test 1603 -ne `wc -c <'tpipe.c'`; then
+    echo shar: \"'tpipe.c'\" unpacked with wrong size!
+fi
+# end of 'tpipe.c'
+fi
+echo shar: End of shell archive.
+exit 0

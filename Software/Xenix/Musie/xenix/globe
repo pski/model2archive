@@ -1,0 +1,867 @@
+# This is a shell archive.  Remove anything before this line, then feed it
+# into a shell via "sh file" or similar.  To overwrite existing files,
+# type "sh file -c".
+# Contents:  README Makefile globe.1 globe.c
+# Wrapped by kent@sparky on Thu Jul 21 18:48:04 1994
+PATH=/bin:/usr/bin:/usr/ucb:/usr/local/bin:/usr/lbin:$PATH ; export PATH
+echo If this archive is complete, you will see the following message:
+echo '          "shar: End of archive 1 (of 1)."'
+if test -f 'README' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'README'\"
+else
+  echo shar: Extracting \"'README'\" \(492 characters\)
+  sed "s/^X//" >'README' <<'END_OF_FILE'
+X       globe - display the currently-lighted face of Earth in ASCII
+X                            version of 26mar94
+X
+X
+XA cute ASCII graphic hack.  The pictures were converted from 256x256
+Xbitmaps using pbmtoascii.  The bitmaps originally came from Sun.  The
+Xwrapper program took 20 minutes to write, including documentation.
+X
+XInstallation:
+X  - Edit Makefile and follow the instructions.
+X  - Make.
+X  - Make install.
+XThat's all!
+X
+XComments to:
+X    Jef Poskanzer  jef@netcom.com  jef@well.sf.ca.us
+END_OF_FILE
+  if test 492 -ne `wc -c <'README'`; then
+    echo shar: \"'README'\" unpacked with wrong size!
+  fi
+  # end of 'README'
+fi
+if test -f 'Makefile' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Makefile'\"
+else
+  echo shar: Extracting \"'Makefile'\" \(669 characters\)
+  sed "s/^X//" >'Makefile' <<'END_OF_FILE'
+X# CONFIGURE: the directory where you want the executables installed.
+X# This directory needs to be secure against modification by random users.
+XINSTDIR =	/usr/local/bin
+X
+X# CONFIGURE: the directory tree where you want the man pages installed.
+XMANDIR =	/usr/local/man
+X
+X# CONFIGURE: your favorite C compiler.
+XCC =		cc
+X
+X# CONFIGURE: your favorite C flags.
+XCFLAGS =	-O
+X
+X# CONFIGURE: your favorite linker flags.
+XLDFLAGS =	-s
+X
+Xall:		globe
+X
+Xglobe:		globe.c
+X	$(CC) $(CFLAGS) globe.c $(LDFLAGS) -o globe
+X
+Xinstall:	all
+X	rm -f $(INSTDIR)/globe
+X	cp globe $(INSTDIR)
+X	chmod 755 $(INSTDIR)/globe
+X	rm -f $(MANDIR)/man1/globe.1
+X	cp globe.1 $(MANDIR)/man1
+X
+Xclean:
+X	rm -f globe a.out core
+END_OF_FILE
+  if test 669 -ne `wc -c <'Makefile'`; then
+    echo shar: \"'Makefile'\" unpacked with wrong size!
+  fi
+  # end of 'Makefile'
+fi
+if test -f 'globe.1' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'globe.1'\"
+else
+  echo shar: Extracting \"'globe.1'\" \(803 characters\)
+  sed "s/^X//" >'globe.1' <<'END_OF_FILE'
+X.TH globe 1 "26 March 1994"
+X.SH NAME
+Xglobe - display the currently-lighted face of Earth in ASCII
+X.SH SYNOPSIS
+X.B globe
+X.SH DESCRIPTION
+X.PP
+XA cute ASCII graphic hack.  The pictures were converted from 256x256
+Xbitmaps using pbmtoascii.  The bitmaps originally came from Sun.  The
+Xwrapper program took 20 minutes to write, including documentation.
+X.SH AUTHOR
+XCopyright (C) 1994 by Jef Poskanzer <jef@netcom.com>.
+X.\" Permission to use, copy, modify, and distribute this software and its
+X.\" documentation for any purpose and without fee is hereby granted, provided
+X.\" that the above copyright notice appear in all copies and that both that
+X.\" copyright notice and this permission notice appear in supporting
+X.\" documentation.  This software is provided "as is" without express or
+X.\" implied warranty.
+END_OF_FILE
+  if test 803 -ne `wc -c <'globe.1'`; then
+    echo shar: \"'globe.1'\" unpacked with wrong size!
+  fi
+  # end of 'globe.1'
+fi
+if test -f 'globe.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'globe.c'\"
+else
+  echo shar: Extracting \"'globe.c'\" \(36450 characters\)
+  sed "s/^X//" >'globe.c' <<'END_OF_FILE'
+X/* globe - display the currently-lighted face of the Earth in ASCII
+X**
+X** Copyright (C) 1994 by Jef Poskanzer <jef@netcom.com>.
+X**
+X** Permission to use, copy, modify, and distribute this software and its
+X** documentation for any purpose and without fee is hereby granted, provided
+X** that the above copyright notice appear in all copies and that both that
+X** copyright notice and this permission notice appear in supporting
+X** documentation.  This software is provided "as is" without express or
+X** implied warranty.
+X*/
+X
+X#include <sys/types.h>
+X#include <stdio.h>
+X#include <time.h>
+X
+X#define SECSPERDAY 86400
+X#define OFFSET 43200
+X
+X#define NGLOBES 30
+X#define NLINES 23
+X
+Xstatic char* globes[NGLOBES][NLINES] =
+X    {
+X    "             ._o##HMP'\"\"\"&&Z##o_",
+X    "          _od'`\"\"' \"\"?\\ HMM9MMMMMHb_",
+X    "       .dHM'        `9M#HMMMMMMMMMMMMb.",
+X    "     .d#\"\"'         ooHM#9HMMMMMMMMMMMMb.",
+X    "    d*'             HMMdbdd+'*HH#MMMMMMMM?",
+X    "  ./'            ..?MMMMMMM#bd##obMMMMMMMMb",
+X    "  H              $MMMMMMMMMMMMMMMMM&MMMRMHMH",
+X    " d6.            |MMMMMMMMMMMMMMMMMMM&HMMM|`9b",
+X    "|             - {MMMMMMMMMMMMMMMMMMMM&MH''  H|",
+X    "MMH|            `9MMMMMMMMMMMMMMMMMMMMM#H'  `H",
+X    "MMMM#.            \"**\"\"'\"#MMMMMMMMMMMMMM|    |",
+X    "MMMMMb\\                   |MMMMMMMMMMMH'     |",
+X    "MMMMMMMMHo                `?MMMMMMMMMM       |",
+X    "MMMMMMMMMH                  MMMMMMMMMb  .    |",
+X    "|*MMMMMMM.                 |MMMMMMMMM*,H|   .|",
+X    " \\TMMMMMM'                 `MMMMMMMP',M?.   /",
+X    " `|9MMMR'                   HMMMMMP' `'    |",
+X    "  `?9MMM                    `MMMH'        /",
+X    "    \\MMH                     \"\"         ,/",
+X    "     `*M\\                             ./'",
+X    "       `*\\o   ..                    ,+'",
+X    "          \"-\\,_                 _.-\"",
+X    "              \"^~-v_o#######d#\"\"",
+X    "              _o#>MMMM?\"\"`?&##o_.",
+X    "          _dHH''+\"\"  \"\"-o.+MMMMMMHb_",
+X    "       .dHMMM'         `9M#MMMMMMMMMMb.",
+X    "     .dMH*\"\"\"          ,odMH*MMMMMMMMMMb.",
+X    "    dMP'         --    `HMMdo&/*`#M#MMMMM?",
+X    "  .dP'                .?MMMMMMM#o##boMMMMMb",
+X    "  HM|                ?MMMMMMMMMMMMMMMMMMMMM&",
+X    " d\"Mb_               MMMMMMMMMMMMMMMMMMMHMM|\\",
+X    "|M    |              MMMMMMMMMMMMMMMMMMM6MH'`|",
+X    "|MdMH#.              `HMMMMMMMMMMMMMMMMMMMH| |",
+X    "|`MMMMH#\\              `**\"\"'`#MMMMMMMMMMMM' |",
+X    "||MMMMMMMo_                    HMMMMMMMMMH'  |",
+X    "||MMMMMMMMMMHb.                `HMMMMMMMM'   |",
+X    "|`MMMMMMMMMMMH'                 |MMMMMMMM..  |",
+X    "| `HMMMMMMMMM                  .MMMMMMMMH,& .|",
+X    " \\  TMMMMMMMM                  `HMMMMMM',H: /",
+X    " `| `HMMMMM\"'                   MMMMMH' \"' |",
+X    "  `\\ /MMMMP                     |MMH\"'    /",
+X    "    \\.`MMH'                     `\"'     ,/",
+X    "     `\\:HM.                           ./'",
+X    "       `~Z#\\v    .                  ,/'",
+X    "          \"-\\_ \\.               _.-\"",
+X    "              \"\"b~v\\_od#####=d\"\"",
+X    "              _odp$MMMHR:\"\"\"##o_",
+X    "          _d$MMH\" \"*\"  \"\" \\\\+HHMMHb_",
+X    "       .dHMMMHMR          \"*HHMMMMMMMb.",
+X    "     .dMMMM*\"'\"'           vdMM#MMMMMMMb.",
+X    "    dMMMP'            -    |HM6bdd#`HMHMM?",
+X    "  .dMHP'                 ..|MMMMMMHbd#bMMMb",
+X    " .H' &b                  :HMMMMMMMMMMMMMMMMH",
+X    " d[p\"9H\\_.               |MMMMMMMMMMMMMMMMMMb",
+X    "|`HH     '               |MMMMMMMMMMMMMMMMMMT|",
+X    "| `boHMH#L               ``MMMMMMMMMMMMMMMMMH|",
+X    "|   dMMMMMH#\\              ``#\"\"\"\"*HMMMMMMMMM|",
+X    "|. |MMMMMMMMMo\\                    |MMMMMMMM||",
+X    "|  |MMMMMMMMMMMMM#\\                `9MMMMMMH |",
+X    "|   9MMMMMMMMMMMMM?                 |MMMMMM|.|",
+X    "|    *HMMMMMMMMMM|                 .MMMMMMM\\L|",
+X    " \\     HMMMMMMMMM'                 `MMMMMP\\P/",
+X    " `\\    |MMMMMMP\"'                   MMMMP'^7",
+X    "  `\\    9MMMMM'                    .MMH'  /",
+X    "    \\.  `MMMH'                      \"   ,/",
+X    "     `\\. `HM|                         ./'",
+X    "       `~\\ *H\\,    ..               ,/'",
+X    "          \"-\\_  ,\\              _.-\"",
+X    "              \"-+#qo\\_ood###==\"\"",
+X    "             ._o##M'MMMMH?:'-qo_",
+X    "          _dH*SMMM\" `\"\"  \"\" \\o&HMHb_",
+X    "       .dHMMMMMMHML          \"*HMMMMMb.",
+X    "     .dMMMMMMH*\"'\"'           ,dMM#MMMMb.",
+X    "    dMMMMMM*'            --    *MMb&d?*MH?",
+X    "   dMMM#M''                   .|MMMMMHb#bMb.",
+X    "  HMH' .H\\                   `]MMMMMMMMMMMMH",
+X    " /|MLd/'9Hb__                 MMMMMMMMMMMMMMb",
+X    "|  `HM+      '                MMMMMMMMMMMMMMM|",
+X    "|    |bodMM##?                `9MMMMMMMMMMMMMH",
+X    "|      |MMMMMMH#b               \"**\"\"\"#MMMMMMM",
+X    "|   . |MMMMMMMMMMbo_                   MMMMMMM",
+X    "|     |MMMMMMMMMMMMMMMb,               `MMMMMM",
+X    "|      ?MMMMMMMMMMMMMMH'                MMMMMH",
+X    "|       ?HMMMMMMMMMMMM'                JMMMMM|",
+X    " \\        |MMMMMMMMMMP                 MMMMRP",
+X    " `|        MMMMMMMR\"\"                  MMMP7",
+X    "  `\\       9MMMMMH'                   |MH'/",
+X    "    \\.     |MMMH?                     `',/",
+X    "     `\\.    TMM'                      ./'",
+X    "       `~\\   `HL.-    .             ,/'",
+X    "          \"-\\_  ' ,, .          _.-\"",
+X    "              \"-~~HHo__,od##==^\"'",
+X    "              _od#HM[\"MMMM:$--v_.",
+X    "          ,oHMR'$HMM: `\"'  \"' -HHHb_",
+X    "       .dHMMMMMMMMM#M?         `*&MMMb.",
+X    "     .dMMMMMMMMMH\"\"'`\"           ,HMHMMb.",
+X    "    /MMMMMMMMMP'             -    *H6ddPH?",
+X    "   /JMMMMM#M''                    .MMMMM#Hb",
+X    "  | MMM?   H&,                   `HMMMMMMMMH",
+X    " /  |MM_#|`\"DHb\\_.                HMMMMMMMMMb",
+X    "|    \"\"HM#.      !                |MMMMMMMMMM|",
+X    "|       `HoodMMH##_               `*MMMMMMMMMH",
+X    "|         `|MMMMMMMH#o              `**\"'*MMMM",
+X    "|      .  |MMMMMMMMMMMbo.                 dMMM",
+X    "|         &MMMMMMMMMMMMMMMMb.             |MMM",
+X    "|          9MMMMMMMMMMMMMMMH'             |MMH",
+X    "|           *HMMMMMMMMMMMMT               HMM|",
+X    " \\            TMMMMMMMMMMM'              |MMP",
+X    " `|           `MMMMMMMM'\"'               dMH",
+X    "  `\\           MMMMMMH'                 ,MP",
+X    "    \\.         MMMM#'                   i/",
+X    "     `\\.       TMM?                   ./'",
+X    "       `~\\     `*M?,-    _          ,/'",
+X    "          \"-\\_    ` ,, .        _.-\"",
+X    "              \"-\\=vHMb__ooo#==-\"",
+X    "              _od#HMM6&*MMMH::-_",
+X    "          _dHMMMR??MMM? \"\"| `\"'-?Hb_",
+X    "       .~HMMMMMMMMHMMM#M?        `*HMb.",
+X    "     ./?HMMMMMMMMMMM\"*\"\"\"           &MHb.",
+X    "    /'|MMMMMMMMMMM'             -   `*MHM\\",
+X    "   /  |MMMMMMHHM''                   .MMMHb",
+X    "  |   9HMMP   .Hq,                   TMMMMMH",
+X    " /     |MM\\,H-\"\"&&6\\__               `MMMMMMb",
+X    "|       `\"\"HH#,       \\             - MMMMMMM|",
+X    "|           `HoodHMM###.              `9MMMMMH",
+X    "|              .MMMMMMMM##\\             `*\"?HM",
+X    "|         ..  ,HMMMMMMMMMMMo\\.              |M",
+X    "|             |MMMMMMMMMMMMMMMMHo           |M",
+X    "|              ?MMMMMMMMMMMMMMMM*           |H",
+X    "|.              `#MMMMMMMMMMMMM'           .M|",
+X    " \\                `MMMMMMMMMMM*            |P",
+X    " `\\                MMMMMMMMT\"'            ,H",
+X    "  `\\              `MMMMMMH?              ./",
+X    "    \\.            |MMMH#\"               ,/",
+X    "     `\\.          |MMP'               ./'",
+X    "       `~\\        `HM:.-    .       ,/'",
+X    "          \"-\\_       '_\\ .      _.-\"",
+X    "              \"-\\-#odMM\\_,oo==-\"",
+X    "              _od#HMMMMM&HMM#~o_.",
+X    "          _vHMMMMMM$`9MMb_\"\"' \"'`\\b_",
+X    "       .~'|MMMMMMMMMMMMMMHM\\.     `\"#b.",
+X    "     ./' ,MMMMMMMMMMMMMP*\"'\"'        `Mb.",
+X    "    /'  |MMMMMMMMMMMMM'             - `*M?",
+X    "   /     MMMMMMMM#HM'                   9Mb",
+X    "  |      99MMM'    9\\\\                 `TMMH",
+X    " /         HMM\\,#|\"\"?pMb__.             |MMMb",
+X    "|           \"\"\"#M#+       `|           - MMMM|",
+X    "|                ?\\oodHMH##L.            `HMMH",
+X    "|                  `|MMMMMMMM#b,          `*\"H",
+X    "|              -   |MMMMMMMMMMMMo_           |",
+X    "|                  &MMMMMMMMMMMMMMMHo        |",
+X    "b                   9MMMMMMMMMMMMMMM*        |",
+X    "|,                   *HMMMMMMMMMMMM?        .|",
+X    " \\                     TMMMMMMMMMM?         /",
+X    " `|  -                 dMMMMMMMP\"'         /'",
+X    "  `\\                   MMMMMMH'           /'",
+X    "    \\.                |MMMH#\"           ,/",
+X    "     `\\.              MMH'            ./'",
+X    "       `~\\            HM:..   .     ,/'",
+X    "          \"-\\_          .\\      _.-\"",
+X    "              \"-\\-odbo#ML_oo-=-\"",
+X    "             ._od#HMMMMHMR&M##-_",
+X    "          _/dMMMMMMMM[:$MMb\\:\"|\"\"^~_",
+X    "       .~'' |MMMMMMMMMMHMMMMH&\\    `\"\\.",
+X    "     ./'   .HMMMMMMMMMMMMMMP*'\"'      \"\\.",
+X    "    /'     |MMMMMMMMMMMMMM'             *?",
+X    "   /        HMMMMMMMMHHM?                !b",
+X    "  |         `6HMMM|    T|+.              `9H",
+X    " /|          ` HMM?_dH`\"\"&$bo__           `Mb",
+X    "|               ``\"*HH#|       \\           TM|",
+X    "|                    `*bo\\#MMH##_          `HH",
+X    "}                       ']MMMMMMMH#\\        `H",
+X    "|                   .   dMMMMMMMMMMMo\\       |",
+X    "|                       MMMMMMMMMMMMMMMH,    |",
+X    "|                       `HMMMMMMMMMMMMMH'    |",
+X    "|                        `*MMMMMMMMMMMM'    .|",
+X    " \\                          MMMMMMMMMM'     /",
+X    " `|                        |MMMMMMM?\"'     |",
+X    "  `\\                       MMMMMMH'       /",
+X    "    \\.                    HMMM#?'       ,/",
+X    "     `\\.                 ?MM*'        ./'",
+X    "       `~\\               MM?..  .   ,/'",
+X    "          \"-\\_            _o.   _.-\"",
+X    "              \"-\\-vod#od#M:o-~-\"",
+X    "             ._od#dHMMMMMMM9##o_",
+X    "          _\\H#*MMMMMMMMM??9Mbd$\"\"`._",
+X    "       .~^\"   `HMMMMMMMMMMMMMMMHb.  `\\.",
+X    "     ./'      ,HMMMMMMMMMMMMMMP\"'\"    `\\.",
+X    "    /'        |MMMMMMMMMMMMMMT         -`\\",
+X    "   /           `MMMMMMMMMHHH?             \\",
+X    "  |.            `H*MMMP    !Pq\\           `\\",
+X    " / `|              *MMH_,#|\"\"?&6o_.        `b",
+X    "|                    \"\"\"#M##       \\        +|",
+X    "|                         `#oooHMH##\\        \\",
+X    "| .                          'MMMMMMMH#,     |",
+X    "|                       ..   HMMMMMMMMM6\\.   |",
+X    "P                           |MMMMMMMMMMMMMH, |",
+X    "| .                          |MMMMMMMMMMMMH' |",
+X    "|!                            `HMMMMMMMMMH  .|",
+X    " \\   '                          MMMMMMMMH'  /",
+X    " `|                            ,MMMMMMP\"   |",
+X    "  `\\                          .MMMMMH'    /",
+X    "    \\.                       ,HMM#*\"    ,/",
+X    "     `\\.                    .MM*'     ./'",
+X    "       `~\\                  MR\"-  _ ,/'",
+X    "          \"-\\_              _o.._.-\"",
+X    "              \"-\\-vooo#oo#HS-~-\"",
+X    "              _od#d&&MMMMMMM##o_.",
+X    "          _~?MH**MMMMMMMMM$$*Mb&P+._",
+X    "       .~^-\"'    \"MMMMMMMMMMMMMMMM\\_`\\.",
+X    "     ./'          HMMMMMMMMMMMMMMR*\"  `\\.",
+X    "    /'            9MMMMMMMMMMMMMM.      `\\",
+X    "   /               `HMMMMMMMMH#M:         \\",
+X    "  |  .              `*&MMMM    `Hq,        |",
+X    " /    \\.              '`HMM?_dH`\"`H6o_.     \\",
+X    "|                        ``\"\"HH#|     `|    `|",
+X    "|                              ?\\ooHMH##.    |",
+X    "|                                 |MMMMMM#,  |",
+X    "|                            .   |MMMMMMMMb\\ |",
+X    "|-'                              &MMMMMMMMMMH|",
+X    "|   .                            `HMMMMMMMMMH|",
+X    "|_`                               `HMMMMMMMM.|",
+X    " \\                                  MMMMMMM'/",
+X    " `|                                JMMMMM''|",
+X    "  `\\                              ?MMMM*' /",
+X    "    *b                           dMM#'' ,/",
+X    "     `\\.                       .HH*'  ./'",
+X    "       `~\\                    |MP: .,/'",
+X    "          \"-\\_               .,:_.-\"",
+X    "              \"-~-_oooodbod##:-\"",
+X    "              _od>d&&&HMMMMM##o_.",
+X    "          _~/\"TMH**HMMMMMMMM$$&MHk~_",
+X    "       .~''-`\"'    `*HMMMMMMMMMMMMMHZ>.",
+X    "     ./'             |MMMMMMMMMMMMMMP'`\\.",
+X    "    /'               `HMMMMMMMMMMMMM.   `\\",
+X    "   /                   `HMMMMMMMMHH[      \\",
+X    "  |                     `*RHMMM    `Db     |",
+X    " /       `|                 *MMb_?#\"\"\\Mo_.  \\",
+X    "|                             \"\"\"#M#|    `. `|",
+X    "|                                  `\\odHM#b  |",
+X    "|                                     TMMMMH||",
+X    "|  -                              .  |MMMMMMMd",
+X    "|   -                                {MMMMMMMM",
+X    "H    -                               `MMMMMMMH",
+X    "|. . '                                |MMMMMM|",
+X    " \\\\`        '                          dMMMMP",
+X    " `|                                   ?MMMH7",
+X    "  `\\                                 ?MMM*/",
+X    "    \\:\\,                           .dMH*\\/",
+X    "     `\\H.-                        ,M*'./'",
+X    "       `~\\                      .H*:,/'",
+X    "          \"-\\_                 _\\,-\"",
+X    "              \"-\\-\\,ooooo#oo=d\"\"",
+X    "              _o#>?&&&&HMMMM##o_",
+X    "          _od*\"\"TMH*\"#MMMMMMMM$&HHb_",
+X    "       .//\"'--`\"\"     `\"HMMMMMMMMMMMMb.",
+X    "     ./'                 MMMMMMMMMMMMMT\\.",
+X    "    /'                   `HMMMMMMMMMMM? `\\",
+X    "   /                       `HMMMMMMMM#L   \\",
+X    "  |                          `HHMMM   `H\\  |",
+X    " /          ``|                 ?HMb_#|'9b\\.\\",
+X    "|'                                ``\"#Hb   `:|",
+X    "|                                      *bdMHL|",
+X    "|                                        |MMMH",
+X    "|     -                               .  MMMMM",
+X    "H,      '                               |MMMMM",
+X    "M`|     -                                MMMMH",
+X    "|. ,  . `       .                        |MMM|",
+X    " \\.., '                                  ,MMP",
+X    " `&,                                    .HMH'",
+X    "  `9,                                  ,MMP",
+X    "    *, `\\,                            ?MH?",
+X    "     `\\.|| -                        ,&&>'",
+X    "       `~\\                        ,&6>'",
+X    "          \"-\\_                 ._v~\"",
+X    "              \"^~-v_,ooooodb~=\"\"",
+X    "              _od#d?&&&&&MMM##o_.",
+X    "          _vH##\"\"\"?MM#\"*HMMMMMMMZ&b_",
+X    "       .d/>'\"  - '\"'     `\"HMMMMMMMMMb.",
+X    "     .d*'                   TMMMMMMMMMM+.",
+X    "    d*'                      *MMMMMMMMMM/\\",
+X    "   /'                          `HMMMMMMHb \\",
+X    "  |                              `HMMM| `\\\\|",
+X    " /               `~                 *MH\\#P*b\\",
+X    "| '                                   \"\"*H| `|",
+X    "|                                        `9oMH",
+X    "|                                          `MM",
+X    "L                                        - |MM",
+X    "Mb?.       -'                              &MM",
+X    "[P|\"\\       -   .                          |MH",
+X    "|M,   .  _  `                              |M|",
+X    " 9H\\  \\  \"                                 |P",
+X    " `HMb                                     ,H",
+X    "  `9Mb                                  .?P",
+X    "    *H|   \\b                           .H?",
+X    "     `<!  |R                         .d*'",
+X    "       `~\\                         .d*'",
+X    "          \"-\\_                  _,-\"",
+X    "             `\"\"\\=v\\_,oooood~~-\"'",
+X    "              _od#&&$?&&&&MM##o_.",
+X    "          _odMM#\"\"'\"\"9MM*\"#MMMMMMHb\\",
+X    "       .dH*:/'\"- -- \"\"      `*HMMMMMMb.",
+X    "     ./M#^'                    ?MMMMMMMb.",
+X    "    dMp'                        `HMMMMMMM?",
+X    "  ./'\"                            `*MMMMMMb",
+X    " ./-                                `HMMM `&",
+X    " /                   `-|               ?Mb?Pb",
+X    "|'  '                                    `\"&||",
+X    "M                                           \\M",
+X    "T                                            T",
+X    "Mo.           -                            . M",
+X    "T9Mb?\\.        -`                            M",
+X    "P_?P? \"\\        -                            H",
+X    "|MbH,    .   _  `                           ||",
+X    " 9MMH\\   v.  '                              /",
+X    " `HMMMH.                                   /'",
+X    "  `9MMMH                                 ./'",
+X    "    \\:*H|    `b,                        ,/",
+X    "     `\\.`    dT                       ./'",
+X    "       `~\\                          ,/'",
+X    "          \"-\\_                  _.-\"",
+X    "             `\"\"*bqb__,ooooo~=-\"",
+X    "              _od#M&&&?$&&HM##o_.",
+X    "          _oHH#MM#\"\"'\"\"*MMP\"#HMMMHb_",
+X    "       .dHMM? ~\"''  ---\"'     `\"#MMMMb.",
+X    "     .dM#M#^'                    `*MMMMb.",
+X    "    dMM?&'                         `HMMMM?",
+X    "  .dP|'\"                             \"*MMMb.",
+X    "  HT-                                  `HMb\\",
+X    " /:                       `~             `HHb",
+X    "|||                                        `*|",
+X    "PH|                                          \\",
+X    "M\"'`                                         |",
+X    "M&\\o_ .                                      {",
+X    "R+\"9HMbv+\\           `                       |",
+X    "T*'_:9`b ``\\             .                   |",
+X    "| dMbJH.     ,   ..  ^                      .|",
+X    " \\MMMMMH\\    \\   `  .                       /",
+X    " `HMMMMMMH.                                |",
+X    "  `9MHHMMMH                               /",
+X    "    *. `*#H     `&o                     ,/",
+X    "     `\\.  `'    dP'                   ./'",
+X    "       `~\\                          ,/'",
+X    "          \"-\\_                  _.-\"",
+X    "             `\"\"*#&#b__,oooo-~-\"",
+X    "              _od#HM6&&$?&&M##o_",
+X    "          _oHMM##HMH*\"\"\"\"`HMM\"#HMHb_",
+X    "       .dHMMMM* .*'` - - `\"'    `\"*MMb.",
+X    "     .dMMM#&H*^'                    ?MMb.",
+X    "    dMM&M:d/'                        `*MM?",
+X    "  .dMM| '\"                             `*Mb.",
+X    "  HMMT-                                  `HH",
+X    " dH\":                         \"~.          ?b",
+X    "|M ||     .                                 `|",
+X    "M?.4[                                        |",
+X    "M,H''                                        |",
+X    "MMMp]ov_.               -                    |",
+X    "H$\"b\":99MHo++\\           -                   |",
+X    "|\"`\"*._:`T`=  \"b          -                  |",
+X    "|   ?HMb_M?      .,   _  `-                 .|",
+X    " \\ ,MMMMMMMb_    v.   '                     /",
+X    " `|`MMMMMMMMMb                         -   |",
+X    "  `\\`HMH#MMMMM                            /",
+X    "    \\:'  `\"###      `#v                 ,/",
+X    "     `\\.     \"     o&'                ./'",
+X    "       `~\\                          ,/'",
+X    "          \"-\\_                  _.-\"",
+X    "             `\"\"*#HH##__,ooo-~-\"",
+X    "              _od#HHM6&&&?$&##o_",
+X    "          _oHMMMMH##RM#\"\"\"\"`#MM\"#Hb_",
+X    "       .dHMMMMMMH' .*\"` - - `'    `\"Hb.",
+X    "     .dMMMMMH#$&+-\"                  `9b.",
+X    "    dMMMM#][_d&'                       `H?",
+X    "  .dMMMMH |'\"`                           `\\",
+X    "  HMMMMM'-                                `\\.",
+X    " /MMH\"::                          \"~.       \\",
+X    "|?MM  Hi      `                             `|",
+X    "|T?' ||M                                     |",
+X    "|H|.d}`'  '                                  |",
+X    "|9LMM&p!|o,_. .              -               |",
+X    "|`H??|\\`\":PHMHovd\\_            '             |",
+X    "|  \"\"\"?* :_:`T`b. `?\\             .          |",
+X    "|      ?#MML.M?       ,   ..  `             .|",
+X    " \\   .dMMMMMMMM#.    .\\   `                 /",
+X    " `|  `HMMMMMMMMMMb                         |",
+X    "  `\\  `9MM##MMMMMM                        /",
+X    "    \\.  \"   `\"##H|      :b,             ,/",
+X    "     `\\.        `'    ,d*'            ./'",
+X    "       `~\\                          ,/'",
+X    "          \"-\\_ .                _.-\"",
+X    "              \"\"*#HMM##:_,oo---\"",
+X    "             ._o##HM&M6&&&$?##o_.",
+X    "          _oHMMMMMMH##H9M*\"'\"`#HMb\\_",
+X    "       .dHMMMMMMMMMM  :\"'' - - \"   `\"\\.",
+X    "     .dMMMMMMMMH#\"&b-\"                `\\.",
+X    "    dMMMMMMM#TM_,#?                     `\\",
+X    "  .dMMMMMMMM  \"''                         \\.",
+X    " .HMMMMMMMM: -                      .      |",
+X    " dHTMMMH\"':                          `^|    \\",
+X    "|P `MMH  |6.                                `|",
+X    "M'`|P#' ,|M6                                 |",
+X    "T  &H .dM-\"'                                 |",
+X    "|  9M.MMH#r?|ov\\_                -           |",
+X    "|   `6:$'#|`\"\"?*MMHov*,.          -'         |",
+X    "|     \"\"`*?\" __:\"9\"*=  \"\"|         -         |",
+X    "|         .d#MM6_MH.       |   _  `-        .|",
+X    " \\      .oHMMMMMMMMH\\     v.   '            /",
+X    " `|     `MMMMMMMMMMMMH.                    |",
+X    "  `\\     `MMM##HMMMMMM'                   /",
+X    "    \\,    `'    \"\"###'      Tb          ,/",
+X    "     `\\.           `\"     o/' -       ./'",
+X    "       `~\\                          ,/'",
+X    "          \"-\\_                  _.-\"",
+X    "              \"\"*#HMMMMHc_,o---\"",
+X    "              _o##HMM&MM&&&&:#o_",
+X    "          _oHMMMMMMMMM###&MP\"'\"*#H+_",
+X    "       .dHMMMMMMMMMMMMM  :*  - --'  `\\.",
+X    "     .dMMMMMMMMMMMM#*\\H~'             `\\.",
+X    "    dMMMMMMMMMMH?ML_oH'                 `\\",
+X    "  .dMMMMMMMMMMM}  *\"'                     \\",
+X    " .HMMMMMMMMMMMH: -                     .   |",
+X    " /MMH\"MMMHM?\" :                         `~. \\",
+X    "|'M'  9MMM|  -M,       `                    `|",
+X    "|.M   |i**' .~TM.                            |",
+X    "| \"  |&M  .dM| \"'  '                         |",
+X    "|     9ML|MMH>p'*,o._.  .            -       |",
+X    "|      `H???'#\\ \"\"`P9MM#vv+\\.         -'     |",
+X    "|        `\"\"`\"\"*'.__``&\"*~  \"b.       -  .   |",
+X    "|             .d#HMM\\_Mb       .   _  `    ..|",
+X    " \\          ,oHMMMMMMMMM#.    ..   '        /",
+X    " `|         9MMMMMMMMMMMMM|                |",
+X    "  `\\         9MMH##HMMMMMM'               /",
+X    "    \\.        \"     `?#H#'     .H.      ,/",
+X    "     `\\.               \"'    ,p''-    ./'",
+X    "       `\\\\                          ,/'",
+X    "          \"-\\_                  _.-\"",
+X    "             `\"\"*#HMMMMMM#:o---\"",
+X    "             ._od#HMMM6HM&&&#>o_",
+X    "          _oHMMMMMMMMMMMH##*MM\"\"`b\\_",
+X    "       .dHMMMMMMMMMMMMMMMH. ?'  - ^ `\\.",
+X    "     .dMMMMMMMMMMMMMMMH#'db-'         `\\.",
+X    "    dMMMMMMMMMMMMMMH`M\\_oM'             `\\",
+X    "  .dMMMMMMMMMMMMMMM|  \"\"'                 \\",
+X    "  H#MMMMMMMMMMMMMMHi -                   . |",
+X    " d? MMM*\"HMMMPM?\"':.                      `\\\\",
+X    "|'  MP' .`9MMM|   4b        '               `|",
+X    "H   M|  ` d`**'  /'Hb                        |",
+X    "|   `'   q/H  .,HD \"'                        |",
+X    "|        `&ML:MMM$cr!P,ov_.              -   |",
+X    "|          `H$:?'`*|`\":9\"HMMbv/\\\\         '  |",
+X    "L            `\"\"\"\"\"?\" :__\"`T`b| `?|          /",
+X    "|,                 _d#MM6_JH,      |  .. -  ,|",
+X    " \\.             _odMMMMMMMMMH\\    ,.  `     /",
+X    " `|             HMMMMMMMMMMMMM|            |",
+X    "  `\\             MMMH##HMMMMMM'           /",
+X    "    \\.  .        `\"     `*#H*'     M.   ,/",
+X    "     `\\.                  `\"    ,~''  ./'",
+X    "       `~:                          ,/'",
+X    "          \"-\\_                  _.-\"",
+X    "              \"^*#HMMMMMMM#&---\"",
+X    "             ._od#HMMMMMHM6&##o_",
+X    "          _dHMMMMMMMMMMMMMMH##9R'^~_",
+X    "       .dHMMMMMMMMMMMMMMMMMMH,`*   `\"\\.",
+X    "     .dMMMMMMMMMMMMMMMMMMM#*iD~'      `\\.",
+X    "    dMMMMMMMMMMMMMMMMMM#`M\\,dH          `\\",
+X    "  .dMMMMMMMMMMMMMMMMMMMH  *\"'             \\",
+X    "  HMH#MMMMMMMMMMMMMMMMHb -                 $",
+X    " dMM' $MMMH'`HMMMM\\H\"' :                    \\",
+X    "|M?'  `MM'  .`TMMMH   -M\\       `           `|",
+X    "MM'    Mb   ` |i`#'  ./!ML                   |",
+X    "M|      \"    ?bM|  .oHr``'  `                |",
+X    "H             $MM_|MMM\\#/ |o\\\\_            - |",
+X    "|              `*6??:'|*|`\":9\"MMHov+\\       '|",
+X    "H.                \"\"\"`\"'*' __.\"9\"*~ `\"|      ?",
+X    "|H|                    .,##MML_Mb      | . `.|",
+X    " 9b.                .,oHMMMMMMMMM?    \\  `  /",
+X    " `&                 |MMMMMMMMMMMMM|        |",
+X    "  `\\                 9MMH##HMMMMMH'       /",
+X    "    \\.    .          `\"     `###'    ,| ,/",
+X    "     `\\.                      \"'  ,/^'./'",
+X    "       `~\\                          ,/'",
+X    "          \"-\\_                  _.-\"",
+X    "              \"\"\\dHMMMMMMMMM=:-\"",
+X    "              _od#HMMMMMMMMM##o_.",
+X    "          _dHMMMMMMMMMMMMMMMMH##M}~_",
+X    "       .dHMMMMMMMMMMMMMMMMMMMMMb`9' `\\.",
+X    "     .dMMMMMMMMMMMMMMMMMMMMMMH#`H/    `\\.",
+X    "    dMMMMMMMMMMMMMMMMMMMMMM?9H.,M,      `\\",
+X    "  .dHMMMMMMMMMMMMMMMMMMMMMMH  *\"'         \\",
+X    "  HMMMM##MMMMMMMMMMMMMMMMMMS. -            |.",
+X    " dMMMM*' `MMMMH'\"HMMMMPH?\" :.               \\",
+X    "|MMH*'    9MP\"   /'MMMM|   |b.      .       `|",
+X    "MMMH`     `Hb      M`**'  ,~TM,              |",
+X    "MMM|        \"     #/H,  _dM~``'  '           |",
+X    "MM'               `&ML.4MMH\\#$|\\ov_.         4",
+X    "MM                  `*6:??'?* \"\":PHMHo/\\.    |",
+X    "MM,.                  `\"\"\"`\"'*'.:_\"??*| `|   |",
+X    "|M|d|                       .d#HM6.Mb     ,..|",
+X    " 9LT|.|                  _odMMMMMMMMM,   , `/",
+X    " `H/\"                    MMMMMMMMMMMMM     |",
+X    "  `\\.                    9MMH##HMMMMH'    /",
+X    "    \\.       .           `'    `*##*   ?\\/",
+X    "     `\\.                         \"' ,/?/'",
+X    "       `~\\   `                      ,~'",
+X    "          \"-\\_                  _.-\"",
+X    "              \"\"*#&MMMMMMMMM#b-\"",
+X    "             ._o<>HMMMMMMMMM##o_.",
+X    "          _oHMMMMMMMMMMMMMMMMMMM#&b_",
+X    "       .dHMMMMMMMMMMMMMMMMMMMMMMMb?\\`\\.",
+X    "     .dMMMMMMMMMMMMMMMMMMMMMMMMMM*Tp' `\\.",
+X    "    /HMMMMMMMMMMMMMMMMMMMMMMMMM>&,,M,   `\\",
+X    "  .dH#MMMMMMMMMMMMMMMMMMMMMMMMMH `?'      \\",
+X    "  HMMMMM[MH##MMMMMMMMMMMMMMMMMM&,-'        |",
+X    " dMMPMMMMH'  `MMMMH*\"?MMMMM\\H\"'`:           \\",
+X    "|MMM6MH$'     TMM'   .`TMMMH,   M\\     `    `|",
+X    "MMMMMHH`      `HH.   ` .L`#*'  /'ML          |",
+X    "MMMMMM'         `'    -#dH   _dH \"'  '       |",
+X    "MMMMP'                 `9ML.HMMP#p!|oo_      |",
+X    "MMMM                     `#6:?`'*|`\":PHMbd\\. |",
+X    "MMMM| .                    `\"\"\"\"\"*'.:_\"P`|`\\ |",
+X    "|MMMH,M.                        .?#HM6,M   .\\|",
+X    " 9MM|`M| -                   .odHMMMMMMM|  ,/",
+X    " `HMM `'                     HMMMMMMMMMM|  |",
+X    "  `9M,                       JMMH##MMMM*' /",
+X    "    *.           .           \"'    *H#' ,?",
+X    "     `\\.                           -'.o/'",
+X    "       `~\\      '                   ,/'",
+X    "          \"-\\_                  _.-\"",
+X    "              \"^*#HHHMMMMMMM##-\"",
+X    "              _od:&HMMMMMMMM##o_",
+X    "          _dHMMMMMMMMMMMMMMMMMMMMD\\_",
+X    "       .dHMMMMMMMMMMMMMMMMMMMMMMMMM&&~.",
+X    "     .dMMMMMMMMMMMMMMMMMMMMMMMMMMMMH*H`\\.",
+X    "    dH9HMMMMMMMMMMMMMMMMMMMMMMMMMM*&,J? `\\",
+X    "  .dM#bbHMMMMMMMMMMMMMMMMMMMMMMMMMM|`?'   \\",
+X    "  HMMMMMMMMH]M###MMMMMMMMMMMMMMMMMMb -     |",
+X    " dMMMMMPMMMMM*'  `9MMMMH'\"9MMMMTM\"'`_       \\",
+X    "|MMMMMMbMM*?'     `MMP'    'HMMMb   M,      `|",
+X    "MMMMMMMMH#P`       `Mb    ' ||`#'  .^M,      |",
+X    "MMMMMMMMMP           `'    |b]b  .dH-\"' `    |",
+X    "MMMMMMMH'                   !MM_|MMH>p\"\\o\\   |",
+X    "TMMMMMM                       *M???'#|\":T9M+\\|",
+X    "|TMMMMM|  .                     \"\"\"\"\"*'__\"?*`#",
+X    "||MMMMMD.dH                         .d#MMJ| .|",
+X    " \\9MMMM `MP ..                   .odHMMMMM| /",
+X    " `|*MMM! `'                      MMMMMMMMM||",
+X    "  `\\`MM|                         MMH#HMMM*/",
+X    "    \\:'                          \"   `#*\\/",
+X    "     `\\.                             -?/'",
+X    "       `~\\         '                ,/'",
+X    "          \"-\\_                  _.-\"",
+X    "              \"-+#HMM#MMMMMM##\"\"",
+X    "             ._od#/$HMMMMMMM##o_",
+X    "          _oHMMMMMMMMMMMMMMMMMMMMHb_",
+X    "       .dHMMMMMMMMMMMMMMMMMMMMMMMMMMMb.",
+X    "     .dMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM9+.",
+X    "    dM&+9HHMMMMMMMMMMMMMMMMMMMMMMMMMM*b]/\\",
+X    "  .dMMHd#o#MMMMHMMMMMMMMMMMMMMMMMMMMMH,?' \\",
+X    " .HMMMMMMMPMMMMM]MH##MMMMMMMMMMMMMMMMMb,-  |",
+X    " dMMMMMMMMM9MMMMMH'  `\"MMMMM*\"?MMMMPH\" :    \\",
+X    "|MMMMMMMMMMbMM*\"\"      ?MMT'   `?MMM?  9\\   \"|",
+X    "MMMMMMMMMMMMH#H`'       ?HL      6`#'  /9L   |",
+X    "P\"HMMMMMMMMMMH'           \"     q/H  .dD'' ' |",
+X    "| HMMMMMMMMH\"                   `9ML:MMR#?\\o.|",
+X    "| `MMMMMMMM                       `H$??`#`:MMH",
+X    "|  TMMMMMMM,  .                     \"\"\"\"*'_:P#",
+X    "|  |MMMMMMM|,dH                         ?#MHL|",
+X    " \\  9MMMMMi |M| ..                   ,dHMMMMP",
+X    " `|  9MMMM' `\"'                     |MMMMMMH",
+X    "  `\\  `HMM'                         JMH#MMP",
+X    "    \\_ `\"               .           \"  |H?",
+X    "     `\\.                              ./'",
+X    "       `~\\            '             ,/'",
+X    "          \"-\\_                  _.-\"",
+X    "              \"-==&MMMM#MMMM##\"\"",
+X    "             ._-c>&R?$MMMMMM##o_",
+X    "          _o$MHMMMMMMMMMMMMMMMMMMHb_",
+X    "       .~1MMMMMMMMMMMMMMMMMMMMMMMMMMMb.",
+X    "     .<bdMM9MMMMMMMMMMMMMMMMMMMMMMMMMMMb.",
+X    "    /\\M6b>^9R#MMMMMMMMMMMMMMMMMMMMMMMMMDM?",
+X    "   /dMMMMb##b#dMMMMHMMMMMMMMMMMMMMMMMMMMb*\\",
+X    "  bMMMMMMMMMMM&MMMMM$MM##HMMMMMMMMMMMMMMM\\-\\",
+X    " dMMMMMMMMMMMMM*MMMMMM*   `9MMMM#\"?MMMMH\"`. \\",
+X    "|HMMMMMMMMMMMMMbMMH\"?       9MM'   ??MMH  \\.`|",
+X    "|MMMMMMMMMMMMMMMH##|`       `HH,   ' b`*' /M |",
+X    "|*\"'#MMMMMMMMMMMMM*           `'    ?/H  ?D` |",
+X    "|    MMMMMMMMMMM?'                   *M?4MM#bd",
+X    "|    ?MMMMMMMMM'                      ?M???|:M",
+X    "|     9MMMMMMMM|  .                     \"\"\"*_H",
+X    "|     &MMMMMMMM}.oH|                      ,#M|",
+X    " \\    `HMMMMMM: iMM  ..                 ,dMMP",
+X    " `|    `HMMMMM' `\"'                    |MMMH",
+X    "  `\\     *MMM|                        .MHHP",
+X    "    \\.    `\"                          `',?",
+X    "     `\\.                              ./'",
+X    "       `~\\               `          ,/'",
+X    "          \"-\\_                  _.-\"",
+X    "              \"-~=q#HMMMHHMM##\"\"",
+X    "              _v~:S&M$?HMHMM##o_",
+X    "          _.:$\\#MMMMMMMMMMMMMMMMMHb_",
+X    "       .~'.HMHMMMMMMMMMMMMMMMMMMMMMMMb.",
+X    "     ./',odHMMMMMMMMMMMMMMMMMMMMMMMMMMMb.",
+X    "    /\" |M6&d\\\"?M&#MMMMMMMMMMMMMMMMMMMMMMM?",
+X    "   / _HMMMMMbd##obHMMMMMMMMMMMMMMMMMMMMMMM}",
+X    "  | dMMMMMMMMMMMMMPMMMMH[9M###MMMMMMMMMMMMMH",
+X    " / dMMMMMMMMMMMMMMM/HMMMMMH'  `\"MMMM*\"HMMMT:\\",
+X    "| |MMMMMMMMMMMMMMMMMdMM#\":      ?MM'  .\"MMb`6|",
+X    "| |MMMMMMMMMMMMMMMMMMH#H|'       ?H\\  ` |?* &H",
+X    "|  ?*\"\"*HMMMMMMMMMMMMMH'           \"    bH .H9",
+X    "|       {MMMMMMMMMMMH'                  `MLMMM",
+X    "|       `9MMMMMMMMMR                     `6?*H",
+X    "L        `MMMMMMMMMH.  .                  `\"\"&",
+X    "|.       |MMMMMMMMMM|,dM                    ?|",
+X    " \\        *MMMMMMMT  dM| ..               ,dP",
+X    " `|        TMMMMMM'  `\"                  ,MH",
+X    "  `\\        `MMMH'                      .HP",
+X    "    \\.       `\"                         i/",
+X    "     `\\.                              ./'",
+X    "       `~\\                          ,/'",
+X    "          \"-\\_                . _.-\"",
+X    "              \"-~=q###MMMMHM##\"\"'",
+X    "              _o~~^?&M&?]MHM##o_",
+X    "          _~^\"$?.#MMMMMMMMMMMMMMMHb_",
+X    "       .~'  :MM#MMMMMMMMMMMMMMMMMMMMMb.",
+X    "     ./'  .ooMHHMMMMMMMMMMMMMMMMMMMMMMMb.",
+X    "    /'-   MM6bd>/\"#&#HMMMMMMMMMMMMMMMMMMM?",
+X    "   /    ?MMMMMMHbd##o#HMMMMHMMMMMMMMMMMMMMb",
+X    "  |   ?MMMMMMMMMMMMMMM69MMMM69MH##MMMMMMMMMH.",
+X    " /   |MMMMMMMMMMMMMMMMML*MMMMMM?  `\"MMMH`HMM\\",
+X    "|    HMMMMMMMMMMMMMMMMMMHHMH*''     ?MM' !9M||",
+X    "|    9MMMMMMMMMMMMMMMMMMMM##H`'      ?M, ` R?\\",
+X    "|     `*\"\"\"#MMMMMMMMMMMMMMMH'         `'  |d|d",
+X    "|           |MMMMMMMMMMMMH'                9LM",
+X    "M,          `9MMMMMMMMMMT                  `M]",
+X    "M|            MMMMMMMMMMb   .               `*",
+X    "|b           |MMMMMMMMMMH oH|               .|",
+X    " 9,           *MMMMMMMM' ,MH  -            ./",
+X    " `|            9MMMMMM\"  `\"'              .&",
+X    "  `\\            ?MMMH'                   ./",
+X    "    \\.           \"'                     ,/",
+X    "     `\\.                              ./'",
+X    "       `~\\.                    '    ,/'",
+X    "          \"\\\\_                 ._.-\"",
+X    "              \"-\\~q###HHMMMMd#\"\"'",
+X    "              _odp^'\"?M&&?MH##o_",
+X    "          _~^''`$+ #MM9MMMMMMMMMMHb_",
+X    "       ./'     9MHHMMMMMMMMMMMMMMMMMMb.",
+X    "     ./\"     ,ooM#MHMHMMMMMMMMMMMMMMMMMb.",
+X    "    /'  --   MMM&o&~*`#&#HMMMMMMMMMMMMMMM?",
+X    "   /     . ,HMMMMMM#bd##o#dMMMMHMMMMMMMMMMb",
+X    "  |      ?MMMMMMMMMMMMMMMMMHMMMMM9MH#HMMMMMH",
+X    " /      |MMMMMMMMMMMMMMMMMMM/HMMMMM|  \"HMM?Hb",
+X    "|'      dMMMMMMMMMMMMMMMMMMMM&MM#\":    `MR !H|",
+X    "T       `MMMMMMMMMMMMMMMMMMMMMH#H|'     `M,`|H",
+X    "H        `**\"\"\"?HMMMMMMMMMMMMMMM*        `' |M",
+X    "M\\               MMMMMMMMMMMMM*'             M",
+X    "MMH,             `MMMMMMMMMMM!               T",
+X    "MMM|              |MMMMMMMMMM|  .            |",
+X    "|MM|              HMMMMMMMMMM|,dM           .|",
+X    " 9ML              `MMMMMMMMT  dM' .         /",
+X    " `H|               |MMMMMMP'  \"'           |",
+X    "  `9,               ?MMMH'                /",
+X    "    \\,               \"'                 ,/",
+X    "     `\\.                              ./'",
+X    "       `~\\ .                     `  ,/'",
+X    "          \"-\\_                  _.-\"",
+X    "             `\"-~-?######HMM##\"\"'",
+X    "             ._o##H\"?\"\"S&&?9##o_",
+X    "          _/^*'\" \":d.|MMPMMMMMMMMHb_",
+X    "       .d/'      -9MHHMMMMMMMMMMMMMMMb.",
+X    "     .~'\"       ,ooMHHHMMMMMMMMMMMMMMMMb.",
+X    "    /'     -    |MMbbdb~'`&M#HMMMMMMMMMMM?",
+X    "   /         ..?MMMMMMM#bd##b#dMMMMHMMMMMMb",
+X    " .|         .]MMMMMMMMMMMMMMMMMMMMMMRMH#MMMH",
+X    " d          |MMMMMMMMMMMMMMMMMMM&HMMMMH `*MM\\",
+X    "|?          HMMMMMMMMMMMMMMMMMMMMbMM#':   TM`|",
+X    "M|          `MMMMMMMMMMMMMMMMMMMMMM#H|     9,\\",
+X    "MM|          `\"#\"\"\"\"*HMMMMMMMMMMMMMMP       '|",
+X    "MMM\\                 |MMMMMMMMMMMMH'         |",
+X    "MMMMMb,               `MMMMMMMMMMR           |",
+X    "MMMMMM'                9MMMMMMMMMM  .        |",
+X    "|MMMMM                ,MMMMMMMMMMH.dM       .|",
+X    " 9MMMM                `9MMMMMMMR' dM'..     /",
+X    " `HMM:                 `MMMMMMP'  \"'       |",
+X    "  `9ML                  `MMMH'            /",
+X    "    *M.                  \"'             ,/",
+X    "     `\\\\                              ./'",
+X    "       `\\v. .                      `,/'",
+X    "          \"-v_                  _.-\"",
+X    "              \"-~-\\o#######M##\"\"'"
+X    };
+X
+Xvoid
+Xmain( argc, argv )
+X    int argc;
+X    char *argv[];
+X    {
+X    time_t now;
+X    int gnum, lnum;
+X
+X    now = time( (time_t*) 0 );
+X
+X    gnum = ( now + OFFSET ) % SECSPERDAY / ( SECSPERDAY / NGLOBES );
+X    for ( lnum = 0; lnum < NLINES; ++lnum )
+X	puts( globes[gnum][lnum] );
+X
+X    exit( 0 );
+X    }
+END_OF_FILE
+  if test 36450 -ne `wc -c <'globe.c'`; then
+    echo shar: \"'globe.c'\" unpacked with wrong size!
+  fi
+  # end of 'globe.c'
+fi
+echo shar: End of archive 1 \(of 1\).
+cp /dev/null ark1isdone
+MISSING=""
+for I in 1 ; do
+    if test ! -f ark${I}isdone ; then
+	MISSING="${MISSING} ${I}"
+    fi
+done
+if test "${MISSING}" = "" ; then
+    echo You have the archive.
+    rm -f ark[1-9]isdone
+else
+    echo You still must unpack the following archives:
+    echo "        " ${MISSING}
+fi
+exit 0
+exit 0 # Just in case...
+
+

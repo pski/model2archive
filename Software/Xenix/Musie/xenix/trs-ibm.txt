@@ -1,0 +1,51 @@
+Below are instructions on how to construct a null modem cable for the
+purposes of transferring data between a Model 16/16B/6000 and an IBM
+Compatible computer via some communications program like kermit running
+on both machines or some other configuration.  Under MSDOS, a user would
+call up the TRS80 Xenix machine via any communications program running 
+as a terminal, login, start the data transfer on the Xenix machine, and
+return to MSDOS to receive the download.
+
+                       DB-25 TO DB-25
+
+           Tandy                     IBM COMPATIBLE
+     DB-25 Connector                 DB-25 Connector
+        FUNCTION    Pin             Pin     FUNCTION
+    ___________________             ___________________
+    | Sig. Grnd   | 7 |             | 7 | Sig. Grnd   |
+    |             |   |             |   |             |
+    | Trans. Data | 2 |             | 3 | Rec. Data   |
+    |             |   |             |   |             |
+    | Rec. Data   | 3 |             | 2 | Trans. Data |
+    |             |   |             |   |             |
+    | DTR         | 20|             | 6 | DSR         |
+    |             |   |             |   |             |
+    | DSR         | 6 |             | 20| DTR         |
+    |             |   |             |   |             |
+    |             |   | Joined > \--| 5 |Clear to Send|
+    |             |   |           \ |   |             |
+    | Carrier Det.| 8 |------------\| 4 |Req. to Send |
+    |_____________|___|             |___|_____________|
+
+
+
+                        DB-25 TO DB-9
+
+           Tandy                     IBM COMPATIBLE
+     DB-25 Connector                 DB-9 Connector
+        FUNCTION    Pin             Pin     FUNCTION
+    ___________________             ___________________
+    | Sig. Grnd   | 7 |             | 5 | Sig. Grnd   |
+    |             |   |             |   |             |
+    | Trans. Data | 2 |             | 2 | Rec. Data   |
+    |             |   |             |   |             |
+    | Rec. Data   | 3 |             | 3 | Trans. Data |
+    |             |   |             |   |             |
+    | DTR         | 20|             | 6 | DSR         |
+    |             |   |             |   |             |
+    | DSR         | 6 |             | 4 | DTR         |
+    |             |   |             |   |             |
+    |             |   | Joined > \--| 8 |Clear to Send|
+    |             |   |           \ |   |             |
+    | Carrier Det.| 8 |------------\| 7 |Req. to Send |
+    |_____________|___|             |___|_____________|

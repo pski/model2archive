@@ -1,0 +1,498 @@
+Adding a 5 1/4" 1.2MB drive to a RS 16/6000 system:
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The following information is provided by an individual and is not nor should
+be construed as being provided by  Radio  Shack or Tandy Cory.  Radio Shack/
+Tandy Corp has no obligation to support the information provided in any way.
+------------------------------------------------------------------------------
+NOTE:
+The following information was posted about a month ago.  However, I posted
+a draft version and not the version I intended to, and only noticed this
+after receiving some inquires about it.  The following information supercedes
+the posting with the date 28-Aug-88.  Sorry for the error.
+
+P.S. Note:  Sent this out but somewhere in the virus crisis it seems to have
+not gone anywhere.  To those that are seeing it again, Sorry.  Just press J.
+
+---cut here---
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+        6000 > 4000 > 3000  Vol 1, No. 1
+
+Utilizing 5 1/4" media on your Tandy 16/6000 computer system.   31-Aug-88
+            by Frank Durda IV
+
+If you have reached the point where you are having trouble getting 8"
+media, or getting the drives repaired or replaced, this may interest you.
+
+The following information will allow you to add or substitute 5 1/4"
+high capacity floppy drives for 8" double sided drives in your 16/6000 XENIX
+system.  You can mix 8" and 5 1/4" drives, or chuck the 8" drives entirely.
+
+If you just want to look at the pay-back, pull out your handy Radio Shack
+computer catalog.  Ten 8" DD DS disks cost $39.95.  Ten 5 1/4" HD DS
+disks cost $34.95.   If you buy your disks at those prices, it will
+take 20 boxes of 5 1/4" vs 8" diskettes to pay off the approx $100 drive.
+Since most mail order houses can get you ten 5 1/4" HD DS for less than $20,
+a 5 1/4" drive will pay back a lot quicker.  In addition, most people would
+agree that 5 1/4" media quality is usually better than the 8" media available
+today.
+
+If you want to add 5 1/4" drives externally, you should obtain an enclosure
+to mount the drives in.  These are available from numerous mail-order
+houses.  One is AEROCOMP, 2544 West Commerce St, Dallas Tx 75212, P.O. Box
+223957 and the order number is 1-800-527-0347.  (Sorry, I have never done
+business with this firm, so I can't comment on their product.)  They advertise
+an enclosure for two 5 1/4" drives.  You could also order such an enclosure
+from Radio Shack National Parts (it was used for CoCo drives in recent years).
+
+Almost any high-capacity (1.2 Meg) drive can be used.  I used Mitsubishi
+MF504B-347UA drives.  For that particular drive, these straps should be set:
+    TD MS SR-PM2 RI SB DSx
+Other drives that should be acceptable include TEAC 55G series drives.
+
+DSx should be set as you prefer.  On a Model 16B and 6000 drive 0 may
+not be selected on the external connector.  If you have two internal
+drives on a 16B/6000 and want to keep using them, your external drives
+must be DS2 and DS3.  The last external drive must contain a terminating
+resistor pack.
+
+If you only have one internal drive, you may have three 5 1/4" external
+drives.  Set the strap DS1 for the first drive, DS2 for the second, and
+DS3 for the third.
+
+If you have two internal 8" drives and you wish to disable one of them,
+it will be necessary to disassemble your 16B/6000, and disconnect
+power and data cables going to your second internal drive.  If the
+terminating resistor pack is installed on the drive you are disconnecting,
+you must move the resistor pack to drive 0.  By disconnecting the power,
+you will reduce the power consumption and heat load on your system.
+You must also add a jumper at E40-E41 on the main CPU board (under
+the card cage).  This moves the DS1 signal to the external connector.
+
+If you have a Model II or 16A, you can have at least two external drives
+and as many as four if you decide to disable the external drives.  Initially
+it is suggested that you leave drive 0 as an 8" drive until you can copy
+your installation floppies onto 5 1/4" media.
+
+On the Model 16A, 16B and 6000, it is advised that you leave one
+internal drive connected to power even if you decide to disconnect its
+data cables.  This is to insure a minimum load on certain power supply
+voltages.
+
+You must construct the cable between the Model II/16A/16B/6000 and the 5 1/4"
+drives.  You will need a 50 pin dip connector and at least one 34 pin edge
+connector  (one per drive).  You may use either 34 or 50 pin wire.  
+
+If you have an existing 50 pin cable and a 34 pin cable, you may simply
+wish to cut the connector off one end and splice the appropriate signals
+together.  Just try to keep the total length to under 6'.
+
+Because the cable you build may be delicate, you may want to build it as a
+short cable which can fit entirely inside your drive enclosure with the
+50 pin connector mounted so that a longer standard 50-to-50 pin cable can
+connect between the computer and the drive enclosure by plugging into the
+"translation" cable.
+
+Here is the wiring table.  Keep in mind that the odd numbers are ground
+on both the 34 and 50 pin connectors.  The new cable should re-route
+the wires in pairs to help simplify assembly and assure adequate ground.
+When an entire group of wires can be moved as a set, they are listed together.
+
+Signal Name     50 Pin  tie to  34 Pin
+               connector       connector
+            Pins        Pins
+
+Side Select (14)    14-15       31-32
+
+Index (20)      20-21       7-8
+
+Ready (22)      22-23       33-34
+
+Drive Select 1 (26) 26-31       9-14
+Drive Select 2 (28)
+Drive Select 3 (30)
+
+Drive Select 4 (32) 32-33       5-6
+
+Direction (34)      34-47       17-30
+Step (36)
+Write Data (38)
+Write Gate (40)
+Track 0 (42)
+Write Protect (44)
+Read Data (46)
+
+Again, note that on both connectors the odd numbered pins are ground and even
+numbered pins are the signals.  Do not get the ground and signal reversed. 
+For example, the Index signal line, 20 on the 50-pin connector, connects
+to pin 8 on the 34-pin connector.  21 connects to 7.  When dealing
+with a group of signals such as 26-31 goes to 9-14, you would have
+26->10, 27->9, 28->12, 29->11, 30->14, 31->13.  By putting the edge or DIP
+(but not both ends) connectors "on the wrong side" of the ribbon cable,
+the cabling system itself will assist in getting the correct alternations.
+
+In addition to the above, pins 9 and 10 on the 50 pin connector must
+be tied together to produce the "double-sided" signal that the Model 16/16B/6000
+requires.  All other pins on the 34 and 50 pin connector should not
+be connected to anything.  Your cable can look like this:
+
+    +---+               +-----+        +-----+
+    ! 5 !--------\           /------!  3  !--------!  3  !
+    ! 0 !--------\ A miracle/-------!  4  !--------!  4  !
+    !   !-N/C       occurs----------!     !--------!     !
+    ! p !------------here-----------!  p  !--------!  p  !
+    ! i !--------/          \-------!  i  !--------!  i  !
+    ! n !-------/               N/C-!  n  !--------!  n  !
+    +---+                           +-----+        +-----+
+    DIP              Edge       Edge
+    (facing down)             (facing up)     (facing up)
+
+That is all there is to it.  Once you have built your cable, and applied
+power to your drive enclosure, connect the cable to your Model 16/16B/6000
+external floppy connector (on the 16B/6000 it is behind the access door
+and in the lower right corner), and turn on your system.  If the drive
+light comes on and stays on, this usually indicates that the cable
+is plugged in upside down somewhere (check your pin 1 keying). 
+
+If the drive light does not light, run diskutil and attempt to format
+a floppy in that drive.  If the drive light does not come on, check
+the drive select strap on the drive and make sure it is set to the drive
+number you tried to format.  If that is ok, the cable may be at fault.
+
+If the drive light does come on but diskutil does not get past cylinder 0,
+the terminating resistor may not be installed or the cable is incorrectly
+wired.
+
+If diskutil gets all the way through formatting a floppy, and it behaves
+as though it formatted a double sided disk, you are in business.
+
+If you have some programs that are hard coded to expect media in certain
+drives under XENIX, consider renaming the device names (/dev/fdn, /dev/rfdn,
+/dev/fdbtn and /dev/rfdbtn) so that you can use 5 1/4" media instead.
+Be sure to rename all the floppy devs with the same drive number or else you
+can get into trouble.
+
+Although the 5 1/4" drives are 80 track drives, only 77 of the tracks are
+used under 6000 XENIX, because it still thinks it is talking to a 77-track 8"
+drive.  However, because 6000 XENIX writes the correct number of sectors
+per track allowed for that transfer rate and motor speed (16 512-byte sectors),
+the XENIX-usable storage will equal 1.224 meg (((76x2x16)+16)x512 = 1,253,376,
+which is 24K more than the IBM AT format allows.  The full 80 tracks can
+be utilized, but this requires patching and more operator intervention when
+performing tars dumps and file-system creation.  This and passing data
+between IBM AT and a 6000 XENIX system on 5 1/4" disks will be discussed
+in a future issue.
+
+One final note:  Not all the 5 1/4" disk drives will detect a diskette
+change as the earlier 8" half-height drives did (most had square lights).
+(The cost-reduced 8" drives usually had round drive lights and these would
+only report a disk change if it occurred while the drive light was on.)
+Because there is no separate signal line available, some 5 1/4" drives simply
+do not provide that information while others combine it with the READY signal
+or some other signal.  On the drives I used, I found that attempting to use
+the combined READY and DISK CHANGE caused numerous problems so the above
+straps do not enable that feature.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+If you have questions about this article, please send email to:
+
+                Frank Durda IV @ <trsvax!uhclem>
+                ...decvax!microsoft!trsvax!uhclem
+                ...hal6000!trsvax!uhclem
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Speedup, 256 --> 1MB upgrade:
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+12MHz CPU/no wait state DRAM mod:
+
+i've been running at 12MHz for a few months and things seem to be going
+pretty smoothly.  but i did run into trouble with a slow memory chip
+'till i figured out what the problem was.
+
+these modifications must be done to the new (8MHz) 68000 board, and the
+official tandy 1-meg ram card.  the 0 wait state mods are not
+recommended unless you want to add more cooling fans and a bigger
+power supply.  
+
+a 68000-L12 chip costs about $45 in single quantities.  i think i would
+recommend 120ns chips iver the 150's just in case there's a slow-ish one
+in the bunch.  i've got a 9-user profile-16 system giving
+more-than-reasonable performance (considering).
+
+(...now, if i just had a meg or two more RAM ;-)
+
+if you have trouble, i'd be glad to offer help.  i would not recommend
+performing the mods on your only board - try to work with a spare.
+also, it IS important to use sockets.  the 68000-card is reported to
+have flimsy foil on the sandwitched traces (between the layers).
+======================Begin Forwarded Message===============================
+|
+|
+|After much testing I have revised the modifications required to run the
+|68000 CPU at 12 Mhz.  The modifications below will work at 12Mhz 0/wait
+|states, with 100ns rams and 12Mhz 1/wait state, with 150ns rams.
+|One of the goals of the new list was to provide a minimal amount of
+|modifications and reduce the amount of capacitors on the boards.  Capacitors
+|have a tendency to cause signal drift.  This is something that cannot be
+|allowed in a 12Mhz system.  Also due to the fact that I have seen 3 different
+|parts in the U9 location, on the memory boards.  These were causing some
+|real grief, on some systems.
+|
+|68000 CPU Board Modifications (0 or 1/wait state)
+|
+|   1. Remove U1. (74F32)
+|
+|   2. Install a socket where U1 was. (Optional)
+|
+|   3. Install a 74S32 in U1.
+|
+|   4. Move jumper block to E5-E7 on the 68K board.
+|
+|
+|68000 Memory Board Modifications (150ns rams, 1/wait state)
+|
+|   1. Remove jumper block at E12 to E14.
+|
+|   2. Add a jumper from U13.4 to E14.
+|
+|   3. Remove U9 and all associated capacitors and install a socket.
+|
+|   4. Insert a 74S244 into the U9 socket.
+|
+|   5. Add a 10pf capacitor from U9.16 to ground. (U9.19)
+|
+|   6. Add a 10pf capacitor from U9.18 to ground. (U9.19)
+|
+|   7. Make sure there are four 74ALS240A's installed at U5, U6, U7, U8.
+|
+|
+|68000 Memory Board Modifications (100ns rams, 0/wait states)
+|
+|   Do steps 3,4,5,6,7 from the 150ns list.
+|
+|   1. Install jumper block at E12 to E14.
+|
+|   2. Cut the trace from U13.8.
+|
+|   3. Install a jumper from U13.6 to U11.3.
+|
+|   4. Insert a 74S244 into the U9 socket.
+|
+|   5. Add a 10pf capacitor from U9.16 to ground. (U9.19)
+|
+    
+256K card to 1MB upgrade:
+(Note that someone is selling a 1MB to 4MB upgrade - must use 1MB board
+and substitute 1MB DRAMS for 256K DRAMS.  One such board is used as a 
+swap device.)
+
+Anyway, here's the info on the 1Meg upgrade.  After finishing this
+modification, the schematic of the board looks just like the real 6000
+1Meg board, except that the 6000 board has jumpers to turn the board
+back into a Model-16-type board:
+
+    
+--------------------------------------------------------------------------
+
+You will need 150ns chips for a 6mHz 68000, and you should use
+120ns chips for an 8mHz 68000 (150ns may not be fast enough).
+
+    
+The mod is as follows:
+
+Parts Needed:
+
+    Description         Qty
+    RAM chips (see above)    32
+    Resistor, 68 ohm          1
+    74S240            1
+    74S157            1
+
+Cut the following traces:
+    
+    BUS A17 --> U9.13       Cut top side between U9 and first via
+    BUS A18 --> U2.4        Cut bottom side between U2 and first via
+    BUS A19 --> U2.6        Cut bottom side between U2 and first via
+
+New Parts:
+
+    Mount the 74S240 on top of U3 or U4 by bending up all pins EXCEPT
+    1, 10, 19, and 20.  This chip will be called P1 for piggyback 1.
+
+    Mount the 74S157 on top of U29 by bending up all pins EXCEPT 1, 8,
+    15, and 16.  This chip will be called P2 for piggyback 2.
+
+Jumpers:
+
+    BUS A17 --> P1.11       Via from first cut      Buffered A17
+    BUS A18 --> P1.13       Via from second cut     Buffered A18
+    BUS A19 --> U9.13       Via from third cut      Buffered A19 for bank
+    U2.4    --> U2.5        On U2 to default address selection
+    U2.6    --> U2.7        On U2 to default address selection
+    P1.9    --> P2.2        Buffered A17
+    P1.7    --> P2.3        Buffered A18
+    P2.4    --> resistor    A17 MUXed with A18
+    resistor--> pin 1 of ALL RAM chips on the bottom of the board.
+
+The resistor is in series to pin 1 of all the RAM chips.
+
+That's All Folks!  The mod could have been done a little differently
+without the 74S157, but that chip makes it possible to use only 16
+RAMs to get 512K (in case of memory failure, a 512K board is better
+than a 0K board!).
+
+--------------------------------------------------------------------------
+
+
+CONVERSIONS OF TANDY 12 OR 15 MEG PRIMARIY DRIVES TO USE OTHER BUBBLES.
+
+
+Here are some free-form notes from my file from when I did some
+conversions on standard 12 meg primary disks to use a Quantum Q540.
+(33 meg hard disk).  These go back to about September 1984.
+
+The Tandon TM503 (standard tandy drive) has a pin TP18, which is kludge
+wired to the primary controller board J2 pin 5.  This looks like a +5v
+pull-up to make the drive itself happy ad defeat write protect.
+
+I jumper a +5 from the disks J3 pin 4 to TP18 if I want to use the Tandon
+as a SECONDARY drive or PRIMARY using the internal type 2 drive Tandy
+controller.
+
+In the 4 drive system (standard primary) the Red wire from the control
+panel with lights and push buttons is +5v and common to the lights.  The
+orange is +5v to connect to TP18 on the Tandon and fake it out for
+write protect *IF* the write protect switch is NOT pushed in, and
+the BULB IS NOT BURNED OUT.  This is not obvious, and explains write
+protect panics when the bulb burned out on me.
+
+This write protect kludge is not necessary for many other drives.
+(let alone figuring out where to fake out the drive).  So, you have
+to fake out the write protect directly on the controller (large
+card) in the primary housing.
+
+When you remove the Tandon primary make sure you draw a picture of where
+the 3 wires used to go, in case you have to reverse the process.
+
+The Orange went to TP18; the yellow to the first prong of P7?? (3 of
+these in a row at the front of the drive - look for the solder); and
+the white to a pin on U7, an IC.
+
+Now the fun part.  These changes are done directly to the Radio Shack
+4 drive controller board in the primary housing:
+
+My notes show me two things: what I was told originally to do by Lee
+Penn, and what I later did  which was a bit easier and simply choosing
+other points on the traces which were easier to solder to.
+
+
+1)  The orange wire gets removed from the drive board, and connected in
+-stead to the pin #5 of J1 on the controller. This is write enable.
+
+2)  The white wire gets removed from the drive board,a nd connected
+instead to pin #22 of J5.  This is the ready wire.
+
+3)  The yellow wire gets removed and connected instead to pin #26 of J5.
+This is the drive select wire.
+
+As you look at the controller board component side, U42 is about in
+the middle, and J6 is in the lower right corner, J5 right in front of
+it. J6 us the 50 pin, and J5 the 34 pin cable header.
+
+I made my connections, however as follows (you best trace this carefully
+and re-check ) - if you blow it, its *NOT* my fault:
+
+Yellow to the 13th pad down on J6; White to the 15th pad down on J6; 
+orange to a pad which is in this position, between U42 and C36:
+
+            *
+          * <====== orange  Look for this between C36 and network R27.
+            *
+
+This should be electrically identical to the J5 setups.
+
+As this is arranged, the green "active" light will be on steadily; and
+will not flash like it used to when reading data.  My notes say that
+the following arrangement should work, with flashing; but I don't
+think I ever got to try it.
+
+White: J5 pin 8 
+Orange: J5 pin 20 (index)
+Yellow: J5 pin 26 (drive select)
+
+All of this took a number of late nights; and I
+later bought the 12 meg disk service manual too (which I still
+have for emergencies).  I have the same manual for the 8 meg series too;
+as well as an 8 meg primary upstairs in the den which is currently a
+boat anchor. (but works fine when connected to a model16a boat as
+a hard disk drive).
+
+If all else fails - just start poking around, and watch for smoke.
+Be sure to GET THE CABLES connected right, or you will smoke it for
+sure. THis was a common problem with people re-hooking up their drive 
+cases to the computer.
+
+But as a wise philosopher and ex-tandy employee said - You break it,
+you bought it!  AND Don't call me if it doesn;t work.
+
+
+--------ST 506 mods - older version------
+
+We measured more like 18 ohms. Best we see that your technical sheets show
+when you get them. For now it works and has for actually several months -
+since I found it had happenned a while ago, not the day I came out
+to do the conversion work.
+
+I *was* going to put the Q540 in as a primary until I saw it was a different
+controller board tw3hat in my old 12 meg, which I previously converted.
+
+Instead, we took the safe way, and made up a secondary housing to house
+and power the q540. I did NOTHING about write protect, after first wiring
+the poser fromt he modex connector to pin J1-22 ( -READY) on the Q540.
+THis upset the system and it would not boot at all with the q540 as a 
+secondary. I took off the wire and everything went perfectly.
+
+My notes here from doing this in my own unit with a q540 as a primary
+were done as following:
+
+1) Remove the Yellow, While and Orange wires which are soldered to the
+circuit board of the factory supplied Tandon
+
+2) Re-route them up to the primary controler board to fake out the
+proper signals.
+
+White (ready wire) to J5 pin 22
+Orange (write enable) J1 pin 5
+Yellow (drive select) J5 pin 26
+
+Two of these connections are common to the 50 pin connector, which
+was called j6 ( the J5 26 and J5 22 connections) which are more convenient
+to get at.
+
+On the new controller, new j4 seems equal to old j5 and new j2 seems to be
+old j6
+
+I have the service manual for the old 12 megs but not for the newer
+versions which must show the new controller.
+
+With these changes made, you can use the tandon with out the special
+connections, or a quantum, or I imagine anything else just by plugging
+it in.
+
+
+SA1000 mods:
+
+I simply replaced the SA1004 with a Q2080; I ran a wire from the write-protect
+switch 5V line to line 5 of the 20-conductor data cable to pull the line high
+when the switch was not set to protect.  The 2080 formats out to about 63MB
+(only 1024 cylinders can be used of the 1178) and is very fast, much faster
+than the CMI 6640 I used on another machine.  The 2080 even bolts up to
+the SA1004 holes if you remove the external case.
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+

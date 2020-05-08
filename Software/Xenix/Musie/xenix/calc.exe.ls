@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3           34573 Aug  2 11:33 1994 /usr/local/calc
+-rw-r--r-- 3/3            8074 Aug 16 02:04 1994 /usr/lib/Help/lib/L/calc

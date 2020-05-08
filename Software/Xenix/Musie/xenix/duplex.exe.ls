@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3            6584 Jul 31 07:14 1989 /usr/local/duplex
+-rw-r--r-- 3/3             600 Jan 22 01:08 1995 /usr/lib/Help/lib/L/duplex

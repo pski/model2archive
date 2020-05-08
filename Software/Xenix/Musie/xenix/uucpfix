@@ -1,0 +1,52 @@
+Below is the fix so uucp and the dialer can go faster than 1200 baud.
+
+First, edit /usr/lib/uucp/dial.c for the correct speeds and recompile. 
+You will see a file called link_dial that contains the compile options.  
+Just make it executable and run it and make this your new dialer.
+
+Add these to /usr/lib/uucp/L-devices:
+
+ACU	cul0	cua0.9600	9600
+ACU	cul0	cua0.2400	2400
+
+ACU	cul1	cua0.9600	9600
+ACU	cul1	cua0.2400	2400
+
+Last, you must rm certain cu devices and link them to your tty devices
+in the /dev directory.
+
+rm /dev/cua0*
+rm /dev/cul0
+rm /dev/cua1*
+rm /dev/cul1
+
+
+Your devices must look like the ones below.  Notice how I added
+2400 and 9600 cu's.  This is what my cu devices look like.  Notice
+how each one contains 7 links to each tty.
+
+Link "ln" these to /dev/tty01
+crw-rw-rw-   7 root     root       0,  1 Feb 27 23:48 /dev/cua0
+crw-rw-rw-   7 root     root       0,  1 Feb 27 23:48 /dev/cua0.1200
+crw-rw-rw-   7 root     root       0,  1 Feb 27 23:48 /dev/cua0.2400
+crw-rw-rw-   7 root     root       0,  1 Feb 27 23:48 /dev/cua0.300
+crw-rw-rw-   7 root     root       0,  1 Feb 27 23:48 /dev/cua0.9600
+crw-rw-rw-   7 root     root       0,  1 Feb 27 23:48 /dev/cul0
+
+Link "ln" these to /dev/tty02
+crw-rw-rw-   7 root     root       0,  2 Mar  6 21:48 /dev/cua1
+crw-rw-rw-   7 root     root       0,  2 Mar  6 21:48 /dev/cua1.1200
+crw-rw-rw-   7 root     root       0,  2 Mar  6 21:48 /dev/cua1.2400
+crw-rw-rw-   7 root     root       0,  2 Mar  6 21:48 /dev/cua1.300
+crw-rw-rw-   7 root     root       0,  2 Mar  6 21:48 /dev/cua1.9600
+crw-rw-rw-   7 root     root       0,  2 Mar  6 21:48 /dev/cul1
+
+
+You also notice that logent.o and ulockf.o are located in /usr/lib/uucp.
+This has to do with logging uucp and locking the dial port.  Unfortunately,
+this code was never included in dial.c and there are no docs for how to include
+it in the dialer.  If anyone figures this out, please kindly tell me.
+
+-- 
+Steve Scrivano
+sscrivan@nyx.cs.du.edu

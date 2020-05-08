@@ -1,0 +1,426 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  Makefile READ_ME chfn.1 chsh.1 chsh.c
+# Wrapped by root@coupon on Thu Sep 15 02:32:09 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'Makefile' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Makefile'\"
+else
+echo shar: Extracting \"'Makefile'\" \(399 characters\)
+sed "s/^X//" >'Makefile' <<'END_OF_FILE'
+XCFLAGS=-O -Dindex=strchr
+XDEST=/usr/local
+XDOC_DEST=/usr/man/man9
+X
+Xchfn chsh: chsh.o
+X	cc $(CFLAGS) chsh.o -o chsh
+X	-rm chfn
+X	ln chsh chfn
+X
+Xinstall: chsh chfn
+X	@echo Warning: you must be superuser to do this.
+X	-rm $(DEST)/chsh $(DEST)/chfn
+X	cp chsh $(DEST)/chsh
+X	ln $(DEST)/chsh $(DEST)/chfn
+X	chown root $(DEST)/chsh
+X	chmod 4711 $(DEST)/chsh
+X	cp chsh.1 $(DOC_DEST)/chsh.1
+X	cp chfn.1 $(DOC_DEST)/chfn.1
+END_OF_FILE
+if test 399 -ne `wc -c <'Makefile'`; then
+    echo shar: \"'Makefile'\" unpacked with wrong size!
+fi
+# end of 'Makefile'
+fi
+if test -f 'READ_ME' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'READ_ME'\"
+else
+echo shar: Extracting \"'READ_ME'\" \(1567 characters\)
+sed "s/^X//" >'READ_ME' <<'END_OF_FILE'
+XThis program was originally written by K. Richard Magill,
+Xand posted to mod.sources. Since it contained a few
+XSYS5 dependencies, a *serious* security bug, and no sanity
+Xchecks at all, I decided to hack it up a bit.
+X
+XIt now checks a given shell for existence and executability (only
+Xby looking at the mode, sorry), and it honors the standard
+X(as far as I know) algorithm for locking password files.
+X
+XThe serious security bug was the following: Imagine a user called
+Xhacky doing the following:
+Xchsh hacky '/bin/sh
+Xdummy::0:0::/:'
+X
+XSo, if you've installed it already, better remove it *fast*.
+X
+XAlso, some cosmetic changes were made: If no username is given, the
+Xcurrent user is assumed, and if no shell/realname is given, the
+Xold one is printed, and a new one asked.
+X
+XINSTALLATION:
+X
+XFirst, look at the defines at the top in chsh.c. If your system has
+Xputpwent(), remove the #define NOPUTPWENT.
+X
+XSecond, if you don't mind people playing with other people's
+Xshells and names, remove the #define SECURE.
+X
+XThird, KEEP YOUR HANDS OFF the #define DEBUG.
+X
+XI tried this on a mucho hacked up 11/34 running V7, so it is not
+Xmore than sensible that you test it before letting it anywhere near
+Xthe password file.
+X
+XNow, compile it, run it a few times (not as super-user), and,
+Xwhen you're satisfied, remove the #define DEBUG.
+X
+XNow you can type make install, to re-compile and install it.
+X(Don't forget to look at the Makefile to make sure all
+Xpaths are as you would like them).
+X
+X--
+X	Jack Jansen, jack@htsa.UUCP (or jack@mcvax.UUCP)
+X	...!mcvax!vu44!htsa!jack
+X	The shell is my oyster.
+END_OF_FILE
+if test 1567 -ne `wc -c <'READ_ME'`; then
+    echo shar: \"'READ_ME'\" unpacked with wrong size!
+fi
+# end of 'READ_ME'
+fi
+if test -f 'chfn.1' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'chfn.1'\"
+else
+echo shar: Extracting \"'chfn.1'\" \(829 characters\)
+sed "s/^X//" >'chfn.1' <<'END_OF_FILE'
+X.TH CHFN 1 Local
+X.SH NAME
+Xchfn \- change user's real name
+X.SH SYNOPSIS
+X.B chfn
+X[ user [ realname ] ]
+X.SH DESCRIPTION
+X.I chfn
+Xallows the user to change her real name, as printed by
+X.I finger(1)
+Xand
+X.I who(1).
+XIf no
+X.B user
+Xargument is given, the real name is changed for the person
+Xcurrently logged in.
+X.PP
+XIf no
+X.B realname
+Xis given, the current name is printed, and a new one is asked.
+X.PP
+XDepending on choices made by the system administrator, it might
+Xor might not be possible to modify someone else's name. The program
+Xwill then ask for the correct password first.
+X.SH SEE ALSO
+Xchsh(1), finger(1), who(1)
+X.SH DIAGNOSTICS
+XAll kinds of problems with the password file, and locking it,
+Xare reported, and the program exits.
+X.SH AUTHOR
+XK. Richard Magill, rich@rexaco1.UUCP
+X.br
+XExtensively modified by Jack Jansen, jack@htsa.UUCP.
+END_OF_FILE
+if test 829 -ne `wc -c <'chfn.1'`; then
+    echo shar: \"'chfn.1'\" unpacked with wrong size!
+fi
+# end of 'chfn.1'
+fi
+if test -f 'chsh.1' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'chsh.1'\"
+else
+echo shar: Extracting \"'chsh.1'\" \(982 characters\)
+sed "s/^X//" >'chsh.1' <<'END_OF_FILE'
+X.TH CHSH 1 Local
+X.SH NAME
+Xchsh \- change login shell
+X.SH SYNOPSIS
+X.B chsh
+X[ user [ shell ] ]
+X.SH DESCRIPTION
+X.I chsh
+Xallows the user to change her login shell.
+XIf no
+X.B user
+Xargument is given, the login shell is changed for the person
+Xcurrently logged in.
+X.PP
+XIf no
+X.B shell
+Xis given, the current shell is printed, and a new one is asked.
+X.PP
+XDepending on choices made by the system administrator, it might
+Xor might not be possible to modify someone else's shell. The program
+Xwill then ask for the correct password first.
+X.SH SEE ALSO
+Xchfn(1), login(1)
+X.SH DIAGNOSTICS
+XThe
+X.B shell
+Xgiven is checked for existence, and executability.
+X.br
+XAlso, all kinds of problems with the password file, and locking it,
+Xare reported, and the program exits.
+X.SH BUGS
+XThe executability check only looks at the mode, so it doesn't
+Xguarantee that you will be able to log in with the given shell.
+X.SH AUTHOR
+XK. Richard Magill, rich@rexaco1.UUCP
+X.br
+XExtensively modified by Jack Jansen, jack@htsa.UUCP.
+END_OF_FILE
+if test 982 -ne `wc -c <'chsh.1'`; then
+    echo shar: \"'chsh.1'\" unpacked with wrong size!
+fi
+# end of 'chsh.1'
+fi
+if test -f 'chsh.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'chsh.c'\"
+else
+echo shar: Extracting \"'chsh.c'\" \(5911 characters\)
+sed "s/^X//" >'chsh.c' <<'END_OF_FILE'
+X/*
+X *	This program was originally written by K. Richard Magill,
+X *	and posted to mod.sources. It has been extensively
+X *	modified by Jack Jansen. See below for details.
+X *
+X *	K. Richard Magill, 26-jan-86.
+X *	Last Mod 26-jan-86, rich.
+X *	Modified by Jack Jansen, 30-jan-86:
+X *	- It now runs under V7.
+X *	- It now uses (what I believe to be) standard
+X *	  password file locking and backups.
+X *	- Check the size of the new passwd file, abort if
+X *	  it looks funny.
+X *	- Check that there are no :colons: or \nnewlines\n in the
+X *	  given string.
+X *	- Use name from getlogin() if not given, and ask for
+X *	  parameters if not given.
+X *	- if SECURE is defined, don't let other people
+X *	  muck finger/shell info.
+X */
+X/* #define NOPUTPWENT  1	/* Define this if you don't have putpwent */
+X#define SECURE	1		/* Only owner/root can change stuff */
+X/*#define DEBUG	1		 ALWAYS DEFINE THIS AT FIRST */
+X/*#define void	int		 If your compiler doesn't know void */
+X
+X#include <stdio.h>
+X#include <sys/types.h>
+X#include <sys/stat.h>
+X#include <pwd.h>
+X
+X#define WATCH(s,x)	if(x){perror(s);return(-1);}
+X
+Xchar *PASSWD = "/etc/passwd";
+X#ifndef DEBUG
+Xchar *BACKUP = "/etc/passwd.bak";
+Xchar *LOCK = "/etc/ptmp.lock";
+Xchar *TEMP = "/etc/ptmp.tmp";
+Xchar *BAD_TEMP = "/etc/ptmp.bad";
+X#else
+Xchar *LOCK = "ptmp.lock";
+Xchar *TEMP = "ptmp";
+Xchar *BAD_TEMP = "ptmp.bad";
+X#endif DEBUG
+Xchar ArgBuf[128];
+Xchar *Arg = ArgBuf;
+X
+Xvoid endpwent(), perror();
+Xchar *crypt(), *getpass(), *mktemp();
+Xstruct passwd *getpwent(), *getpwnam(), *fgetpwent();
+Xchar *index();
+X
+Xmain(argc, argv)
+Xint argc;
+Xchar **argv;
+X{
+X	register int i;
+X	register struct passwd *p;
+X	FILE *fout;
+X	int target_id;			/* Who are we changing? */
+X	struct stat stat_buf;
+X	long  OldLen, NewLen;		/* Old/New length of passwd */
+X	long LenDiff;			/* Expected length dif. */
+X	int ShellMode;			/* True if chsh */
+X	char *UserName;			/* Who are we working for */
+X
+X	if( strcmp(argv[0], "chsh") == 0 ) ShellMode = 1; else
+X	if( strcmp(argv[0], "chfn") != 0 ) {
+X	    fprintf(stderr,"Sorry, program name should be 'chsh' or 'chfn'.\n");
+X	    exit(1);
+X	}
+X
+X	if( argc >= 2 ) {	/* Login name given */
+X		UserName = argv[1];
+X	} else {
+X		UserName = getlogin();
+X		printf("Changing %s for %s\n", ShellMode ? "login shell":
+X			"real name", UserName);
+X	}
+X
+X	/* is this person real? */
+X
+X	if ((p = getpwnam(UserName)) == NULL) {
+X		(void) fprintf(stderr, "%s: don't know %s\n",
+X			argv[0], UserName);
+X		return(-1);
+X	}	/* if person isn't real */
+X
+X	/* do we have permission to do this? */
+X	target_id = p->pw_uid;
+X
+X	if ((i = getuid()) != 0 && i != target_id) {
+X#ifdef SECURE
+X		fprintf(stderr,"Sorry, you don't have permission to do that.\n");
+X		exit(1);
+X#else
+X		char salt[3];
+X
+X		salt[0] = p->pw_passwd[0];
+X		salt[1] = p->pw_passwd[1];
+X		salt[3] = '\0';
+X
+X		if (*p->pw_passwd != '\0'
+X			&& strncmp(crypt(getpass("Password: "), salt),
+X			p->pw_passwd, 8)) {
+X			(void) fprintf(stderr, "Sorry.\n");
+X			return(-1);
+X		}	/* passwd didn't match */
+X#endif SECURE
+X	}	/* check for permission */
+X
+X	/* If in verbose mode, print old info */
+X	if( argc <= 2 ) {
+X	    if( ShellMode ) {
+X		printf("Old shell: %s\n", p->pw_shell?p->pw_shell:"");
+X		printf("New shell: ");
+X		gets(Arg);
+X	    } else {
+X		printf("Old name: %s\n", p->pw_gecos?p->pw_gecos:"");
+X		printf("New name: ");
+X		gets(Arg);
+X	    }
+X	} else {
+X	    Arg = argv[2];
+X	}
+X
+X	/* Check for dirty characters */
+X	if( index(Arg, '\n') || index(Arg, ':') ) {
+X	    fprintf(stderr,"%s: Dirty characters in argument.\n",argv[0]);
+X	    exit(1);
+X	}
+X
+X	/* Check that the shell sounds reasonable */
+X	if( ShellMode ) {
+X	    if( *Arg != '/' ) {
+X		fprintf(stderr,"%s: shell name should be full path.\n",Arg);
+X		exit(1);
+X	    }
+X	    WATCH(Arg,stat(Arg,&stat_buf));
+X	    if( (stat_buf.st_mode & 0111) == 0 ) {
+X		fprintf(stderr,"%s is not an executable.\n");
+X		exit(1);
+X	    }
+X	}
+X
+X	/* set up files */
+X
+X	endpwent();	/* close passwd file */
+X
+X	setpwent();
+X
+X	/* Now, lock the password file */
+X	creat(LOCK,0600);	/* This might fail. No problem */
+X	if( link(LOCK,TEMP) < 0 ) {
+X		fprintf(stderr,"Sorry, password file busy.\n");
+X		exit(1);
+X	}
+X	WATCH(TEMP,(fout = fopen(TEMP, "w")) == NULL);
+X
+X	while ((p = getpwent()) != NULL) {
+X		if (p->pw_uid == target_id) {
+X			if (!ShellMode ) {
+X				LenDiff = strlen(Arg)-strlen(p->pw_gecos);
+X				p->pw_gecos = Arg;
+X			} else {
+X				LenDiff = (-strlen(p->pw_shell));
+X				p->pw_shell = Arg == NULL ? "/bin/sh"
+X					: Arg;
+X				LenDiff += strlen(p->pw_shell);
+X			}
+X		}	/* if this is entry to be changed */
+X
+X		WATCH("putpwent",putpwent(p, fout));
+X	}	/* while not eof (we couldn't recognize an error) */
+X
+X	/* close files */
+X	endpwent();
+X	fclose(fout);
+X
+X	/* Check that sizes are as expected */
+X	WATCH(TEMP, stat(TEMP, &stat_buf) );
+X	NewLen = stat_buf.st_size;
+X	WATCH(PASSWD, stat(PASSWD, &stat_buf) );
+X	OldLen = stat_buf.st_size;
+X	if( OldLen + LenDiff != NewLen ) {
+X	    fprintf(stderr,"Sorry, password file changed size: %ld, expected %ld.\n", NewLen, OldLen+LenDiff);
+X	    fprintf(stderr,"Warn your system administrator, please.\n");
+X	    WATCH(TEMP, link(TEMP,BAD_TEMP));
+X	    WATCH(TEMP,unlink(TEMP));
+X	    WATCH(LOCK,unlink(LOCK));
+X	    exit(1);
+X	}
+X
+X#ifndef DEBUG
+X	/* remove old backup if it exists */
+X	WATCH(BACKUP,!stat(BACKUP, &stat_buf) && unlink(BACKUP));
+X
+X	/* make current passwd file backup */
+X	WATCH("linking passwd to passwd.bak",link(PASSWD, BACKUP) || unlink(PASSWD));
+X
+X	/* make new file passwd */
+X	WATCH("linking temp to passwd",link(TEMP, PASSWD) || unlink(TEMP));
+X	WATCH("chmod passwd", chmod(PASSWD, 0644));
+X#endif DEBUG
+X
+X	/* Remove lock */
+X	WATCH(LOCK,unlink(LOCK));
+X
+X#ifdef DEBUG
+X	printf("Now, check that %s looks reasonable.\n", TEMP);
+X#endif DEBUG
+X	/* must have succeeded */
+X	return(0);
+X}	/* main */
+X
+X#ifdef NOPUTPWENT
+Xputpwent(ent, fp)
+X    FILE *fp;
+X    struct passwd *ent;
+X    {
+X
+X    fprintf(fp,"%s:%s:%d:%d:%s:%s:%s\n", ent->pw_name, ent->pw_passwd,
+X	ent->pw_uid, ent->pw_gid, ent->pw_gecos, ent->pw_dir,
+X	ent->pw_shell);
+X    return(0);
+X}
+X#endif NOPUTPWENT
+END_OF_FILE
+if test 5911 -ne `wc -c <'chsh.c'`; then
+    echo shar: \"'chsh.c'\" unpacked with wrong size!
+fi
+# end of 'chsh.c'
+fi
+echo shar: End of shell archive.
+exit 0

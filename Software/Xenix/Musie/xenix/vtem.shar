@@ -1,0 +1,1546 @@
+Note from sscrivan@nyx.cs.du.edu (Steve Scrivano):  This source compiles
+on 3.2 Xenix only and requires the patch program (not the one that came
+with Xenix).  After unsharing this file type "patch < vtemdex.pch". 
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  Makefile out.c term.c vtem.1 vtem.c vtem.h vtemdex.pch
+# Wrapped by root@coupon on Mon Jan 30 14:02:00 1995
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'Makefile' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Makefile'\"
+else
+echo shar: Extracting \"'Makefile'\" \(199 characters\)
+sed "s/^X//" >'Makefile' <<'END_OF_FILE'
+XCFLAGS= -O
+X
+X
+Xvtem:	vtem.o term.o out.o
+X	$(CC) $(CFLAGS) -o vtem vtem.o term.o out.o -ltermcap
+X
+X.c.o:	; $(CC) $(CFLAGS) -c $*.c
+X
+Xshar:	; shar -v vtem.1 Makefile vtem.h vtem.c term.c out.c > vtem.shar
+END_OF_FILE
+if test 199 -ne `wc -c <'Makefile'`; then
+    echo shar: \"'Makefile'\" unpacked with wrong size!
+fi
+# end of 'Makefile'
+fi
+if test -f 'out.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'out.c'\"
+else
+echo shar: Extracting \"'out.c'\" \(9779 characters\)
+sed "s/^X//" >'out.c' <<'END_OF_FILE'
+X/*
+X * vt - A termcap driven VT100 emulator for BSD Unix
+X *
+X * Version 1.0
+X *
+X * Public domain software.
+X * Written by Leif Samuelsson (leif@erisun) in December, 1985
+X */
+X
+X#include "vtem.h"
+X
+Xtypedef Bool int;
+X
+Xstatic int	row, col, save_row, save_col, top_margin, bottom_margin;
+Xstatic Bool	blink, bold, reverse, underline, save_blink, save_bold,
+X		save_reverse, save_underline, origin_mode, vt52_mode, wrap;
+X
+Xstatic short tabs[80];
+Xstatic FILE *f;
+Xstatic int arg[10], argno;
+X
+X/* arow is absolute row, taking top_margin into account */
+X#define arow	(row + (origin_mode ? (top_margin - 1) : 0))
+X
+X
+X/* nextch - read output and interpret control characters.
+X *	    Return first non-control character.
+X */
+Xint nextch()
+X{
+Xregister int ch;
+X
+X    while ((ch = getc(f)) != EOF) {
+X	switch (ch) {
+X	    case '\0':			/* Ignore nulls and DELs */
+X	    case '\177':
+X		    break;
+X	    case '\007':		/* Bell */
+X		ring_bell(); break;
+X	    case '\b':			/* BackSpace */
+X		    if (col > 1) {
+X			col--;
+X			backspace();
+X		    } break;
+X	    case '\t':			/* Tab */
+X		while (col < 80 && !tabs[col++]);
+X		set_cursor(col-1, arow-1); break;
+X
+X	    case '\n':			/* Line Feed */
+X		    do_linefeed(); break;
+X	    case '\r':			/* Carriage Return */
+X		if (col > 1) {
+X		    col = 1;
+X		    cr();
+X		} break;
+X	    case '\016':		/* Ignore shift in/out */
+X	    case '\017':
+X	        break;
+X	    default:
+X		    return(ch);
+X	}
+X	if (f->_cnt == 0)
+X	    fflush(stdout);
+X    }
+X    return(ch);
+X}
+X
+X/* handle_output - Main loop of output process.
+X *		   Reads and dispatches characters from output stream.
+X */
+Xhandle_output()
+X{
+Xregister int ch;
+X
+X    gettermtype();
+X    (void) close(0);
+X    if ((f = fdopen(master, "r")) == (FILE *) 0) {
+X	fprintf(stderr, "handle_output: Can't read from shell\r\n");
+X	exit(1);
+X    }
+X    do_reset();
+X    while ((ch = nextch()) != EOF) {
+X	if (ch == '\033') {		/* Escape character */
+X	    if (vt52_mode)
+X		do_vt52_escape();
+X	    else
+X		do_ansi_escape();
+X	}
+X	else if (ch >= ' ') {		/* Printing character */
+X	    if (col == 81) {
+X		if (wrap) {
+X		    col = 1;
+X		    set_cursor(col-1, arow-1);
+X		    do_linefeed();
+X		}
+X		else {
+X		    col = 80;
+X		    set_cursor(col-1, arow-1);
+X		}
+X	    }
+X	    if (col == 80) {
+X		if (arow != 24)
+X		    putchar(ch);	/* Must ignore last pos */
+X		set_cursor(col-1, arow-1);
+X		if (wrap)
+X		    col++;
+X	    }
+X	    else {
+X		putchar(ch);
+X		col++;
+X	    }
+X	}
+X	if (f->_cnt == 0)
+X	    fflush(stdout);
+X    }
+X    fclose(f);
+X    exit(0);
+X}
+X
+X/* do_ansi_escape - reads and interprets an ANSI escape sequence
+X */
+X
+Xdo_ansi_escape()
+X{
+Xregister int ch;
+X
+X    if ((ch = nextch()) == EOF)
+X	return;
+X    switch (ch) {
+X	case '#':
+X	    do_hash();
+X	    break;
+X	case '(':
+X	case ')':
+X	    do_character_sets(); break;
+X	case '7':
+X	    save_row = row;
+X	    save_col = col;
+X	    save_blink = blink;
+X	    save_bold = bold;
+X	    save_reverse = reverse;
+X	    save_underline = underline;
+X	    break;
+X	case '8':
+X	    if (save_row > 0) {
+X		row = save_row;
+X		col = save_col;
+X		set_cursor(col-1, arow-1);
+X		if (blink = save_blink)
+X		    start_blink();
+X		if (bold = save_bold)
+X		    start_bold();
+X		if (reverse = save_reverse)
+X		    start_reverse();
+X		if (underline = save_underline)
+X		    start_underline();
+X	    } break;
+X
+X	case 'D':
+X	    do_linefeed(); break;
+X
+X	case 'E':
+X	    if (col > 1) {
+X		col = 1;
+X		cr();
+X	    }
+X	    do_linefeed(); break;
+X
+X	case 'H':
+X	    tabs[col-1] = 1; break;
+X
+X	case 'M':
+X	    do_reverse_lf(); break;
+X
+X	case '[':
+X	    do_csi(); break;
+X
+X	case 'c':
+X	    do_reset(); break;
+X    }
+X}
+X
+X/* do_csi - the real ANSI interpreter
+X */
+Xdo_csi()
+X{
+Xregister int i, ch;
+Xint private;
+X
+X    if ((ch = nextch()) == EOF)
+X	return;
+X
+X    /* Check if private VT100 esc sequence */
+X    private = 0;
+X    if (ch == '?') {
+X	private++;
+X	if ((ch = nextch()) == EOF)
+X	    return;
+X    }
+X
+X    /* Parse arguments */
+X    argno = 0;
+X    while ((ch >= '0' && ch <= '9') || ch == ';') {
+X	arg[argno] = 0;
+X	while (ch >= '0' && ch <= '9') {
+X	    arg[argno] = arg[argno] * 10 + (ch - '0');
+X	    if ((ch = nextch()) == EOF)
+X		return;
+X	}
+X	if (ch == ';')
+X	    if ((ch = nextch()) == EOF)
+X		return;
+X	argno++;
+X    }
+X
+X    if (private) {
+X	if (argno != 1)
+X	    return;
+X	switch (ch) {
+X	    case 'h':
+X		switch (arg[0]) {
+X		    case 6:
+X			origin_mode++; break;
+X		    case 7:
+X			wrap++; break;
+X		} break;
+X	    case 'l':
+X		switch (arg[0]) {
+X		    case 2:
+X			vt52_mode = 1; break;
+X		    case 6:
+X			origin_mode = 0; break;
+X		    case 7:
+X			wrap = 0; break;
+X		} break;
+X	}
+X    }
+X    else {
+X	switch (ch) {
+X	    case 'A':
+X		i = (argno == 1 && arg[0] > 0) ? arg[0] : 1;
+X		while (i-- && row > 1) {
+X		    cursor_up();
+X		    row--;
+X		} break;
+X
+X	    case 'B':
+X		i = (argno == 1 && arg[0] > 0) ? arg[0] : 1;
+X		while (i-- && row < bottom_margin-top_margin+1) {
+X		    cursor_down();
+X		    row++;
+X		} break;
+X
+X	    case 'C':
+X		i = (argno == 1 && arg[0] > 0) ? arg[0] : 1;
+X		while (i-- && col < 80) {
+X		    cursor_right();
+X		    col++;
+X		} break;
+X
+X	    case 'D':
+X		i = (argno == 1 && arg[0] > 0) ? arg[0] : 1;
+X		while (i-- && col > 1) {
+X		    backspace();
+X		    col--;
+X		} break;
+X
+X	    case 'H':
+X	    case 'f':
+X		do_set_cursor(); break;
+X	    case 'J':
+X		do_erase_in_display(); break;
+X	    case 'K':
+X		do_erase_in_line(); break;
+X	    case 'L':
+X		do_insert_line(); break;
+X	    case 'M':
+X		do_delete_line(); break;
+X	    case 'g':
+X	        do_clear_tabs(); break;
+X	    case 'm':
+X		do_attributes(); break;
+X	    case 'r':
+X		do_set_scroll_region();
+X	}
+X    }
+X}
+X
+X/* do_vt52_escape - interprets VT52 escape sequences
+X */
+Xdo_vt52_escape()
+X{
+Xregister int ch;
+X
+X    if ((ch = nextch()) == EOF)
+X	return;
+X    switch (ch) {
+X	case '<':
+X		vt52_mode = 0; break;
+X	case 'A':
+X		if (row > 1) {
+X		    cursor_up();
+X		    row--;
+X		} break;
+X	case 'B':
+X		if (row < bottom_margin-top_margin+1) {
+X		    cursor_down();
+X		    row++;
+X		} break;
+X	case 'C':
+X		if (col < 80) {
+X		    cursor_right();
+X		    col++;
+X		} break;
+X	case 'D':
+X		if (col > 1) {
+X		    backspace();
+X		    col--;
+X		} break;
+X	case 'H':
+X		row = col = 1;
+X		set_cursor(col-1, arow-1); break;
+X	case 'I':
+X		do_reverse_lf(); break;
+X	case 'J':
+X		clear_eos(); break;
+X	case 'K':
+X		clear_eol(col-1, arow-1); break;
+X	case 'Y':
+X		do_vt52_set_cursor(); break;
+X    }
+X}
+X
+X
+Xdo_set_cursor()
+X{
+X    if (arg[0] == 0)
+X	arg[0]++;
+X    if (arg[1] == 0)
+X	arg[1]++;
+X    Kwitch (argno) {
+X	case 0:
+X	    arg[0] = 1;
+X	    argno++;
+X	    /* Fall through */
+X
+X	case 1:
+X	    arg[1] = 1;		/* Correct? */
+X	    argno++;
+X	    /* Fall through... */
+X
+X	case 2:
+X	    row = arg[0];
+X	    col = arg[1];
+X	    set_cursor(col-1, arow-1);
+X	    break;
+X    }
+X}
+X
+Xdo_vt52_set_cursor()
+X{
+Xregister int ch1, ch2;
+X
+X    if ((ch1 = nextch()) == EOF)
+X	return;
+X    if ((ch2 = nextch()) == EOF)
+X	return;
+X    ch1 -= 0x1f;
+X    ch2 -= 0x1f;
+X    if (ch1 >= 1 && ch1 <= 24 && ch2 >= 1 && ch2 <= 80) {
+X	    row = ch1;
+X	    col = ch2;
+X	    set_cursor(col-1, arow-1);
+X    }
+X}
+X
+Xdo_erase_in_display()
+X{
+X    switch (argno) {
+X	case 0:
+X	    arg[0] = 0;
+X	    argno++;
+X	    /* Fall through */
+X	case 1:
+X	    switch (arg[0]) {
+X		case 0:
+X		    clear_eos();
+X		    break;
+X		case 1:
+X		    clear_bos(col-1, arow-1);
+X		    break;
+X		case 2:
+X		    clear_screen();
+X		    set_cursor(col-1, arow-1);
+X		    break;
+X	    }
+X	    break;
+X    }
+X}
+X
+Xdo_erase_in_line()
+X{
+X    switch(argno) {
+X	case 0:
+X	    arg[0] = 0;
+X	    argno++;
+X	    /* fall through */
+X	case 1:
+X	    switch (arg[0]) {
+X		case 0:
+X		    clear_eol(col-1, arow-1);
+X		    break;
+X		case 1:
+X		    clear_bol(col-1, arow-1);
+X		    break;
+X		case 2:
+X		    cr();
+X		    clear_eol(0, arow-1);
+X		    set_cursor(col-1, arow-1);
+X		    break;
+X	    } break;
+X    }
+X}
+X
+Xdo_clear_tabs()
+X{
+Xregister int i;
+X
+X    if (argno == 0)
+X	arg[argno++] = 0;
+X    switch (arg[0]) {
+X	case 0:
+X	    tabs[col-1] = 0; break;
+X	case 3:
+X	    for (i = 0; i<80; i++)
+X		tabs[i] = 0; break;
+X    } 
+X}
+X
+Xdo_attributes()
+X{
+Xregister int i;
+X
+X    if (argno == 0) {
+X	arg[0] = 0;
+X	argno++;
+X    }
+X    for (i=0; i<argno; i++) {
+X	switch (arg[i]) {
+X	    case 0:
+X		end_attributes();
+X		bold = underline = blink = reverse = 0;
+X		break;
+X	    case 1:
+X		start_bold();
+X		bold++; break;
+X
+X	    case 4:
+X		start_underline();
+X		underline++; break;
+X
+X	    case 5:
+X		start_blink();
+X		blink++; break;
+X
+X	    case 7:
+X		start_reverse();
+X		reverse++; break;
+X	}
+X    }
+X}
+X
+Xdo_set_scroll_region()
+X{
+X    if (arg[0] == 0)
+X	arg[0]++;
+X    if (arg[1] == 0)
+X	arg[1]++;
+X    switch (argno) {
+X	case 0:
+X	    arg[0] = 1;
+X	    arg[1] = 24;
+X	    argno = 2;
+X	    /* Fall through */
+X
+X	case 2:
+X	    top_margin = arg[0];
+X	    bottom_margin = arg[1];
+X	    col = row = 1;
+X	    set_cursor(col-1, arow-1);
+X	    break;
+X    }
+X}
+X
+Xdo_linefeed()
+X{
+X    if (arow == bottom_margin) {
+X	if (bottom_margin < LI) {
+X	    scroll_region(top_margin-1, bottom_margin-1, TRUE);
+X	    set_cursor(col-1, arow-1);
+X	}
+X	else
+X	    linefeed();
+X    }
+X    else if (arow < 24) {
+X	row++;
+X	linefeed();
+X    }
+X}
+X
+Xdo_reverse_lf()
+X{
+X    if (arow == top_margin) {
+X	scroll_region(top_margin-1, bottom_margin-1, FALSE);
+X	set_cursor(col-1, arow-1);
+X    }
+X    else if (arow > 1) {
+X	row--;
+X	reverse_lf();
+X    }
+X}
+X
+Xdo_hash()
+X{
+Xregister int ch, i, j;
+X
+X    if ((ch = nextch()) == EOF)
+X	return;
+X    switch(ch) {
+X	case '8':
+X	    for (i=1; i<=24; i++) {
+X		set_cursor(0, i-1);
+X		for (j=1; j <= ((i==24)?79:80); j++)
+X		    putchar('E');
+X	    }
+X	    row = col = 1;
+X	    set_cursor(col-1, arow-1);		/* Correct? */
+X	    break;
+X    }		 
+X}
+X
+X/* do_characters_sets - Not implemented
+X */
+Xdo_character_sets()
+X{
+X    nextch();			/* Ignore for now */
+X}
+X
+X/* do_reset - Reset emulator and screen
+X */
+Xdo_reset()
+X{
+Xregister int i;
+X
+X    clear_screen();
+X    row = 1;
+X    col = 1;
+X    top_margin = 1;
+X    bottom_margin = 24;
+X    origin_mode = 0;
+X    vt52_mode = 0;
+X    wrap = 1;
+X    save_row = -1;			/* So we know we haven't saved */
+X    for (i=0; i<80; i++)
+X	tabs[i] = ((i/8)*8 == i);
+X}
+X
+X/* The following are routines for VT102 compatibility
+X */
+X
+Xdo_insert_line()
+X{
+X/* Not yet implemented */
+X}
+X
+Xdo_delete_line()
+X{
+X/* Not yet implemented */
+X}
+END_OF_FILE
+if test 9779 -ne `wc -c <'out.c'`; then
+    echo shar: \"'out.c'\" unpacked with wrong size!
+fi
+# end of 'out.c'
+fi
+if test -f 'term.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'term.c'\"
+else
+echo shar: Extracting \"'term.c'\" \(5633 characters\)
+sed "s/^X//" >'term.c' <<'END_OF_FILE'
+X/*
+X * vt - A termcap driven VT100 emulator for BSD Unix
+X *
+X * Version 1.0
+X *
+X * Public domain software.
+X * Written by Leif Samuelsson (leif@erisun) in December, 1985
+X */
+X
+X
+X/* This module contains termcap and tty routines */
+X
+X#include "vtem.h"
+X
+Xextern char *tgetstr(), *tgoto();
+X
+X/* Variables for saving original terminal parameters */
+X  struct sgttyb oldb, newb;
+X  struct tchars oldtchars, newtchars = { -1, -1, -1, -1, -1, -1 };
+X  struct ltchars oldltchars, newltchars = { -1, -1, -1, -1, -1, -1 };
+X  int oldlb, newlb, oldl, newl;
+X
+X/* Terminal attributes */
+Xchar tbuf[1024];
+XBool BS;
+Xint CO, LI;
+Xchar	*AL, *BC, *BL, *CD, *CL, *CE, *CM, *CR, *CS, *DL, *DO,
+X	*KE, *KS, *MB, *MD, *ME, *MR, *ND, *NL, *SE, *SO, *SR,
+X	*TI, *TE, *UE, *UP, *US, *MAL, *MDL;
+X 
+Xputchar_x(c)
+Xchar c;
+X{
+X    putchar(c);
+X}
+X
+Xttycbreak()
+X{
+X    ioctl(0, TIOCGETP, &oldb);
+X    ioctl(0, TIOCGETC, &oldtchars);
+X    ioctl(0, TIOCGETD, &oldl);
+X    ioctl(0, TIOCGLTC, &oldltchars);
+X    ioctl(0, TIOCLGET, &oldlb);
+X
+X    newb = oldb;
+X    newb.sg_flags |= CBREAK;
+X    newb.sg_flags &= ~(CRMOD | ECHO);
+X    ioctl(0, TIOCSETP, &newb);
+X    ioctl(0, TIOCSETC, &newtchars);
+X    ioctl(0, TIOCSLTC, &newltchars);
+X    signal(SIGINT,SIG_IGN);
+X}
+X
+X
+X/* gettermtype - Finds terminal type and reads termcap entry for it.
+X */
+Xgettermtype()
+X{
+Xchar tptr[1024];
+Xchar *termtyp;
+Xchar *tbufptr;
+X
+X    termtyp=getenv("TERM");
+X    switch(tgetent(tptr,termtyp)) {
+X	case -1:
+X	    printf("Can't read termcap\n");
+X	    exit(1);
+X	case 0:
+X	    printf("Can't find your terminal type (%s) in termcap\n", termtyp);
+X	    exit(1);
+X    }
+X    tbufptr=tbuf;
+X    AL = tgetstr("al", &tbufptr);
+X    BC = tgetstr("bc", &tbufptr);
+X    BL = tgetstr("bl", &tbufptr);
+X    if (!BL)
+X	BL = "\007";
+X    BS = tgetflag("bs",&tbufptr);
+X    if (!BC && BS)
+X	BC = "\b";
+X    CD = tgetstr("cd", &tbufptr);
+X    CL = tgetstr("cl", &tbufptr);
+X    CE = tgetstr("ce", &tbufptr);
+X    CM = tgetstr("cm", &tbufptr);
+X    CR = tgetstr("cr", &tbufptr);
+X    if (!CR)
+X	CR = "\r";
+X    CS = tgetstr("cs", &tbufptr);
+X    DL = tgetstr("dl", &tbufptr);
+X    DO = tgetstr("do", &tbufptr);
+X    if (!DO)
+X	DO = "\n";
+X    KE = tgetstr("ke", &tbufptr);
+X    KS = tgetstr("ks", &tbufptr);
+X    MB = tgetstr("mb", &tbufptr);
+X    ME = tgetstr("me", &tbufptr);
+X    MR = tgetstr("mr", &tbufptr);
+X    ND = tgetstr("nd", &tbufptr);
+X    NL = tgetstr("nl", &tbufptr);
+X    if (!NL)
+X	NL = "\n";
+X    SO = tgetstr("so", &tbufptr);
+X    SE = tgetstr("se", &tbufptr);
+X    SR = tgetstr("sr", &tbufptr);
+X    TI = tgetstr("ti", &tbufptr);
+X    TE = tgetstr("te", &tbufptr);
+X    UE = tgetstr("ue", &tbufptr);
+X    UP = tgetstr("up", &tbufptr);
+X    US = tgetstr("us", &tbufptr);
+X    MAL = tgetstr("AL", &tbufptr);
+X    MDL = tgetstr("DL", &tbufptr);
+X    CO = tgetnum("co");
+X    LI = tgetnum("li");
+X    if(!TI) {
+X	    TI = tgetstr("vs", &tbufptr);
+X	    TE = tgetstr("ve", &tbufptr);
+X    }
+X
+X    if (CO < 80 || LI < 24) {
+X	printf("Sorry, but vtem requires 24 by 80 lines.\r\n");
+X	exit(1);
+X    }
+X    if (!CM) {
+X	printf("Sorry, but vtem requires cursor motion capability (cm).\r\n");
+X	exit(1);
+X    }
+X    if (!CL) {
+X	printf("Sorry, but vtem requires clear screen capability (cl).\r\n");
+X	exit(1);
+X    }
+X    if (!UP) {
+X	printf("Sorry, but vtem requires cursor up capability (up).\r\n");
+X	exit(1);
+X    }
+X}
+X
+Xsetupterm(flg)			/* If flg==TRUE, set line in cbreak mode and */
+XBool flg;			/* initialize the terminal,otherwise restore */
+X{
+X    if (flg) {
+X	ttycbreak();
+X	if (TI)
+X	    tputs_x(TI);	/* start CM mode */
+X    }
+X    else {
+X	if (KE)
+X	    tputs_x(KE);	/* Restores Keypad */
+X	if (TE)
+X	    tputs_x(TE);	/* exit CM mode */
+X	ioctl(0, TIOCSETP, &oldb);
+X	ioctl(0, TIOCSETC, &oldtchars);
+X	ioctl(0, TIOCSLTC, &oldltchars);
+X    }
+X}
+X
+X/* clear_bos - clear from beginning of screen to cursor
+X */
+Xclear_bos(c,r)
+Xint c,r;
+X{
+Xregister int i;
+X
+X    for (i=0; i<r; i++) {
+X	tputs_x(tgoto(CM, 0, i));
+X	tputs_x(CE);
+X    }
+X    clear_bol(c,r);
+X}
+X
+X/* clear_eos - Clear from cursor to end of screen.
+X */
+Xclear_eos()
+X{
+X    tputs_x(CD);
+X}
+X
+X/* clear_bol - Clear from beginning of line to cursor.
+X */
+Xclear_bol(c,r)
+Xint c,r;
+X{
+Xregister int i;
+X
+X    tputs_x(tgoto(CM, 0, r));
+X    for (i=0; i<c; i++)
+X	putchar(' ');
+X}
+X
+X/* clear_eol - Clear from cursor to end of line.
+X */
+Xclear_eol(c, r)
+Xint c, r;
+X{
+Xregister int i;
+X
+X    if (CE)
+X	tputs_x(CE);
+X    else {
+X	for (i=c; i < ((r==23)?79:80); i++)
+X	    putchar(' ');
+X	set_cursor(c, r);
+X    }
+X}
+X
+X
+Xcursor_up()
+X{
+X    tputs_x(UP); 
+X}
+X
+X
+Xcursor_down()
+X{
+X    tputs_x(DO); 
+X}
+X
+X
+Xcursor_right()
+X{
+X    tputs_x(ND); 
+X}
+X
+X
+Xreverse_lf()
+X{
+X    cursor_up();		/* We hope */
+X}
+X
+X
+X/* start_reverse - Set terminal in reverse video mode.
+X */
+Xstart_reverse()
+X{
+X    if (MR)
+X	tputs_x(MR);
+X    else
+X	tputs_x(SO);
+X}
+X
+X
+Xstart_blink()
+X{
+X    tputs_x(MB);
+X}
+X
+X
+Xstart_underline()
+X{
+X    tputs_x(US);
+X}
+X
+X
+Xstart_bold()
+X{
+X    if (MD)
+X	tputs_x(MD);
+X    else
+X	tputs_x(SO);
+X}
+X
+X
+Xring_bell()
+X{
+X    tputs_x(BL);
+X}
+X
+X
+X/* end_attributes - Reset terminal attributes to normal.
+X */
+Xend_attributes()
+X{
+X    if (ME)
+X	tputs_x(ME);
+X    else {
+X	tputs_x(SE);
+X	tputs_x(UE);
+X    }
+X}
+X
+X
+Xscroll_region(lin1, lin2, upward)      /* Scroll region between lin1 and */
+Xint lin1, lin2;			       /* lin2 inclusive one line up or down */
+X{
+X    /* Use scroll region if available - otherwise use insert/delete line*/
+X    if (CS && SR) {
+X	tputs_x(tgoto(CS,lin2,lin1));
+X	if (upward) {
+X	    set_cursor(0,lin2);
+X	    tputs_x(NL);
+X	}
+X	else {
+X	    set_cursor(0,lin1);
+X	    tputs_x(SR);
+X	}
+X	tputs_x(tgoto(CS,23,0));
+X    }
+X    else if (DL && AL) {
+X	if (upward) {
+X	    set_cursor(0,lin1);
+X	    tputs_x(DL);
+X	    set_cursor(0,lin2);
+X	    tputs_x(AL);
+X	}
+X	else {
+X	    set_cursor(0,lin2);
+X	    tputs_x(DL);
+X	    set_cursor(0,lin1);
+X	    tputs_x(AL);
+X	}
+X    }
+X}
+X
+X
+END_OF_FILE
+if test 5633 -ne `wc -c <'term.c'`; then
+    echo shar: \"'term.c'\" unpacked with wrong size!
+fi
+# end of 'term.c'
+fi
+if test -f 'vtem.1' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'vtem.1'\"
+else
+echo shar: Extracting \"'vtem.1'\" \(2100 characters\)
+sed "s/^X//" >'vtem.1' <<'END_OF_FILE'
+X.TH VTEM 1 1986-01-24
+X.SH NAME
+Xvtem - a VT100 emulator based on termcap
+X.SH SYNOPSIS
+X.I vtem
+X.SH DESCRIPTION
+X.I vtem
+Xruns on BSD4.2 and works by starting a sub-shell and then translating
+Xoutput escape sequences. It's function is limited by the capabilities
+Xlisted in the termcap database and the capabilities of the actual
+Xterminal that it is being run on.
+X
+XIt has been tested with Per Lindberg's excellent verifier "vttest" and
+Xhas been found to give acceptable results on the following terminals:
+X
+X	Sun windows
+X.br
+X	PC-Kermit in h19 emulation mode.
+X.br
+X	VT100	(!)
+X
+XOn a Sun, you can use the following Suntools rootmenu entry:
+X
+X.nf
+X"VT100 Tool" shelltool -Ww 80 -Wh 24 -Wl " VT100 Tool" vtem
+X.fi
+X.SH BUGS
+XRelease 1.0 of vtem has the following bugs and limitations:
+X
+XRegion scroll will only work on terminals with
+Xcs or al/dl.
+X
+XIt will never write in the last position of the screen,
+Xbecause of the unpredictable behaviour of many terminals.
+X
+XVT102 capabilities are not yet implemented.
+X
+XNo soft scroll.
+X
+X132 width not supported.
+X
+XInput is not translated, which means no function key emulation.
+X
+XNo double height or double width lines.
+X
+XNo alternate character set, meaning no graphics.
+X
+XNo printer support.
+X
+XNo status reports, answerback messages, etc.
+X
+XNo SETUP mode.
+X
+XNo LEDs.
+X
+X.SH AUTHOR
+XLeif Samuelsson 
+X.br
+Xleif@erisun.UUCP  or  ..enea!erix!erisun!leif
+X.br
+X
+XTandy 6000 Bugs and notes:
+X
+XThis program was modified and a patch provided by:
+Xjsr@dexter.mi.org (Jay S. Rouman) to run on 16/6000 machines.
+X
+XThis is an extremely minimal program that is far from giving full vt100
+Xsupport.  It's usefulness is limited to piping or cat"ing" input through
+X"vtem" so that a vt100 like screen can be displayed on a TRS16/6000 or
+Xanother terminal with proper non-vt-100 termcap capability.
+XA vt-100 screen can be displayed reasonably well and you can
+Xrun cu or cu.s3 and pipe it through vtem:  cu.s3 phone#|vtem. The program
+Xwill core dump if it encounters any codes not supported like screen graphics
+Xsupporting special non-ascii characters.  Most other communication programs
+Xcan not be piped through vtem.
+END_OF_FILE
+if test 2100 -ne `wc -c <'vtem.1'`; then
+    echo shar: \"'vtem.1'\" unpacked with wrong size!
+fi
+# end of 'vtem.1'
+fi
+if test -f 'vtem.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'vtem.c'\"
+else
+echo shar: Extracting \"'vtem.c'\" \(2082 characters\)
+sed "s/^X//" >'vtem.c' <<'END_OF_FILE'
+X/*
+X * vt - A termcap driven VT100 emulator for BSD Unix
+X *
+X * Version 1.0
+X *
+X * Public domain software.
+X * Written by Leif Samuelsson (leif@erisun) in December, 1985
+X */
+X
+X#include "vtem.h"
+X#include <sys/wait.h>
+X
+Xint master, slave, child;
+Xchar linec, linen;
+X
+X
+Xdone()
+X{
+Xunion wait status;
+X
+X	if (wait3(&status, WNOHANG, 0) != child)
+X		return;
+X	setupterm(0);
+X	exit(0);
+X}
+X
+Xmain()
+X{
+X	/* Strategy: Start three processes, one for input, one for output
+X         * and one shell.
+X         */
+X	setup_master();
+X	setupterm(TRUE);
+X	signal(SIGCHLD, done);
+X	if (child = fork())
+X	    handle_input();
+X	else {
+X	    if (fork())
+X		handle_output();
+X	    else
+X		start_shell();
+X	}
+X}
+X
+Xhandle_input()
+X{
+Xchar buf[BUFSIZ];
+Xint i;
+X
+X	while (i = read(0, buf, BUFSIZ))
+X		write(master, buf, i);
+X	setupterm(0);
+X	exit(0);
+X}
+X
+X
+Xstart_shell()
+X{
+Xint t;
+Xchar *shell, *tail, *rindex();
+X
+X	if ((shell = getenv("SHELL")) == (char *) 0)
+X	    shell = "/bin/sh";
+X	if ((tail = rindex(shell, '/')) == (char *) 0)
+X	    tail = "sh";
+X	else
+X	    tail++;
+X	if ((t = open("/dev/tty", 2)) >= 0) {
+X	    ioctl(t, TIOCNOTTY, (char *)0);
+X	    close(t);
+X	}
+X	setup_slave();
+X	close(master);
+X	dup2(slave, 0);
+X	dup2(slave, 1);
+X	dup2(slave, 2);
+X	close(slave);
+X	execl(shell, tail, "-i", 0);
+X	perror(shell);
+X	fail();
+X}
+X
+Xfail()
+X{
+X	kill(0, SIGTERM);
+X	setupterm(0);
+X	exit(0);
+X}
+X
+X
+Xsetup_master()
+X{
+Xchar line[11];
+X
+X    for (linec = 'p'; linec <= 's'; linec++) {
+X	sprintf(line, "/dev/pty%c0", linec);
+X	if (access(line, 0) != 0)
+X	    break;
+X	for (linen = 0; linen < 16; linen++) {
+X	    sprintf(line, "/dev/pty%c%1x", linec, linen);
+X	    master = open(line, 2);
+X	    if (master >= 0) {
+X		return;
+X	    }
+X	}
+X    }
+X    fprintf(stderr, "Can't find a pty\n");
+X    fail();
+X}
+X
+Xsetup_slave()
+X{
+Xchar line[11];
+X
+X    sprintf(line, "/dev/tty%c%1x", linec, linen);
+X    slave = open(line, 2);
+X    if (slave < 0) {
+X	perror(line);
+X	fail();
+X    }
+X    ioctl(slave, TIOCSETP, (char *)&oldb);
+X    ioctl(slave, TIOCSETC, (char *)&oldtchars);
+X    ioctl(slave, TIOCSLTC, (char *)&oldltchars);
+X    ioctl(slave, TIOCLSET, (char *)&oldlb);
+X    ioctl(slave, TIOCSETD, (char *)&oldl);
+X}
+END_OF_FILE
+if test 2082 -ne `wc -c <'vtem.c'`; then
+    echo shar: \"'vtem.c'\" unpacked with wrong size!
+fi
+# end of 'vtem.c'
+fi
+if test -f 'vtem.h' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'vtem.h'\"
+else
+echo shar: Extracting \"'vtem.h'\" \(840 characters\)
+sed "s/^X//" >'vtem.h' <<'END_OF_FILE'
+X#include <stdio.h>
+X#include <signal.h>
+X#include <sys/types.h>
+X#include <sys/time.h>
+X#include <sys/stat.h>
+X#include <sys/ioctl.h>
+X
+X#define FALSE 0
+X#define TRUE 1
+X
+Xtypedef short Bool;
+X
+Xextern char *getenv();
+Xextern putchar_x();
+X
+Xextern struct sgttyb oldb, newb;
+Xextern struct tchars oldtchars, newtchars;
+Xextern struct ltchars oldltchars, newltchars;
+Xextern int oldlb, newlb, oldl, newl;
+X
+Xextern int master;
+X
+Xextern Bool BS;
+Xextern int CO, LI;
+Xextern char *AL, *BC, *BL, *CD, *CL, *CE, *CM, *CR, *CS, *DL, *DO, *KE, *KS, *MB, *MD, *ME, *MR, *ND, *NL, *SE, *SO, *SR, *TI, *TE, *UE, *UP, *US, *MAL, *MDL;
+X
+X#define tputs_x(s)		(tputs(s, 0, putchar_x))
+X
+X#define backspace()		(tputs_x(BC))
+X#define clear_screen()		(tputs_x(CL))
+X#define set_cursor(c, r)	(tputs_x(tgoto(CM, (c), (r))))
+X#define linefeed()		(tputs_x(NL))
+X#define cr()			(tputs_x(CR))
+END_OF_FILE
+if test 840 -ne `wc -c <'vtem.h'`; then
+    echo shar: \"'vtem.h'\" unpacked with wrong size!
+fi
+# end of 'vtem.h'
+fi
+if test -f 'vtemdex.pch' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'vtemdex.pch'\"
+else
+echo shar: Extracting \"'vtemdex.pch'\" \(6551 characters\)
+sed "s/^X//" >'vtemdex.pch' <<'END_OF_FILE'
+XQuick patch to make vtem a simple filter, as in kermit | vtem
+XMon Sep 24 15:46:53 EDT 1990 -- jsr
+X
+X*** old/Makefile	Mon Sep 24 14:23:55 1990
+X--- Makefile	Mon Sep 24 14:22:00 1990
+X***************
+X*** 1,8 ****
+X! CFLAGS= -O
+X  
+X  
+X  vtem:	vtem.o term.o out.o
+X! 	$(CC) $(CFLAGS) -o vtem vtem.o term.o out.o -ltermcap
+X  
+X  .c.o:	; $(CC) $(CFLAGS) -c $*.c
+X  
+X--- 1,8 ----
+X! CFLAGS= -+ -O
+X  
+X  
+X  vtem:	vtem.o term.o out.o
+X! 	$(CC) $(CFLAGS) -n -s -o vtem vtem.o term.o out.o -ltermcap
+X  
+X  .c.o:	; $(CC) $(CFLAGS) -c $*.c
+X  
+X*** old/out.c	Mon Sep 24 14:24:07 1990
+X--- out.c	Mon Sep 24 14:19:12 1990
+X***************
+X*** 30,36 ****
+X  {
+X  register int ch;
+X  
+X!     while ((ch = getc(f)) != EOF) {
+X  	switch (ch) {
+X  	    case '\0':			/* Ignore nulls and DELs */
+X  	    case '\177':
+X--- 30,36 ----
+X  {
+X  register int ch;
+X  
+X!     while ((ch = getchar()) != EOF) {
+X  	switch (ch) {
+X  	    case '\0':			/* Ignore nulls and DELs */
+X  	    case '\177':
+X***************
+X*** 73,83 ****
+X  register int ch;
+X  
+X      gettermtype();
+X!     (void) close(0);
+X      if ((f = fdopen(master, "r")) == (FILE *) 0) {
+X  	fprintf(stderr, "handle_output: Can't read from shell\r\n");
+X  	exit(1);
+X      }
+X      do_reset();
+X      while ((ch = nextch()) != EOF) {
+X  	if (ch == '\033') {		/* Escape character */
+X--- 73,84 ----
+X  register int ch;
+X  
+X      gettermtype();
+X! /*    (void) close(0);
+X      if ((f = fdopen(master, "r")) == (FILE *) 0) {
+X  	fprintf(stderr, "handle_output: Can't read from shell\r\n");
+X  	exit(1);
+X      }
+X+ */
+X      do_reset();
+X      while ((ch = nextch()) != EOF) {
+X  	if (ch == '\033') {		/* Escape character */
+X***************
+X*** 338,344 ****
+X  	arg[0]++;
+X      if (arg[1] == 0)
+X  	arg[1]++;
+X!     Kwitch (argno) {
+X  	case 0:
+X  	    arg[0] = 1;
+X  	    argno++;
+X--- 339,345 ----
+X  	arg[0]++;
+X      if (arg[1] == 0)
+X  	arg[1]++;
+X!     switch (argno) {
+X  	case 0:
+X  	    arg[0] = 1;
+X  	    argno++;
+X*** old/term.c	Mon Sep 24 14:24:01 1990
+X--- term.c	Mon Sep 24 12:33:26 1990
+X***************
+X*** 14,24 ****
+X  
+X  extern char *tgetstr(), *tgoto();
+X  
+X- /* Variables for saving original terminal parameters */
+X-   struct sgttyb oldb, newb;
+X-   struct tchars oldtchars, newtchars = { -1, -1, -1, -1, -1, -1 };
+X-   struct ltchars oldltchars, newltchars = { -1, -1, -1, -1, -1, -1 };
+X-   int oldlb, newlb, oldl, newl;
+X  
+X  /* Terminal attributes */
+X  char tbuf[1024];
+X--- 14,19 ----
+X***************
+X*** 34,57 ****
+X      putchar(c);
+X  }
+X  
+X- ttycbreak()
+X- {
+X-     ioctl(0, TIOCGETP, &oldb);
+X-     ioctl(0, TIOCGETC, &oldtchars);
+X-     ioctl(0, TIOCGETD, &oldl);
+X-     ioctl(0, TIOCGLTC, &oldltchars);
+X-     ioctl(0, TIOCLGET, &oldlb);
+X  
+X-     newb = oldb;
+X-     newb.sg_flags |= CBREAK;
+X-     newb.sg_flags &= ~(CRMOD | ECHO);
+X-     ioctl(0, TIOCSETP, &newb);
+X-     ioctl(0, TIOCSETC, &newtchars);
+X-     ioctl(0, TIOCSLTC, &newltchars);
+X-     signal(SIGINT,SIG_IGN);
+X- }
+X  
+X- 
+X  /* gettermtype - Finds terminal type and reads termcap entry for it.
+X   */
+X  gettermtype()
+X--- 29,36 ----
+X***************
+X*** 131,155 ****
+X      if (!UP) {
+X  	printf("Sorry, but vtem requires cursor up capability (up).\r\n");
+X  	exit(1);
+X-     }
+X- }
+X- 
+X- setupterm(flg)			/* If flg==TRUE, set line in cbreak mode and */
+X- Bool flg;			/* initialize the terminal,otherwise restore */
+X- {
+X-     if (flg) {
+X- 	ttycbreak();
+X- 	if (TI)
+X- 	    tputs_x(TI);	/* start CM mode */
+X-     }
+X-     else {
+X- 	if (KE)
+X- 	    tputs_x(KE);	/* Restores Keypad */
+X- 	if (TE)
+X- 	    tputs_x(TE);	/* exit CM mode */
+X- 	ioctl(0, TIOCSETP, &oldb);
+X- 	ioctl(0, TIOCSETC, &oldtchars);
+X- 	ioctl(0, TIOCSLTC, &oldltchars);
+X      }
+X  }
+X  
+X--- 110,115 ----
+X*** old/vtem.c	Mon Sep 24 14:23:57 1990
+X--- vtem.c	Mon Sep 24 12:30:47 1990
+X***************
+X*** 8,126 ****
+X   */
+X  
+X  #include "vtem.h"
+X- #include <sys/wait.h>
+X  
+X  int master, slave, child;
+X  char linec, linen;
+X  
+X  
+X- done()
+X- {
+X- union wait status;
+X- 
+X- 	if (wait3(&status, WNOHANG, 0) != child)
+X- 		return;
+X- 	setupterm(0);
+X- 	exit(0);
+X- }
+X- 
+X  main()
+X  {
+X  	/* Strategy: Start three processes, one for input, one for output
+X           * and one shell.
+X           */
+X! 	setup_master();
+X! 	setupterm(TRUE);
+X! 	signal(SIGCHLD, done);
+X! 	if (child = fork())
+X! 	    handle_input();
+X! 	else {
+X! 	    if (fork())
+X! 		handle_output();
+X! 	    else
+X! 		start_shell();
+X! 	}
+X  }
+X  
+X- handle_input()
+X- {
+X- char buf[BUFSIZ];
+X- int i;
+X- 
+X- 	while (i = read(0, buf, BUFSIZ))
+X- 		write(master, buf, i);
+X- 	setupterm(0);
+X- 	exit(0);
+X- }
+X- 
+X- 
+X- start_shell()
+X- {
+X- int t;
+X- char *shell, *tail, *rindex();
+X- 
+X- 	if ((shell = getenv("SHELL")) == (char *) 0)
+X- 	    shell = "/bin/sh";
+X- 	if ((tail = rindex(shell, '/')) == (char *) 0)
+X- 	    tail = "sh";
+X- 	else
+X- 	    tail++;
+X- 	if ((t = open("/dev/tty", 2)) >= 0) {
+X- 	    ioctl(t, TIOCNOTTY, (char *)0);
+X- 	    close(t);
+X- 	}
+X- 	setup_slave();
+X- 	close(master);
+X- 	dup2(slave, 0);
+X- 	dup2(slave, 1);
+X- 	dup2(slave, 2);
+X- 	close(slave);
+X- 	execl(shell, tail, "-i", 0);
+X- 	perror(shell);
+X- 	fail();
+X- }
+X- 
+X- fail()
+X- {
+X- 	kill(0, SIGTERM);
+X- 	setupterm(0);
+X- 	exit(0);
+X- }
+X- 
+X- 
+X- setup_master()
+X- {
+X- char line[11];
+X- 
+X-     for (linec = 'p'; linec <= 's'; linec++) {
+X- 	sprintf(line, "/dev/pty%c0", linec);
+X- 	if (access(line, 0) != 0)
+X- 	    break;
+X- 	for (linen = 0; linen < 16; linen++) {
+X- 	    sprintf(line, "/dev/pty%c%1x", linec, linen);
+X- 	    master = open(line, 2);
+X- 	    if (master >= 0) {
+X- 		return;
+X- 	    }
+X- 	}
+X-     }
+X-     fprintf(stderr, "Can't find a pty\n");
+X-     fail();
+X- }
+X- 
+X- setup_slave()
+X- {
+X- char line[11];
+X- 
+X-     sprintf(line, "/dev/tty%c%1x", linec, linen);
+X-     slave = open(line, 2);
+X-     if (slave < 0) {
+X- 	perror(line);
+X- 	fail();
+X-     }
+X-     ioctl(slave, TIOCSETP, (char *)&oldb);
+X-     ioctl(slave, TIOCSETC, (char *)&oldtchars);
+X-     ioctl(slave, TIOCSLTC, (char *)&oldltchars);
+X-     ioctl(slave, TIOCLSET, (char *)&oldlb);
+X-     ioctl(slave, TIOCSETD, (char *)&oldl);
+X- }
+X--- 8,23 ----
+X   */
+X  
+X  #include "vtem.h"
+X  
+X  int master, slave, child;
+X  char linec, linen;
+X  
+X  
+X  main()
+X  {
+X  	/* Strategy: Start three processes, one for input, one for output
+X           * and one shell.
+X           */
+X! 	handle_output();
+X  }
+X  
+X*** old/vtem.h	Mon Sep 24 14:23:56 1990
+X--- vtem.h	Mon Sep 24 12:30:00 1990
+X***************
+X*** 1,9 ****
+X  #include <stdio.h>
+X  #include <signal.h>
+X! #include <sys/types.h>
+X! #include <sys/time.h>
+X  #include <sys/stat.h>
+X- #include <sys/ioctl.h>
+X  
+X  #define FALSE 0
+X  #define TRUE 1
+X--- 1,8 ----
+X+ #include <sys/types.h>
+X  #include <stdio.h>
+X  #include <signal.h>
+X! #include <time.h>
+X  #include <sys/stat.h>
+X  
+X  #define FALSE 0
+X  #define TRUE 1
+END_OF_FILE
+if test 6551 -ne `wc -c <'vtemdex.pch'`; then
+    echo shar: \"'vtemdex.pch'\" unpacked with wrong size!
+fi
+# end of 'vtemdex.pch'
+fi
+echo shar: End of shell archive.
+exit 0

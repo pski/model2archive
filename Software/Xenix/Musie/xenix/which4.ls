@@ -1,0 +1,5 @@
+-rw-r--r-- 0/0             171 Feb 20 00:34 1995 Makefile
+-rwxr-xr-x 0/0            8268 Feb 20 00:34 1995 which
+-rw-r--r-- 0/0            2205 Feb 20 00:16 1995 which.1
+-rw-r--r-- 0/0            6114 Feb 20 00:33 1995 which.man
+-rw-r--r-- 0/0            3907 Feb 20 00:16 1995 which4.c

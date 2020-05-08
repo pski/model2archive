@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3           18536 Jul 31 16:25 1989 /usr/local/pwgen
+-rw-r--r-- 3/3             417 Jan 19 01:53 1995 /usr/lib/Help/lib/L/pwgen

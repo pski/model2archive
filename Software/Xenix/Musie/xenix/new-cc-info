@@ -1,0 +1,101 @@
+From: uhclem@nemesis.UUCP
+Date: 24 Jan 94 21:26 CST
+Newsgroups: comp.sys.tandy
+Subject: 6000 Compiler can handle long names
+Message-ID: <-30918@nemesis>
+Path: mnemosyne.cs.du.edu!tali.hsc.colorado.edu!csn!magnus.acs.ohio-state.edu!math.ohio-state.edu!howland.reston.ans.net!cs.utexas.edu!uunet!seas.smu.edu!utacfd.uta.edu!trsvax!trsvax!nemesis!uhclem
+Nf-ID: #N:nemesis:-30918:000:3468
+Nf-From: nemesis.UUCP!uhclem    Jan 24 21:26:00 1994
+Lines: 91
+
+
+There is a myth that the 6000 'C' compiler cannot handle long variable
+names.  As of the 3.2 XENIX Development System Upgrade this is false.
+
+Quoting from the printed man page:	(Dated 6-Dec-87)
+"
+-+	Increase the significant length of preprocessor symbols from
+	8 to 32 chafacters; and increase the length of external symbols
+	from 7 to 31.  This flag should be used on all or none of a set
+	of source files that will be linked together.
+"
+Internally we called these "flexnames".  They work fine.
+
+The 3.2 compiler also adds (or documents) the following options over the
+3.0 (28-Jun-85) man page:
+
+"
+-Os	Causes the optimizer to output a summary of its optimizing
+	activity to stderr.
+
+-Oa	The optimizer will attempt to convert automatic variables into
+	automatic register variables, if they were not already
+	declared as register variables.
+
+	The optimizer assigns automatic variables to unused registers
+	based on the number of times they are referenced in a function.
+	"An" registers will also be used with certain types of
+	variables.  (Automatic variables whose address is passed to
+	other functions are not converted.)
+
+	This option should not be used on modules that utilize setjmp().
+	There is the potential that if automatic variables are part of
+	the environment passed to setjmp(), one or more of these
+	variables may be converted into register variables, thus
+	causing incorrect results.
+
+-t0	replaces the compiler phase with a program called c68 from the
+	current directory.  (Older man page called this -t1, which is
+	a typo.)
+
+-t1 	replace the object code optimizer phase with a program called
+	c68o from the current directory.  (Older man page called this
+	-t2, which was also a typo.)
+
+-Bppathname
+	Replaces the preprocessing phase with the program pathname.
+	For example: -Bp/lib/cpp.test causes /lib/cpp.test to be
+	used instead of /lib/cpp for the preprocessing phase.
+	(/lib/cpp.test must be supplied by the user.)
+
+-B0pathname
+	Replaces the compilation phase with the program pathname.
+
+-B1pathname
+	Replaces the optimization phase with the program pathname.
+
+-Bapathname
+	Replaces the assembly phase with the program pathname.
+
+-Blpathname
+	Replaces the linking phase with the program pathname.
+
+Notes:
+	The -Oa option does not always have sufficient information to
+	perform its conversions.  It is not supposed to change anything
+	if a change is dubious.  If unusual behaviour is exhibited,
+	recompile the program or individual module without the -Oa
+	option.
+
+End quote
+
+I use -Oas all the time and there it has only produced faulty code in
+one or two cases.  The 3.2 XENIX kernel was compiled this way, as were
+many of the utilities and libraries.   
+
+It is interesting to compile something reasonably small with CC -S, look
+at the resulting code, then compile with CC -S -O or CC -S -Oa and see
+what happens in there.
+
+This compiler doesn't know about void, nor does it understand ANSI prototypes.
+But it does handle the long symbol names.  A typedef will take care
+of void, and there are utilities to make K&R-style function declarations.
+On the other hand, the 3.2 compiler will run on a 1 Meg non-paged system
+where GCC has lots of trouble.
+
+Frank Durda IV <uhclem@nemesis.lonestar.org>|"How do I know?  Oh I did some
+...utacfd!nemesis!uhclem (nearest internet) | work on the optimizer and
+...letni!rwsys!nemesis!uhclem	            | created -a, plus lots of other
+...decvax!microsoft!trsvax!nemesis!uhclem   | optimizations, that's how."
+
+

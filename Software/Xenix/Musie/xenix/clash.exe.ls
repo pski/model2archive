@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3           10946 Jun 12 18:46 1989 /usr/local/clash
+-rw-r--r-- 3/3            3587 Jun 12 18:45 1989 /usr/lib/Help/lib/L/clash

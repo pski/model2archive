@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3            7772 Dec 29 19:32 1988 /usr/local/uroff
+-rw-r--r-- 3/3            1229 Aug 16 22:39 1994 /usr/lib/Help/lib/L/uroff

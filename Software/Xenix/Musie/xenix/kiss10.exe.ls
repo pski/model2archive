@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3           15285 Oct 28 13:49 1994 /usr/local/kiss
+-rw-r--r-- 3/3            1015 Oct 28 14:02 1994 /usr/lib/Help/lib/L/kiss

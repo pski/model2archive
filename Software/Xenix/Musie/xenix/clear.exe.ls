@@ -1,0 +1,3 @@
+-rwxr-xr-x 3/3           16720 Dec 29 19:29 1988 /usr/local/cls
+-rwxr-xr-x 3/3               0 Dec 29 19:29 1988 /usr/local/clear link to /usr/local/cls
+-rw-r--r-- 3/3             511 Aug 30 12:48 1994 /usr/lib/Help/lib/L/clear

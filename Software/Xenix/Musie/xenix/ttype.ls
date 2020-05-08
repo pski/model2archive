@@ -1,0 +1,3 @@
+-rw-r--r-- 0/0            5945 Oct 22 13:03 1994 ttype.shar.gz
+-rwxr-xr-x 3/3           48616 Sep  4 22:53 1994 /usr/games/ttype
+-rw-r--r-- 3/3             363 Sep  3 17:15 1994 /usr/lib/Help/lib/L/ttype

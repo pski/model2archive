@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3           38286 Jul 22 18:56 1994 /usr/local/globe
+-rw-r--r-- 3/3             976 Jul 29 00:45 1994 /usr/lib/Help/lib/L/globe

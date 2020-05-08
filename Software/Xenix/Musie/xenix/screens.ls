@@ -1,0 +1,7 @@
+-rw-r----- 0/0             483 Oct  4 17:17 1995 Makefile
+-rw-r----- 0/0            1130 Oct  4 17:30 1995 README
+-rwx--x--x 0/0           11098 Oct  4 17:19 1995 screens
+-rw-r----- 0/0             487 Oct  4 17:15 1995 screens.6
+-rw-r----- 0/0            1503 Oct  4 17:19 1995 screens.c
+-rw-r--r-- 0/0            1100 Aug 13 09:15 1995 screens.hdr
+-rw-r--r-- 0/0            1216 Oct  4 17:16 1995 screens.man

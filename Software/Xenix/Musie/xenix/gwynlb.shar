@@ -1,0 +1,1642 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  INSTALL NOTES TANDY6000 closedir.c directory.3c dirent.4
+#   dirent.h getdents.2 getdents.c gwyndir.lib.hd opendir.c readdir.c
+#   rewinddir.c seekdir.c sys._dir.h sys.dirent.h telldir.c testdir.c
+# Wrapped by steve@coupon on Tue Sep  6 22:28:51 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'INSTALL' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'INSTALL'\"
+else
+echo shar: Extracting \"'INSTALL'\" \(5490 characters\)
+sed "s/^X//" >'INSTALL' <<'END_OF_FILE'
+X
+X
+X			INSTALLATION INSTRUCTIONS
+X
+X
+XThe following instructions are for systems resembling Ninth Edition UNIX, with
+Xhints about dealing with variations you may encounter for your specific system.
+XInstallation should be done only by someone who is comfortable with modifying
+Xthe standard C library and header files.
+X
+XIf your system already includes directory access routines, you should replace
+Xthem with this package.  We're trying to get this standardized; see the
+Xdiscussion in the NOTES file.
+X
+XI have tried to make the source code as generic as possible, but if your system
+Xpredates Seventh Edition UNIX you will have problems.
+X
+XDISCLAIMER:  Although I believe the code and procedures described here to be
+Xcorrect, I make no warranty of any kind, and you are advised to perform your
+Xown careful testing before making any substantial change like this to your
+Xprogramming environment.
+X
+X
+X0)  For antique systems that do not support C's "void" data type, edit the file
+X    sys.dirent.h to add the following:
+X
+X	typedef int		void;	/* good enough for govt work */
+X
+X    If for some reason your <sys/types.h> doesn't define them, add the
+X    following to sys.dirent.h:
+X
+X	typedef unsigned short	ino_t;	/* (assuming original UFS) */
+X	typedef long		off_t;	/* long is forced by lseek() */
+X
+X    None of this should be necessary for any modern UNIX system.
+X
+X1)  Copy the file dirent.h to /usr/include/dirent.h and copy the file
+X    sys.dirent.h to /usr/include/sys/dirent.h.  (The file sys._dir.h is also
+X    provided for the BRL UNIX System V emulation for 4.nBSD.  That environment
+X    uses different directory names for everything.)
+X
+X2)  Copy the file directory.3c to /usr/man/man3/directory.3 and copy the file
+X    dirent.4 to /usr/man/man5/dirent.5; edit the new file
+X    /usr/man/man3/directory.3 to change the "SEE ALSO" reference from dirent(4)
+X    to dirent(5) and to change the 3C on the first line to 3; edit the new file
+X    /usr/man/man5/dirent.5 to change the 4 on the first line to 5; then print
+X    the manual pages via the command
+X
+X	man directory dirent
+X
+X    to see what the new routines are like.  (If you have a "catman" style of
+X    on-line manual, adapt these instructions accordingly.  Manual entries are
+X    kept in directories with other names on some systems such as UNIX System V.
+X    On systems that already had a directory library documented in some other
+X    manual entry, remove the superseded manual entry; if the description of the
+X    native filesystem directory format found by "man dir" refers to a directory
+X    library, modify it to simply refer to the entry for "dirent".)
+X
+X3)  Copy the files closedir.c, opendir.c, readdir.c, rewinddir.c, seekdir.c,
+X    and telldir.c to the "gen" or "port/gen" subdirectory of your C library
+X    source directory.  If you do not have a getdents() system call, copy the
+X    file getdents.c to the "sys" or "port/sys" subdirectory and copy the file
+X    getdents.2 to /usr/man/man2/getdents.2 (actually you may prefer to put this
+X    file in section 3 and adjust the references in the other manual entries
+X    accordingly; also adjust the references to dirent(4) to be to dirent(5) if
+X    that's where the entry is).  Edit the C library makefile(s) to include the
+X    new object modules in the C library.  (See the comments at the beginning of
+X    getdents.c for symbols that must be defined to configure getdents.c.)  Then
+X    remake and reinstall the C library.  Alternatively, you can just compile
+X    the new sources and insert their objects near the front of the C library
+X    /lib/libc.a using the "ar" utility (seekdir.o should precede readdir.o,
+X    which in turn should precede getdents.o).  On some systems you then need to
+X    use the "ranlib" utility to update the archive symbol table.
+X
+X4)  After the C library has been updated, delete /usr/include/ndir.h or any
+X    other header used with a previous directory library to prevent inadvertent
+X    use of the superseded directory access interface.  Also delete any
+X    corresponding library such as /usr/lib/libndir.a.
+X
+X5)  To verify installation, try compiling, linking, and running the program
+X    testdir.c.  This program searches the current directory "." for each file
+X    named as a program argument and prints `"FOO" found.' or `"FOO" not found.'
+X    where FOO is of course replaced by the name being sought in the directory.
+X    Try something like
+X
+X	cd /usr/bin			# a multi-block directory
+X	WHEREVER/testdir FOO lint BAR f77 XYZZY
+X
+X    which should produce the output
+X
+X	"FOO" not found.
+X	"lint" found.
+X	"BAR" not found.
+X	"f77" found.
+X	"XYZZY" not found.
+X
+X    A more thorough test would be
+X
+X	cd /usr/bin			# a multi-block directory
+X	WHEREVER/testdir `ls -a` | grep 'not found'
+X
+X    This program does not test the seekdir() and telldir() functions.
+X
+X6)  Notify your programmers that all directory access must be made through the
+X    new interface, and that documentation is available via
+X
+X	man directory dirent
+X
+X    Make the NOTES file available to those programmers who might want to
+X    understand what this is all about.
+X
+X7)  Change all system sources that were accessing directories to use the new
+X    routines.  Nearly all such sources contain the line
+X
+X	#include <sys/dir.h>
+X    or
+X	#include <ndir.h>
+X
+X    so they should be easy to find.  (If you earlier removed some other header
+X    file, that is, if this package superseded an earlier version of the
+X    directory access library, look for its name too.  See the conversion
+X    instructions in the NOTES file.)
+END_OF_FILE
+if test 5490 -ne `wc -c <'INSTALL'`; then
+    echo shar: \"'INSTALL'\" unpacked with wrong size!
+fi
+# end of 'INSTALL'
+fi
+if test -f 'NOTES' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'NOTES'\"
+else
+echo shar: Extracting \"'NOTES'\" \(5314 characters\)
+sed "s/^X//" >'NOTES' <<'END_OF_FILE'
+X
+X
+XNOTES FOR NEARLY-POSIX-COMPATIBLE C LIBRARY DIRECTORY-ACCESS ROUTINES
+X
+X
+XOlder UNIX C libraries lacked support for reading directories, so historically
+Xprograms had knowledge of UNIX directory structure hard-coded into them.  When
+XBerkeley changed the format of directories for 4.2BSD, it became necessary to
+Xchange programs to work with the new structure.  Fortunately, Berkeley designed
+Xa small set of directory access routines to encapsulate knowledge of the new
+Xdirectory format so that user programs could deal with directory entries as an
+Xabstract data type.  (Unfortunately, they didn't get it quite right.)  The
+Xinterface to these routines was nearly independent of the particular
+Ximplementation of directories on any given UNIX system; this has become a
+Xparticularly important requirement with the advent of heterogeneous network
+Xfilesystems such as NFS.
+X
+XIt has consequently become possible to write portable applications that search
+Xdirectories by restricting all directory access to use these new interface
+Xroutines.  The sources supplied here are a total rewrite of Berkeley's code,
+Xincorporating ideas from a variety of sources and conforming as closely to
+Xpublished standards as possible, and are in the PUBLIC DOMAIN to encourage
+Xtheir widespread adoption.  They support four methods of access to system
+Xdirectories: the original UNIX filesystem via read(), the 4.2BSD filesystem via
+Xread(), NFS and native filesystems via getdirentries(), and SVR3 getdents().
+XThe other three types are accomplished by appropriate emulation of the SVR3
+Xgetdents() system call, which attains portability at the cost of slightly more
+Xdata movement than absolutely necessary for some systems.  These routines
+Xshould be added to the standard C library on all UNIX systems, and all existing
+Xand future applications should be changed to use this interface.  Once this is
+Xdone, there should be no portability problems due to differences in underlying
+Xdirectory structures among UNIX systems.  (When porting your applications to
+Xother UNIX systems, you can always carry this package around with you.)
+X
+XAn additional benefit of these routines is that they buffer directory input,
+Xwhich provides improved access speed over raw read()s of one entry at a time.
+X
+XOne annoying compatibility problem has arisen along the way, namely that the
+Xoriginal Berkeley interface used the same name, struct direct, for the new data
+Xstructure as had been used for the original UNIX filesystem directory record
+Xstructure.  This name was changed by the IEEE 1003.1 (POSIX) Working Group to
+X"struct dirent" and was picked up for SVR3 under the new name; it is also the
+Xname used in this portable package.  I believe it is necessary to bite the
+Xbullet and adopt the new non-conflicting name.  Code using a 4.2BSD-compatible
+Xpackage needs to be slightly revised to work with this new package, as follows:
+X	Change
+X		#include <ndir.h>	/* Ninth Edition UNIX */
+X	or
+X		#include <sys/dir.h>	/* 4.2BSD */
+X	or
+X		#include <dir.h>	/* BRL System V emulation */
+X	to
+X		#include <sys/types.h>	/* if not already #included */
+X		#include <dirent.h>
+X
+X	Change
+X		struct direct
+X	to
+X		struct dirent
+X
+X	Change
+X		(anything)->d_namlen
+X	to
+X		strlen( (anything)->d_name )
+X
+XThere is a minor compatibility problem in that the closedir() function was
+Xoriginally defined to have type void, but IEEE 1003.1 changed this to type int,
+Xwhich is what this implementation supports (even though I disagree with the
+Xchange).  However, the difference does not affect most applications.
+X
+XAnother minor problem is that IEEE 1003.1 defined the d_name member of a struct
+Xdirent to be an array of maximum length; this does not permit use of compact
+Xvariable-length entries directly from a directory block buffer.  This part of
+Xthe specification is incompatible with efficient use of the getdents() system
+Xcall, and I have therefore chosen to follow the SVID specification instead of
+XIEEE 1003.1 (which I hope is changed for the final-use standard).  This
+Xdeviation should have little or no impact on sensibly-coded applications, since
+Xthe relevant d_name length is that given by strlen(), not the declared array
+Xsize.
+X
+XError handling is not completely satisfactory, due to the variety of possible
+Xfailure modes in a general setting.  For example, the rewinddir() function
+Xmight fail, but there is no good way to indicate this.  I have tried to
+Xfollow the specifications in IEEE 1003.1 and the SVID as closely as possible,
+Xbut there are minor deviations in this regard.  Applications should not rely
+Xtoo heavily on exact failure mode semantics.
+X
+XPlease do not change the new standard interface in any way, as that would
+Xdefeat the major purpose of this package!  (It's okay to alter the internal
+Ximplementation if you really have to, although I tried to make this unnecessary
+Xfor the vast majority of UNIX variants.)
+X
+XInstallation instructions can be found in the file named INSTALL.
+X
+XThis implementation is provided by:
+X
+X	Douglas A. Gwyn
+X	U.S. Army Ballistic Research Laboratory
+X	SLCBR-VL-V
+X	Aberdeen Proving Ground, MD 21005-5066
+X
+X	(301)278-6647
+X
+X	Gwyn@BRL.MIL or seismo!brl!gwyn
+X
+XThis is UNSUPPORTED, use-at-your-own-risk, free software in the public domain.
+XHowever, I would appreciate hearing of any actual bugs you find in this
+Ximplementation and/or any improvements you come up with.
+END_OF_FILE
+if test 5314 -ne `wc -c <'NOTES'`; then
+    echo shar: \"'NOTES'\" unpacked with wrong size!
+fi
+# end of 'NOTES'
+fi
+if test -f 'TANDY6000' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'TANDY6000'\"
+else
+echo shar: Extracting \"'TANDY6000'\" \(1819 characters\)
+sed "s/^X//" >'TANDY6000' <<'END_OF_FILE'
+X#!/bin/sh
+X# Run this from root
+X# To install on the Tandy 6000, position yourself in the directory containing
+X# this software package and run this installation script:
+Xecho "Ok, you better be running from root!"
+Xecho "Installing header files..."
+X
+Xcp sys.dirent.h /usr/include/sys/dirent.h
+Xcp dirent.h /usr/include/dirent.h
+X
+Xchown bin /usr/include/sys/dirent.h /usr/include/dirent.h
+Xchgrp bin /usr/include/sys/dirent.h /usr/include/dirent.h
+X
+Xecho "Sending man pages to /usr/lib/Help/lib/L, please wait....."
+X
+Xman -d -y directory.3c > /usr/lib/Help/lib/L/directory
+Xman -d -y dirent.4 > /usr/lib/Help/lib/L/dirent
+Xman -d -y getdents.2 > /usr/lib/Help/lib/L/getdents
+Xecho "Making and installing object files ...."
+Xcc -O -c *.c
+Xrm testdir.o
+Xar r /lib/libc.a *.o
+Xranlib /lib/libc.a
+Xcc -O testdir.c -o testdir
+Xecho "Running testdir, you should now see FOO not found 3 times"
+Xtestdir FOO FOO FOO
+Xecho "Creating 6 phony 14 character long files for testing"
+Xcp /dev/null A2345678901234
+Xcp /dev/null B2345678901234
+Xcp /dev/null C2345678901234
+Xcp /dev/null D2345678901234
+Xcp /dev/null E2345678901234
+Xcp /dev/null F2345678901234
+Xsync
+Xecho "
+XRunning testdir to search all files in this directory.  If ALL files
+Xshow up as not found, the installation didn't work. There is a bug that
+Xwill sometimes make directory entries 14 characters long show up as not found. 
+XI suspect this could be a problem with Xenix string functions or directory
+Xstructures.  This is not a major problem. The following is an example:
+X
+XSearching through the following entries:
+X_______________________________________"
+Xsleep 10
+Xlc
+Xecho "
+XHopefully only 14 character long file names are not found or this test
+Xhas failed for sure ............."
+Xtestdir `ls -a`|grep "not found"
+Xrm *23*
+Xecho "Done! Leaving object files in case you want to store them somewhere."
+END_OF_FILE
+if test 1819 -ne `wc -c <'TANDY6000'`; then
+    echo shar: \"'TANDY6000'\" unpacked with wrong size!
+fi
+chmod +x 'TANDY6000'
+# end of 'TANDY6000'
+fi
+if test -f 'closedir.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'closedir.c'\"
+else
+echo shar: Extracting \"'closedir.c'\" \(564 characters\)
+sed "s/^X//" >'closedir.c' <<'END_OF_FILE'
+X/*
+X	closedir -- close a directory stream
+X
+X	last edit:	25-Apr-1987	D A Gwyn
+X*/
+X
+X#include	<errno.h>
+X#include	<sys/types.h>
+X#include	<dirent.h>
+X
+Xtypedef void	*pointer;		/* (void *) if you have it */
+X
+Xextern void	free();
+Xextern int	close();
+X
+Xextern int	errno;
+X
+X#ifndef NULL
+X#define	NULL	0
+X#endif
+X
+Xint
+Xclosedir( dirp )
+X	register DIR	*dirp;		/* stream from opendir() */
+X	{
+X	if ( dirp == NULL || dirp->dd_buf == NULL )
+X		{
+X		errno = EFAULT;
+X		return -1;		/* invalid pointer */
+X		}
+X
+X	free( (pointer)dirp->dd_buf );
+X	free( (pointer)dirp );
+X	return close( dirp->dd_fd );
+X	}
+END_OF_FILE
+if test 564 -ne `wc -c <'closedir.c'`; then
+    echo shar: \"'closedir.c'\" unpacked with wrong size!
+fi
+# end of 'closedir.c'
+fi
+if test -f 'directory.3c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'directory.3c'\"
+else
+echo shar: Extracting \"'directory.3c'\" \(4136 characters\)
+sed "s/^X//" >'directory.3c' <<'END_OF_FILE'
+X.TH DIRECTORY 3C "Standard Extension"
+X.SH NAME
+Xopendir, readdir, telldir, seekdir, rewinddir, closedir \- directory operations
+X.SH SYNOPSIS
+X.B "#include <sys/types.h>"
+X.br
+X.B "#include <dirent.h>"
+X.P
+X.B "DIR \(**opendir (dirname)"
+X.br
+X.B "char \(**dirname;"
+X.P
+X.B "struct dirent \(**readdir (dirp)"
+X.br
+X.B "DIR \(**dirp;"
+X.P
+X.B "off_t telldir (dirp)"
+X.br
+X.B "DIR \(**dirp;"
+X.P
+X.B "void seekdir (dirp, loc)"
+X.br
+X.B "DIR \(**dirp;"
+X.br
+X.B "off_t loc;"
+X.P
+X.B "void rewinddir (dirp)"
+X.br
+X.B "DIR \(**dirp;"
+X.P
+X.B "int closedir (dirp)"
+X.br
+X.B "DIR \(**dirp;"
+X.SH DESCRIPTION
+X.I Opendir
+Xestablishes a connection between
+Xthe directory named by
+X.I dirname
+Xand a unique object of type
+X.SM DIR
+Xknown as a
+X.I "directory stream"
+Xthat it creates.
+X.I Opendir
+Xreturns a pointer to be used to identify the
+Xdirectory stream
+Xin subsequent operations.
+XA
+X.SM NULL
+Xpointer is returned if
+X.I dirname
+Xcannot be accessed or is not a directory,
+Xor if
+X.I opendir
+Xis unable to create the
+X.SM DIR
+Xobject
+X(perhaps due to insufficient memory).
+X.P
+X.I Readdir
+Xreturns a pointer to an internal structure
+Xcontaining information about the next active directory entry.
+XNo inactive entries are reported.
+XThe internal structure may be overwritten by
+Xanother operation on the same
+Xdirectory stream;
+Xthe amount of storage needed to hold a copy
+Xof the internal structure is given by the value of a macro,
+X.IR DIRENTSIZ(strlen(direntp\->d_name)) ,
+Xnot by
+X.I "sizeof(struct\ dirent)"
+Xas one might expect.
+XA
+X.SM NULL
+Xpointer is returned
+Xupon reaching the end of the directory,
+Xupon detecting an invalid location in the directory,
+Xor upon occurrence of an error while reading the directory.
+X.P
+X.I Telldir
+Xreturns the current position associated with the named
+Xdirectory stream
+Xfor later use as an argument to
+X.IR seekdir .
+X.P
+X.I Seekdir
+Xsets the position of the next
+X.I readdir
+Xoperation on the named
+Xdirectory stream.
+XThe new position reverts to the one associated with the
+Xdirectory stream
+Xwhen the
+X.I telldir
+Xoperation from which
+X.I loc
+Xwas obtained was performed.
+X.P
+X.I Rewinddir
+Xresets the position of the named
+Xdirectory stream
+Xto the beginning of the directory.
+XAll buffered data for the directory stream is discarded,
+Xthereby guaranteeing that the actual
+Xfile system directory will be referred to for the next
+X.I readdir
+Xon the
+Xdirectory stream.
+X.P
+X.I Closedir
+Xcloses the named
+Xdirectory stream;
+Xinternal resources used for the
+Xdirectory stream are liberated,
+Xand subsequent use of the associated
+X.SM DIR
+Xobject is no longer valid.
+X.I Closedir
+Xreturns a value of zero if no error occurs,
+X\-1 otherwise.
+X.P
+XThere are several possible errors that can occur
+Xas a result of these operations;
+Xthe external integer variable
+X.I errno
+Xis set to indicate the specific error.
+X.RI ( Readdir 's
+Xdetection of the normal end of a directory
+Xis not considered to be an error.)
+X.SH EXAMPLE
+XSample code which searches the current working directory for entry
+X.IR name :
+X.P
+X.ft B
+X	dirp = opendir( "." );
+X.br
+X	while ( (dp = readdir( dirp )) != NULL )
+X.br
+X		if ( strcmp( dp\->d_name, name ) == 0 )
+X.br
+X			{
+X.br
+X			(void) closedir( dirp );
+X.br
+X			return FOUND;
+X.br
+X			}
+X.br
+X	(void) closedir( dirp );
+X.br
+X	return NOT_FOUND;
+X.ft P
+X.SH "SEE ALSO"
+Xgetdents(2), dirent(4).
+X.SH WARNINGS
+XEntries for "." and ".."
+Xmay not be reported for some file system types.
+X.P
+XThe value returned by
+X.I telldir
+Xneed not have any simple interpretation
+Xand should only be used as an argument to
+X.IR seekdir .
+XSimilarly,
+Xthe
+X.I loc
+Xargument to
+X.I seekdir
+Xmust be obtained from a previous
+X.I telldir
+Xoperation on the same
+Xdirectory stream.
+X.P
+X.I Telldir
+Xand
+X.I seekdir
+Xare unreliable when used in conjunction with
+Xfile systems that perform directory compaction or expansion
+Xor when the directory stream has been closed and reopened.
+XIt is best to avoid using
+X.I telldir
+Xand
+X.I seekdir
+Xaltogether.
+X.P
+XThe exact set of
+X.I errno
+Xvalues and meanings may vary among implementations.
+X.P
+XBecause directory entries can dynamically
+Xappear and disappear,
+Xand because directory contents are buffered
+Xby these routines,
+Xan application may need to continually rescan
+Xa directory to maintain an accurate picture
+Xof its active entries.
+END_OF_FILE
+if test 4136 -ne `wc -c <'directory.3c'`; then
+    echo shar: \"'directory.3c'\" unpacked with wrong size!
+fi
+# end of 'directory.3c'
+fi
+if test -f 'dirent.4' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'dirent.4'\"
+else
+echo shar: Extracting \"'dirent.4'\" \(1593 characters\)
+sed "s/^X//" >'dirent.4' <<'END_OF_FILE'
+X.TH DIRENT 4 "Standard Extension"
+X.SH NAME
+Xdirent \- file system independent directory entry
+X.SH SYNOPSIS
+X.B "#include <sys/types.h>"
+X.br
+X.B "#include <sys/dirent.h>"
+X.SH DESCRIPTION
+XDifferent file system types
+Xmay have different directory entries.
+XThe
+X.I dirent
+Xstructure defines a
+Xfile system independent directory entry,
+Xwhich contains information common to
+Xdirectory entries in different file system types.
+XA set of these structures is returned by the
+X.IR getdents (2)
+Xsystem call.
+X.P
+XThe
+X.I dirent
+Xstructure is defined below.
+X.br
+Xstruct	dirent	{
+X.br
+X			long			d_ino;
+X.br
+X			off_t			d_off;
+X.br
+X			unsigned short		d_reclen;
+X.br
+X			char			d_name[1];
+X.br
+X		};
+X.P
+XThe field
+X.I d_ino
+Xis a number which is unique
+Xfor each file in the file system.
+XThe field
+X.I d_off\^
+Xrepresents an offset of that directory entry
+Xin the actual file system directory.
+XThe field
+X.I d_name
+Xis the beginning of the character array
+Xgiving the name of the directory entry.
+XThis name is null terminated
+Xand may have at most
+X.SM NAME_MAX
+Xcharacters in addition to the null terminator.
+XThis results in file system independent directory entries
+Xbeing variable-length entities.
+XThe value of
+X.I d_reclen
+Xis the record length of this entry.
+XThis length is defined to be the number of bytes
+Xbetween the beginning of the current entry and the next one,
+Xadjusted so that the next entry
+Xwill start on a long boundary.
+X.SH FILES
+X/usr/include/sys/dirent.h
+X.SH "SEE ALSO"
+Xgetdents(2).
+X.SH WARNING
+XThe field
+X.I d_off\^
+Xdoes not have a simple interpretation
+Xfor some file system types
+Xand should not be used directly by applications.
+END_OF_FILE
+if test 1593 -ne `wc -c <'dirent.4'`; then
+    echo shar: \"'dirent.4'\" unpacked with wrong size!
+fi
+# end of 'dirent.4'
+fi
+if test -f 'dirent.h' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'dirent.h'\"
+else
+echo shar: Extracting \"'dirent.h'\" \(730 characters\)
+sed "s/^X//" >'dirent.h' <<'END_OF_FILE'
+X/*
+X	<dirent.h> -- definitions for SVR3 directory access routines
+X
+X	last edit:	25-Apr-1987	D A Gwyn
+X
+X	Prerequisite:	<sys/types.h>
+X*/
+X
+X#include	<sys/dirent.h>
+X
+X#define	DIRBUF		8192		/* buffer size for fs-indep. dirs */
+X	/* must in general be larger than the filesystem buffer size */
+X
+Xtypedef struct
+X	{
+X	int	dd_fd;			/* file descriptor */
+X	int	dd_loc;			/* offset in block */
+X	int	dd_size;		/* amount of valid data */
+X	char	*dd_buf;		/* -> directory block */
+X	}	DIR;			/* stream data from opendir() */
+X
+Xextern DIR		*opendir();
+Xextern struct dirent	*readdir();
+Xextern off_t		telldir();
+Xextern void		seekdir();
+Xextern void		rewinddir();
+Xextern int		closedir();
+X
+X#ifndef NULL
+X#define	NULL	0			/* DAG -- added for convenience */
+X#endif
+END_OF_FILE
+if test 730 -ne `wc -c <'dirent.h'`; then
+    echo shar: \"'dirent.h'\" unpacked with wrong size!
+fi
+# end of 'dirent.h'
+fi
+if test -f 'getdents.2' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'getdents.2'\"
+else
+echo shar: Extracting \"'getdents.2'\" \(1922 characters\)
+sed "s/^X//" >'getdents.2' <<'END_OF_FILE'
+X.TH GETDENTS 2 "Standard Extension"
+X.SH NAME
+Xgetdents \- get directory entries in a file system independent format
+X.SH SYNOPSIS
+X.B "#include <sys/types.h>"
+X.br
+X.B "#include <sys/dirent.h>"
+X.P
+X.B "int getdents (fildes, buf, nbyte)"
+X.br
+X.B "int fildes;"
+X.br
+X.B "char \(**buf;"
+X.br
+X.B "unsigned nbyte;"
+X.SH DESCRIPTION
+X.I Fildes
+Xis a file descriptor obtained from an
+X.IR open (2)
+Xor
+X.IR dup (2)
+Xsystem call.
+X.P
+X.I Getdents
+Xattempts to read
+X.I nbyte
+Xbytes from the directory associated with
+X.I fildes
+Xand to format them as
+Xfile system independent entries
+Xin the buffer pointed to by
+X.IR buf .
+XSince the file system independent directory entries
+Xare of variable length,
+Xin most cases the actual number of bytes returned
+Xwill be less than
+X.IR nbyte .
+X.P
+XThe file system independent directory entry is specified by the
+X.I dirent
+Xstructure.
+XFor a description of this see
+X.IR dirent (4).
+X.P
+XOn devices capable of seeking,
+X.I getdents
+Xstarts at a position in the file given by
+Xthe file pointer associated with
+X.IR fildes .
+XUpon return from
+X.IR getdents ,
+Xthe file pointer has been incremented
+Xto point to the next directory entry.
+X.P
+XThis system call was developed in order to implement the
+X.I readdir
+Xroutine
+X[for a description see
+X.IR directory (3C)]
+Xand should not be used for other purposes.
+X.SH "SEE ALSO"
+Xdirectory(3C), dirent(4).
+X.SH DIAGNOSTICS
+XUpon successful completion
+Xa non-negative integer is returned
+Xindicating the number of bytes of
+X.I buf\^
+Xactually filled.
+X(This need not be the number actually used
+Xin the actual directory file.)\|\|
+XA value of zero
+Xindicates the end of the directory has been reached.
+XIf
+X.I getdents
+Xfails for any other reason,
+Xa value of \-1 is returned and
+Xthe external integer variable
+X.I errno
+Xis set to indicate the error.
+X.SH WARNINGS
+XEntries for "." and ".."
+Xmay not be reported for some file system types.
+X.P
+XThe exact set of
+X.I errno
+Xvalues and meanings may vary among implementations.
+END_OF_FILE
+if test 1922 -ne `wc -c <'getdents.2'`; then
+    echo shar: \"'getdents.2'\" unpacked with wrong size!
+fi
+# end of 'getdents.2'
+fi
+if test -f 'getdents.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'getdents.c'\"
+else
+echo shar: Extracting \"'getdents.c'\" \(6382 characters\)
+sed "s/^X//" >'getdents.c' <<'END_OF_FILE'
+X/*
+X	getdents -- get directory entries in a file system independent format
+X			(SVR3 system call emulation)
+X
+X	last edit:	25-Apr-1987	D A Gwyn
+X
+X	This single source file supports several different methods of
+X	getting directory entries from the operating system.  Define
+X	whichever one of the following describes your system:
+X
+X	UFS	original UNIX filesystem (14-character name limit)
+X	BFS	4.2BSD (also 4.3BSD) native filesystem (long names)
+X	NFS	getdirentries() system call
+X
+X	Also define any of the following that are pertinent:
+X
+X	BRL	BRL UNIX System V emulation environment on 4.nBSD
+X	UNK	have _getdents() system call, but kernel may not support it
+X
+X	If your C library has a getdents() system call interface, but you
+X	can't count on all kernels on which your application binaries may
+X	run to support it, change the system call interface name to
+X	_getdents() and define "UNK" to enable the system-call validity
+X	test in this "wrapper" around _getdents().
+X
+X	If your system has a getdents() system call that is guaranteed 
+X	to always work, you shouldn't be using this source file at all.
+X*/
+X#define UFS
+X#include	<errno.h>
+X#include	<sys/types.h>
+X#ifdef BRL
+X#include	<sys/_dir.h>		/* BSD flavor, not System V */
+X#else
+X#include	<sys/dir.h>
+X#undef	MAXNAMLEN			/* avoid conflict with SVR3 */
+X	/* Good thing we don't need to use the DIRSIZ() macro! */
+X#ifdef d_ino				/* 4.3BSD/NFS using d_fileno */
+X#undef	d_ino				/* (not absolutely necessary) */
+X#else
+X#define	d_fileno	d_ino		/* (struct direct) member */
+X#endif
+X#endif
+X#include	<sys/dirent.h>
+X#include	<sys/stat.h>
+X#ifdef UNK
+X#ifndef UFS
+X#include "***** ERROR ***** UNK applies only to UFS"
+X/* One could do something similar for getdirentries(), but I didn't bother. */
+X#endif
+X#include	<signal.h>
+X#endif
+X
+X#if defined(UFS) + defined(BFS) + defined(NFS) != 1	/* sanity check */
+X#include "***** ERROR ***** exactly one of UFS, BFS, or NFS must be defined"
+X#endif
+X
+X#ifdef UFS
+X#define	RecLen( dp )	(sizeof(struct direct))	/* fixed-length entries */
+X#else	/* BFS || NFS */
+X#define	RecLen( dp )	((dp)->d_reclen)	/* variable-length entries */
+X#endif
+X
+X#ifdef NFS
+X#ifdef BRL
+X#define	getdirentries	_getdirentries	/* package hides this system call */
+X#endif
+Xextern int	getdirentries();
+Xstatic long	dummy;			/* getdirentries() needs basep */
+X#define	GetBlock( fd, buf, n )	getdirentries( fd, buf, (unsigned)n, &dummy )
+X#else	/* UFS || BFS */
+X#ifdef BRL
+X#define read	_read			/* avoid emulation overhead */
+X#endif
+Xextern int	read();
+X#define	GetBlock( fd, buf, n )	read( fd, buf, (unsigned)n )
+X#endif
+X
+X#ifdef UNK
+Xextern int	_getdents();		/* actual system call */
+X#endif
+X
+Xextern char	*strncpy();
+Xextern int	fstat(), strlen();
+Xextern off_t	lseek();
+X
+Xextern int	errno;
+X
+X#ifndef DIRBLKSIZ
+X#define	DIRBLKSIZ	4096		/* directory file read buffer size */
+X#endif
+X
+X#ifndef NULL
+X#define	NULL	0
+X#endif
+X
+X#ifndef SEEK_CUR
+X#define	SEEK_CUR	1
+X#endif
+X
+X#ifndef S_ISDIR				/* macro to test for directory file */
+X#define	S_ISDIR( mode )		(((mode) & S_IFMT) == S_IFDIR)
+X#endif
+X
+X#ifdef UNK
+Xstatic enum	{ maybe, no, yes }	state = maybe;
+X					/* does _getdents() work? */
+X
+X/*ARGSUSED*/
+Xstatic void
+Xsig_catch( sig )
+X	int	sig;			/* must be SIGSYS */
+X	{
+X	state = no;			/* attempted _getdents() faulted */
+X	}
+X#endif
+X
+Xint
+Xgetdents( fildes, buf, nbyte )		/* returns # bytes read;
+X					   0 on EOF, -1 on error */
+X	int			fildes;	/* directory file descriptor */
+X	char			*buf;	/* where to put the (struct dirent)s */
+X	unsigned		nbyte;	/* size of buf[] */
+X	{
+X	int			serrno;	/* entry errno */
+X	off_t			offset;	/* initial directory file offset */
+X	struct stat		statb;	/* fstat() info */
+X	union	{
+X		char		dblk[DIRBLKSIZ];
+X					/* directory file block buffer */
+X		struct direct	dummy;	/* just for alignment */
+X		}	u;		/* (avoids having to malloc()) */
+X	register struct direct	*dp;	/* -> u.dblk[.] */
+X	register struct dirent	*bp;	/* -> buf[.] */
+X
+X#ifdef UNK
+X	switch ( state )
+X		{
+X		void		(*shdlr)();	/* entry SIGSYS handler */
+X		register int	retval;	/* return from _getdents() if any */
+X
+X	case yes:			/* _getdents() is known to work */
+X		return _getdents( fildes, buf, nbyte );
+X
+X	case maybe:			/* first time only */
+X		shdlr = signal( SIGSYS, sig_catch );
+X		retval = _getdents( fildes, buf, nbyte );	/* try it */
+X		(void)signal( SIGSYS, shdlr );
+X
+X		if ( state == maybe )	/* SIGSYS did not occur */
+X			{
+X			state = yes;	/* so _getdents() must have worked */
+X			return retval;
+X			}
+X		/* else fall through into emulation */
+X
+X/*	case no:	/* fall through into emulation */
+X		}
+X#endif
+X
+X	if ( buf == NULL || (unsigned long)buf % sizeof(long) != 0 /* ugh */ )
+X		{
+X		errno = EFAULT;		/* invalid pointer */
+X		return -1;
+X		}
+X
+X	if ( fstat( fildes, &statb ) != 0 )
+X		return -1;		/* errno set by fstat() */
+X
+X	if ( !S_ISDIR( statb.st_mode ) )
+X		{
+X		errno = ENOTDIR;	/* not a directory */
+X		return -1;
+X		}
+X
+X	if ( (offset = lseek( fildes, (off_t)0, SEEK_CUR )) < 0 )
+X		return -1;		/* errno set by lseek() */
+X
+X#ifdef BFS				/* no telling what remote hosts do */
+X	if ( (unsigned long)offset % DIRBLKSIZ != 0 )
+X		{
+X		errno = ENOENT;		/* file pointer probably misaligned */
+X		return -1;
+X		}
+X#endif
+X
+X	serrno = errno;			/* save entry errno */
+X
+X	for ( bp = (struct dirent *)buf; bp == (struct dirent *)buf; )
+X		{			/* convert next directory block */
+X		int	size;
+X
+X		do	size = GetBlock( fildes, u.dblk, DIRBLKSIZ );
+X		while ( size == -1 && errno == EINTR );
+X
+X		if ( size <= 0 )
+X			return size;	/* EOF or error (EBADF) */
+X
+X		for ( dp = (struct direct *)u.dblk;
+X		      (char *)dp < &u.dblk[size];
+X		      dp = (struct direct *)((char *)dp + RecLen( dp ))
+X		    )	{
+X#ifndef UFS
+X			if ( dp->d_reclen <= 0 )
+X				{
+X				errno = EIO;	/* corrupted directory */
+X				return -1;
+X				}
+X#endif
+X
+X			if ( dp->d_fileno != 0 )
+X				{	/* non-empty; copy to user buffer */
+X				register int	reclen =
+X					DIRENTSIZ( strlen( dp->d_name ) );
+X
+X				if ( (char *)bp + reclen > &buf[nbyte] )
+X					{
+X					errno = EINVAL;
+X					return -1;	/* buf too small */
+X					}
+X
+X				bp->d_ino = dp->d_fileno;
+X				bp->d_off = offset + ((char *)dp - u.dblk);
+X				bp->d_reclen = reclen;
+X				(void)strncpy( bp->d_name, dp->d_name,
+X					       reclen - DIRENTBASESIZ
+X					     );	/* adds NUL padding */
+X
+X				bp = (struct dirent *)((char *)bp + reclen);
+X				}
+X			}
+X
+X		if ( (char *)dp > &u.dblk[size] )
+X			{
+X			errno = EIO;	/* corrupted directory */
+X			return -1;
+X			}
+X		}
+X
+X	errno = serrno;			/* restore entry errno */
+X	return (char *)bp - buf;	/* return # bytes read */
+X	}
+END_OF_FILE
+if test 6382 -ne `wc -c <'getdents.c'`; then
+    echo shar: \"'getdents.c'\" unpacked with wrong size!
+fi
+# end of 'getdents.c'
+fi
+if test -f 'gwyndir.lib.hd' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'gwyndir.lib.hd'\"
+else
+echo shar: Extracting \"'gwyndir.lib.hd'\" \(1050 characters\)
+sed "s/^X//" >'gwyndir.lib.hd' <<'END_OF_FILE'
+XSubject:  v09i065:  New directory-access library
+XNewsgroups: mod.sources, comp.sources.unix
+XApproved: rs@mirror.TMC.COM
+X
+XSubmitted by: gwyn@brl.arpa <Doug Gwyn>
+XMod.sources: Volume 9, Issue 65
+XArchive-name: gwyn-dir-lib
+X
+X[  This is great package:  it almost seems that, between Doug and
+X   Henry Spencer, the community will have a complete "free" POSIX
+X   C library.  (No quibbles about legal meaning of free, please.)
+X   I repacked the archive to bullet-proof against things like initial
+X   periods in the manpage.  --r$ ]
+X
+XSubject:  v09i065:  New directory-access library
+XNewsgroups: mod.sources, comp.sources.unix
+XApproved: rs@mirror.TMC.COM
+X
+XSubmitted by: gwyn@brl.arpa <Doug Gwyn>
+XMod.sources: Volume 9, Issue 65
+XArchive-name: gwyn-dir-lib
+X
+X[  This is great package:  it almost seems that, between Doug and
+X   Henry Spencer, the community will have a complete "free" POSIX
+X   C library.  (No quibbles about legal meaning of free, please.)
+X   I repacked the archive to bullet-proof against things like initial
+X   periods in the manpage.  --r$ ]
+X
+END_OF_FILE
+if test 1050 -ne `wc -c <'gwyndir.lib.hd'`; then
+    echo shar: \"'gwyndir.lib.hd'\" unpacked with wrong size!
+fi
+# end of 'gwyndir.lib.hd'
+fi
+if test -f 'opendir.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'opendir.c'\"
+else
+echo shar: Extracting \"'opendir.c'\" \(1464 characters\)
+sed "s/^X//" >'opendir.c' <<'END_OF_FILE'
+X/*
+X	opendir -- open a directory stream
+X
+X	last edit:	25-Apr-1987	D A Gwyn
+X*/
+X
+X#include	<errno.h>
+X#include	<sys/types.h>
+X#include	<sys/stat.h>
+X#include	<dirent.h>
+X
+X#ifdef BRL
+X#define open	_open			/* avoid emulation overhead */
+X#endif
+X
+Xtypedef void	*pointer;		/* (void *) if you have it */
+X
+Xextern void	free();
+Xextern pointer	malloc();
+Xextern int	open(), close(), fstat();
+X
+Xextern int	errno;
+X
+X#ifndef NULL
+X#define	NULL	0
+X#endif
+X
+X#ifndef O_RDONLY
+X#define	O_RDONLY	0
+X#endif
+X
+X#ifndef S_ISDIR				/* macro to test for directory file */
+X#define	S_ISDIR( mode )		(((mode) & S_IFMT) == S_IFDIR)
+X#endif
+X
+XDIR *
+Xopendir( dirname )
+X	char		*dirname;	/* name of directory */
+X	{
+X	register DIR	*dirp;		/* -> malloc'ed storage */
+X	register int	fd;		/* file descriptor for read */
+X	struct stat	sbuf;		/* result of fstat() */
+X
+X	if ( (fd = open( dirname, O_RDONLY )) < 0 )
+X		return NULL;		/* errno set by open() */
+X
+X	if ( fstat( fd, &sbuf ) != 0 || !S_ISDIR( sbuf.st_mode ) )
+X		{
+X		(void)close( fd );
+X		errno = ENOTDIR;
+X		return NULL;		/* not a directory */
+X		}
+X
+X	if ( (dirp = (DIR *)malloc( sizeof(DIR) )) == NULL
+X	  || (dirp->dd_buf = (char *)malloc( (unsigned)DIRBUF )) == NULL
+X	   )	{
+X		register int	serrno = errno;
+X					/* errno set to ENOMEM by sbrk() */
+X
+X		if ( dirp != NULL )
+X			free( (pointer)dirp );
+X
+X		(void)close( fd );
+X		errno = serrno;
+X		return NULL;		/* not enough memory */
+X		}
+X
+X	dirp->dd_fd = fd;
+X	dirp->dd_loc = dirp->dd_size = 0;	/* refill needed */
+X
+X	return dirp;
+X	}
+END_OF_FILE
+if test 1464 -ne `wc -c <'opendir.c'`; then
+    echo shar: \"'opendir.c'\" unpacked with wrong size!
+fi
+# end of 'opendir.c'
+fi
+if test -f 'readdir.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'readdir.c'\"
+else
+echo shar: Extracting \"'readdir.c'\" \(987 characters\)
+sed "s/^X//" >'readdir.c' <<'END_OF_FILE'
+X/*
+X	readdir -- read next entry from a directory stream
+X
+X	last edit:	25-Apr-1987	D A Gwyn
+X*/
+X
+X#include	<errno.h>
+X#include	<sys/types.h>
+X#include	<dirent.h>
+X
+Xextern int	getdents();		/* SVR3 system call, or emulation */
+X
+Xextern int	errno;
+X
+X#ifndef NULL
+X#define	NULL	0
+X#endif
+X
+Xstruct dirent *
+Xreaddir( dirp )
+X	register DIR		*dirp;	/* stream from opendir() */
+X	{
+X	register struct dirent	*dp;	/* -> directory data */
+X
+X	if ( dirp == NULL || dirp->dd_buf == NULL )
+X		{
+X		errno = EFAULT;
+X		return NULL;		/* invalid pointer */
+X		}
+X
+X	do	{
+X		if ( dirp->dd_loc >= dirp->dd_size )	/* empty or obsolete */
+X			dirp->dd_loc = dirp->dd_size = 0;
+X
+X		if ( dirp->dd_size == 0	/* need to refill buffer */
+X		  && (dirp->dd_size =
+X			getdents( dirp->dd_fd, dirp->dd_buf, (unsigned)DIRBUF )
+X		     ) <= 0
+X		   )
+X			return NULL;	/* EOF or error */
+X
+X		dp = (struct dirent *)&dirp->dd_buf[dirp->dd_loc];
+X		dirp->dd_loc += dp->d_reclen;
+X		}
+X	while ( dp->d_ino == 0L );	/* don't rely on getdents() */
+X
+X	return dp;
+X	}
+END_OF_FILE
+if test 987 -ne `wc -c <'readdir.c'`; then
+    echo shar: \"'readdir.c'\" unpacked with wrong size!
+fi
+# end of 'readdir.c'
+fi
+if test -f 'rewinddir.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'rewinddir.c'\"
+else
+echo shar: Extracting \"'rewinddir.c'\" \(742 characters\)
+sed "s/^X//" >'rewinddir.c' <<'END_OF_FILE'
+X/*
+X	rewinddir -- rewind a directory stream
+X
+X	last edit:	25-Apr-1987	D A Gwyn
+X
+X	This is not simply a call to seekdir(), because seekdir()
+X	will use the current buffer whenever possible and we need
+X	rewinddir() to forget about buffered data.
+X*/
+X
+X#include	<errno.h>
+X#include	<sys/types.h>
+X#include	<dirent.h>
+X
+Xextern off_t	lseek();
+X
+Xextern int	errno;
+X
+X#ifndef NULL
+X#define	NULL	0
+X#endif
+X
+X#ifndef SEEK_SET
+X#define	SEEK_SET	0
+X#endif
+X
+Xvoid
+Xrewinddir( dirp )
+X	register DIR		*dirp;	/* stream from opendir() */
+X	{
+X	if ( dirp == NULL || dirp->dd_buf == NULL )
+X		{
+X		errno = EFAULT;
+X		return;			/* invalid pointer */
+X		}
+X
+X	dirp->dd_loc = dirp->dd_size = 0;	/* invalidate buffer */
+X	(void)lseek( dirp->dd_fd, (off_t)0, SEEK_SET );	/* may set errno */
+X	}
+END_OF_FILE
+if test 742 -ne `wc -c <'rewinddir.c'`; then
+    echo shar: \"'rewinddir.c'\" unpacked with wrong size!
+fi
+# end of 'rewinddir.c'
+fi
+if test -f 'seekdir.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'seekdir.c'\"
+else
+echo shar: Extracting \"'seekdir.c'\" \(2992 characters\)
+sed "s/^X//" >'seekdir.c' <<'END_OF_FILE'
+X/*
+X	seekdir -- reposition a directory stream
+X
+X	last edit:	25-Apr-1987	D A Gwyn
+X
+X	An unsuccessful seekdir() will in general alter the current
+X	directory position; beware.
+X
+X	NOTE:	4.nBSD directory compaction makes seekdir() & telldir()
+X		practically impossible to do right.  Avoid using them!
+X*/
+X
+X#include	<errno.h>
+X#include	<sys/types.h>
+X#include	<dirent.h>
+X
+Xextern off_t	lseek();
+X
+Xextern int	errno;
+X
+X#ifndef NULL
+X#define	NULL	0
+X#endif
+X
+X#ifndef SEEK_SET
+X#define	SEEK_SET	0
+X#endif
+X
+Xtypedef int	bool;			/* Boolean data type */
+X#define	false	0
+X#define	true	1
+X
+Xvoid
+Xseekdir( dirp, loc )
+X	register DIR		*dirp;	/* stream from opendir() */
+X	register off_t		loc;	/* position from telldir() */
+X	{
+X	register bool		rewind;	/* "start over when stymied" flag */
+X
+X	if ( dirp == NULL || dirp->dd_buf == NULL )
+X		{
+X		errno = EFAULT;
+X		return;			/* invalid pointer */
+X		}
+X
+X	/* A (struct dirent)'s d_off is an invented quantity on 4.nBSD*/
+X	/*  NFS-supporting systems, so it is not safe to lseek() to it. */
+X
+X	/* Monotonicity of d_off is heavily exploited in the following. */
+X
+X	/* This algorithm is tuned for modest directory sizes.  For */
+X	/* huge directories, it might be more efficient to read blocks */
+X	/* until the first d_off is too large, then back up one block,*/
+X	/* or even to use binary search on the directory blocks.  I */
+X	/*  doubt that the extra code for that would be worthwhile. */
+X
+X	if ( dirp->dd_loc >= dirp->dd_size	/* invalid index */
+X	  || ((struct dirent *)&dirp->dd_buf[dirp->dd_loc])->d_off > loc
+X					/* too far along in buffer */
+X	   )
+X		dirp->dd_loc = 0;	/* reset to beginning of buffer */
+X	/* else save time by starting at current dirp->dd_loc */
+X
+X	for ( rewind = true; ; )
+X		{
+X		register struct dirent	*dp;
+X
+X		/* See whether the matching entry is in the current buffer. */
+X
+X		if ( (dirp->dd_loc < dirp->dd_size	/* valid index */
+X		   || readdir( dirp ) != NULL	/* next buffer read */
+X		   && (dirp->dd_loc = 0, true)	/* beginning of buffer set */
+X		     )
+X		  && (dp = (struct dirent *)&dirp->dd_buf[dirp->dd_loc])->d_off
+X			<= loc		/* match possible in this buffer */
+X		   )	{
+X			for ( /* dp initialized above */ ;
+X			      (char *)dp < &dirp->dd_buf[dirp->dd_size];
+X			      dp = (struct dirent *)((char *)dp + dp->d_reclen)
+X			    )
+X				if ( dp->d_off == loc )
+X					{	/* found it! */
+X					dirp->dd_loc =
+X						(char *)dp - dirp->dd_buf;
+X					return;
+X					}
+X
+X			rewind = false;	/* no point in backing up later */
+X			dirp->dd_loc = dirp->dd_size;	/* set end of buffer */
+X			}
+X		else			/* whole buffer past matching entry */
+X			if ( !rewind )
+X				{	/* no point in searching further */
+X				errno = EINVAL;
+X				return;	/* no entry at specified loc */
+X				}
+X			else	{	/* rewind directory and start over */
+X				rewind = false;	/* but only once! */
+X
+X				dirp->dd_loc = dirp->dd_size = 0;
+X
+X				if ( lseek( dirp->dd_fd, (off_t)0, SEEK_SET )
+X					!= 0
+X				   )
+X					return;	/* errno already set (EBADF) */
+X
+X				if ( loc == 0 )
+X					return; /* save time for rewinddir() */
+X				}
+X		}
+X	}
+END_OF_FILE
+if test 2992 -ne `wc -c <'seekdir.c'`; then
+    echo shar: \"'seekdir.c'\" unpacked with wrong size!
+fi
+# end of 'seekdir.c'
+fi
+if test -f 'sys._dir.h' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'sys._dir.h'\"
+else
+echo shar: Extracting \"'sys._dir.h'\" \(2977 characters\)
+sed "s/^X//" >'sys._dir.h' <<'END_OF_FILE'
+X/*
+X	<sys/_dir.h> -- definitions for 4.2,4.3BSD directories
+X
+X	last edit:	25-Apr-1987	D A Gwyn
+X
+X	A directory consists of some number of blocks of DIRBLKSIZ bytes each,
+X	where DIRBLKSIZ is chosen such that it can be transferred to disk in a
+X	single atomic operation (e.g., 512 bytes on most machines).
+X
+X	Each DIRBLKSIZ-byte block contains some number of directory entry
+X	structures, which are of variable length.  Each directory entry has the
+X	beginning of a (struct direct) at the front of it, containing its
+X	filesystem-unique ident number, the length of the entry, and the length
+X	of the name contained in the entry.  These are followed by the NUL-
+X	terminated name padded to a (long) boundary with 0 bytes.  The maximum
+X	length of a name in a directory is MAXNAMELEN.
+X
+X	The macro DIRSIZ(dp) gives the amount of space required to represent a
+X	directory entry.  Free space in a directory is represented by entries
+X	that have dp->d_reclen > DIRSIZ(dp).  All DIRBLKSIZ bytes in a
+X	directory block are claimed by the directory entries; this usually
+X	results in the last entry in a directory having a large dp->d_reclen.
+X	When entries are deleted from a directory, the space is returned to the
+X	previous entry in the same directory block by increasing its
+X	dp->d_reclen.  If the first entry of a directory block is free, then
+X	its dp->d_fileno is set to 0; entries other than the first in a
+X	directory do not normally have 	dp->d_fileno set to 0.
+X
+X	prerequisite:	<sys/types.h>
+X*/
+X
+X#if defined(accel) || defined(sun) || defined(vax)
+X#define	DIRBLKSIZ	512		/* size of directory block */
+X#else
+X#ifdef alliant
+X#define	DIRBLKSIZ	4096		/* size of directory block */
+X#else
+X#ifdef gould
+X#define	DIRBLKSIZ	1024		/* size of directory block */
+X#else
+X#ifdef ns32000	/* Dynix System V */
+X#define	DIRBLKSIZ	2600		/* size of directory block */
+X#else	/* be conservative; multiple blocks are okay but fractions are not */
+X#define	DIRBLKSIZ	4096		/* size of directory block */
+X#endif
+X#endif
+X#endif
+X#endif
+X
+X#define	MAXNAMELEN	255		/* maximum filename length */
+X/* NOTE:  not MAXNAMLEN, which has been preempted by SVR3 <dirent.h> */
+X
+Xstruct direct				/* data from read()/_getdirentries() */
+X	{
+X	unsigned long	d_fileno;	/* unique ident of entry */
+X	unsigned short	d_reclen;	/* length of this record */
+X	unsigned short	d_namlen;	/* length of string in d_name */
+X	char		d_name[MAXNAMELEN+1];	/* NUL-terminated filename */
+X	/* typically shorter */
+X	};
+X
+X/*
+X	The DIRSIZ macro gives the minimum record length which will hold the
+X	directory entry.  This requires the amount of space in a (struct
+X	direct) without the d_name field, plus enough space for the name with a
+X	terminating NUL character, rounded up to a (long) boundary.
+X
+X	(Note that Berkeley didn't properly compensate for struct padding,
+X	but we nevertheless have to use the same size as the actual system.)
+X*/
+X
+X#define	DIRSIZ( dp )	((sizeof(struct direct) - (MAXNAMELEN+1) \
+X			+ sizeof(long) + (dp)->d_namlen) \
+X			/ sizeof(long) * sizeof(long))
+END_OF_FILE
+if test 2977 -ne `wc -c <'sys._dir.h'`; then
+    echo shar: \"'sys._dir.h'\" unpacked with wrong size!
+fi
+# end of 'sys._dir.h'
+fi
+if test -f 'sys.dirent.h' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'sys.dirent.h'\"
+else
+echo shar: Extracting \"'sys.dirent.h'\" \(980 characters\)
+sed "s/^X//" >'sys.dirent.h' <<'END_OF_FILE'
+X/*
+X	<sys/dirent.h> -- file system independent directory entry (SVR3)
+X
+X	last edit:	25-Apr-1987	D A Gwyn
+X
+X	prerequisite:	<sys/types.h>
+X*/
+X
+Xstruct dirent				/* data from getdents()/readdir() */
+X	{
+X	long		d_ino;		/* inode number of entry */
+X	off_t		d_off;		/* offset of disk directory entry */
+X	unsigned short	d_reclen;	/* length of this record */
+X	char		d_name[1];	/* name of file */	/* non-POSIX */
+X	};
+X
+X/* The following nonportable ugliness could have been avoided by defining
+X   DIRENTSIZ and DIRENTBASESIZ to also have (struct dirent *) arguments. */
+X#define	DIRENTBASESIZ		(((struct dirent *)0)->d_name \
+X				- (char *)&((struct dirent *)0)->d_ino)
+X#define	DIRENTSIZ( namlen )	((DIRENTBASESIZ + sizeof(long) + (namlen)) \
+X				/ sizeof(long) * sizeof(long))
+X
+X/* DAG -- the following was moved from <dirent.h>, which was the wrong place */
+X#define	MAXNAMLEN	512		/* maximum filename length */
+X
+X#ifndef NAME_MAX
+X#define	NAME_MAX	(MAXNAMLEN - 1)	/* DAG -- added for POSIX */
+X#endif
+END_OF_FILE
+if test 980 -ne `wc -c <'sys.dirent.h'`; then
+    echo shar: \"'sys.dirent.h'\" unpacked with wrong size!
+fi
+# end of 'sys.dirent.h'
+fi
+if test -f 'telldir.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'telldir.c'\"
+else
+echo shar: Extracting \"'telldir.c'\" \(790 characters\)
+sed "s/^X//" >'telldir.c' <<'END_OF_FILE'
+X/*
+X	telldir -- report directory stream position
+X
+X	last edit:	25-Apr-1987	D A Gwyn
+X
+X	NOTE:	4.nBSD directory compaction makes seekdir() & telldir()
+X		practically impossible to do right.  Avoid using them!
+X*/
+X
+X#include	<errno.h>
+X#include	<sys/types.h>
+X#include	<dirent.h>
+X
+Xextern off_t	lseek();
+X
+Xextern int	errno;
+X
+X#ifndef SEEK_CUR
+X#define	SEEK_CUR	1
+X#endif
+X
+Xoff_t
+Xtelldir( dirp )				/* return offset of next entry */
+X	DIR	*dirp;			/* stream from opendir() */
+X	{
+X	if ( dirp == NULL || dirp->dd_buf == NULL )
+X		{
+X		errno = EFAULT;
+X		return -1;		/* invalid pointer */
+X		}
+X
+X	if ( dirp->dd_loc < dirp->dd_size )	/* valid index */
+X		return ((struct dirent *)&dirp->dd_buf[dirp->dd_loc])->d_off;
+X	else				/* beginning of next directory block */
+X		return lseek( dirp->dd_fd, (off_t)0, SEEK_CUR );
+X	}
+END_OF_FILE
+if test 790 -ne `wc -c <'telldir.c'`; then
+    echo shar: \"'telldir.c'\" unpacked with wrong size!
+fi
+# end of 'telldir.c'
+fi
+if test -f 'testdir.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'testdir.c'\"
+else
+echo shar: Extracting \"'testdir.c'\" \(837 characters\)
+sed "s/^X//" >'testdir.c' <<'END_OF_FILE'
+X/*
+X	testdir -- basic test for C library directory access routines
+X
+X	last edit:	25-Apr-1987	D A Gwyn
+X*/
+X
+X#include	<sys/types.h>
+X#include	<stdio.h>
+X#include	<dirent.h>
+X
+Xextern void	exit();
+Xextern int	strcmp();
+X
+Xmain( argc, argv )
+X	int			argc;
+X	register char		**argv;
+X	{
+X	register DIR		*dirp;
+X	register struct dirent	*dp;
+X	int			nerrs = 0;	/* total not found */
+X
+X	if ( (dirp = opendir( "." )) == NULL )
+X		{
+X		(void)fprintf( stderr, "Cannot open \".\" directory\n" );
+X		exit( 1 );
+X		}
+X
+X	while ( --argc > 0 )
+X		{
+X		++argv;
+X
+X		while ( (dp = readdir( dirp )) != NULL )
+X			if ( strcmp( dp->d_name, *argv ) == 0 )
+X				{
+X				(void)printf( "\"%s\" found.\n", *argv );
+X				break;
+X				}
+X
+X		if ( dp == NULL )
+X			{
+X			(void)printf( "\"%s\" not found.\n", *argv );
+X			++nerrs;
+X			}
+X
+X		rewinddir( dirp );
+X		}
+X
+X	(void)closedir( dirp );
+X	exit( nerrs );
+X	}
+END_OF_FILE
+if test 837 -ne `wc -c <'testdir.c'`; then
+    echo shar: \"'testdir.c'\" unpacked with wrong size!
+fi
+# end of 'testdir.c'
+fi
+echo shar: End of shell archive.
+exit 0

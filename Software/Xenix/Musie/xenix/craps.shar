@@ -1,0 +1,1763 @@
+Path: seismo!gatech!hao!ames!ucbcad!ucbvax!decvax!tektronix!tekgen!tekred!games-request
+From: games-request@tekred.TEK.COM
+Newsgroups: comp.sources.games
+Subject: v01i009:  craps - a card game for curses
+Message-ID: <1197@tekred.TEK.COM>
+Date: 8 May 87 23:59:49 GMT
+Sender: billr@tekred.TEK.COM
+Lines: 1753
+Approved: billr@tekred.TEK.COM
+
+Submitted by: ray@jimi.UUCP
+Mod.sources.games: Volume 1, Issue 9
+Archive-name: craps
+
+#! /bin/sh
+# This is a shell archive, meaning:
+# 1. Remove everything above the #! /bin/sh line.
+# 2. Save the resulting text in a file.
+# 3. Execute the file with /bin/sh (not csh) to create the files:
+#	Makefile
+#	README
+#	craps.6
+#	dont.c
+#	etc.c
+#	final.c
+#	help.c
+#	main.c
+#	makeb.c
+#	pass.c
+#	pay.c
+#	prints.c
+#	props.c
+#	random.c
+#	subs.c
+#	ext.h
+#	types.h
+# This archive created: Thu May  7 17:53:18 1987
+# By:	Ray Tripamer (Applied Systems Consultants, Inc.  Las Vegas)
+export PATH; PATH=/bin:$PATH
+if test -f 'Makefile'
+then
+	echo shar: will not over-write existing file "'Makefile'"
+else
+cat << \SHAR_EOF > 'Makefile'
+SOURCES =	main.c dont.c etc.c help.c makeb.c pass.c pay.c prints.c \
+		props.c subs.c final.c random.c
+OBJECTS =	main.o dont.o etc.o help.o makeb.o pass.o pay.o prints.o \
+		props.o subs.o final.o random.o
+#
+# Use the following defines:
+#
+#	-DBSD42		for Berkeley Unix 4.2
+#	-DBSD29		for Berkeley Unix 2.9
+#	-DSYSV		for System V machines
+#	-DXENIX		for Xenix Machines
+#	-DSCORES	to maintain a high score list
+#
+CFLAGS  =	-O -DXENIX -DSCORES
+
+#
+# if you are using BSD29, then add the -i option to the cc line
+#
+craps:	${OBJECTS}
+	cc ${CFLAGS} -s -i -o craps ${OBJECTS} -lcurses -ltermlib -lm
+
+main.o:		main.c types.h
+dont.o:		dont.c types.h ext.h
+etc.o:		etc.c types.h ext.h
+help.o:		help.c types.h ext.h
+makeb.o:	makeb.c types.h ext.h
+pass.o:		pass.c types.h ext.h
+pay.o:		pay.c types.h ext.h
+prints.o:	prints.c types.h ext.h
+props.o:	props.c types.h ext.h
+subs.o:		subs.c types.h ext.h
+final.o:	final.c types.h ext.h
+random.o:	random.c types.h ext.h
+
+clean:
+	rm -f craps *.o
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'README'
+then
+	echo shar: will not over-write existing file "'README'"
+else
+cat << \SHAR_EOF > 'README'
+
+			Some Notes on Installing Craps
+
+	Craps is known to run on BSD2.x and BSD4.x.  If you are running
+	on another UN*X operating system, then is is imperative that
+	you have a curses library, or forget using this program.
+	Also, for other systems, the file random.c will have to be
+	modified for your local random number generator.
+
+	The routine seedrand() seeds the random number generator, and
+	get_rand() returns an random integer between 1 and 6.
+
+	The high roller list uses the system library function qsort(3),
+	so if your system doesn't have it, it must be supplied, or, as an
+	alternative, just comment out the "#define SCORES" from the file
+	"types.h"
+
+	Also, you will have to specify the path for the high roller
+	file, "craps_list", if the define "#define SCORES" is present.
+	It should go in /usr/games/lib.  The name of the directory
+	is in the file "final.c"
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'craps.6'
+then
+	echo shar: will not over-write existing file "'craps.6'"
+else
+cat << \SHAR_EOF > 'craps.6'
+.TH CRAPS 6
+.UC 4
+.SH NAME
+craps \- play the game of craps
+.SH SYNOPSIS
+.B /usr/games/craps
+.SH DESCRIPTION
+.PP
+.I Craps
+is the popular gambling game found in most casinos, legal or otherwise,
+and is now found on the system.  Although craps has many betting options,
+it is beyond the scope of this manual to explain every possible bet.
+.PP
+To get started you really only need to know one command.  The command
+.B ?
+will give you a list of the available commands.  Another useful tip
+is that the <ESC> key will abort any command, and return you to
+the 'bet:' prompt.
+.PP
+The object of craps is to (of course) beat the house, i.e. leave the
+game with more money than when you started.
+.PP
+A "high rollers" list is maintained which keeps track of the amount won by
+each person who has played, and also the number of games they have played.
+It is highly likely that over the long run, the player on the top of the
+list is the one who has lost the least amount of money!
+.SH ENVIRONMENT
+.PP
+CRAPSNAME - used to set your name on the High Rollers List.
+.SH AUTHOR
+.PP
+Ray Tripamer, University of Nevada, Las Vegas
+:-)
+.SH FILES
+.DT
+/usr/games/lib/craps.list\ \ \ High Roller List
+.br
+.SH SEE ALSO
+"Playboy\'s Guide to Casino Craps"
+.SH BUGS
+.PP
+If any should arise, please mail them to
+me at: !seismo!unrvax!unlv!ray
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'dont.c'
+then
+	echo shar: will not over-write existing file "'dont.c'"
+else
+cat << \SHAR_EOF > 'dont.c'
+#include "types.h"
+#include "ext.h"
+
+pdontln()	/* pay the dont pass line */
+{
+	double bet(),x;
+
+	x=dont+bet(lodds[point],op[point][1],op[point][0]);
+	total=total+x+lodds[point];
+	wins=wins+x;
+	if(dont!=0.0) {
+		sprintf(line,"You won %.2f on the Dont Pass! ~",x);
+		announce(line);
+	}
+	lodds[point]=0.0;
+}
+
+cdontln()	/* clear the dont pass line */
+{
+	loss=loss+dont+lodds[point];
+	if(dont!=0.0) announce("You lost on Dont Pass! ~");
+	dont=0.0;
+	lodds[point]=0.0;
+}
+
+pdontb()	/* pay the dont bar */
+{
+	total=total+dcomeb;
+	wins=wins+dcomeb;
+	if(dcomeb!=0.0) announce("You won your Dont Come Bet! ~");
+}
+
+cdontb()	/* clear the dont bar */
+{
+	loss=loss+dcomeb;
+	if(dcomeb!=0.0) announce("You lost your Dont Come Bar Bet! ~");
+	dcomeb=0.0;
+}
+
+pdonts()	/* pay all of the dont come points */
+{
+	int i,j=0;
+	double x=0.0,bet();
+
+	for(i=0;i<11;i++) {
+		x=x+dcome[i]+bet(lodds[i],op[i][1],op[i][0]);
+		total=total+dcome[i]+lodds[i];
+		if(dcome[i]!=0.0) j++;
+		dcome[i]=lodds[i]=0.0;
+	}
+	sprintf(line,"You won %.2f on your Dont Come Bet%s~",x,(j==1)?". " :"s. ");
+	if(j) announce(line);
+	total=total+x;
+	wins=wins+x;
+}
+
+csdont(n,off)	/* clear a single dont come bet */
+int n,off;
+{
+	loss=loss+dcome[n]+lodds[n];
+	if(dcome[n]!=0.0) announce("Down in Back! ~");
+	dcome[n]=lodds[n]=0.0;
+}
+
+do_dont(n)
+int n;
+{
+	dcome[n]=dcomeb;
+	if(dcomeb!=0.0) {
+		sprintf(line,"Dont Come moved behind the %d. ~",n);
+		announce(line);
+	}
+	dcomeb=0.0;
+}
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'etc.c'
+then
+	echo shar: will not over-write existing file "'etc.c'"
+else
+cat << \SHAR_EOF > 'etc.c'
+#include "types.h"
+#include "ext.h"
+
+pplace(n)	/* pay a place bet */
+int n;
+{
+	double bet(),x;
+
+	x=bet(place[n],plcpays[n][0],plcpays[n][1]);
+	total=total+x;
+	wins=wins+x;
+	if(place[n]!=0.0) {
+		sprintf(line,"You hit your place bet for %.2f! ~",x);
+		announce(line);
+	}
+}
+
+move_place(n)
+int n;
+{
+	if(place[n]!=0.0) {
+		announce("Your place bet is off on the Comeout! ~");
+		if(pass!=0.0) {
+			announce("Your place bet is in your Tray. ~");
+			total=total+place[n];
+			place[n]=0.0;
+		}
+	}
+}
+
+cplace()	/* clear all place bets */
+{
+	int i,j=0;
+	char line[81];
+
+	for(i=0;i<11;i++) { 
+		if(place[i]!=0.0) j++;
+		loss=loss+place[i];
+		place[i]=0.0;
+	}
+	if(j) {
+		sprintf(line,"You lost your Place Bet%s~",(j>1)?"s. ":". ");
+		announce(line);
+	}
+}
+
+pfield()
+{
+	double x;
+
+	x=fpays[sum]*field;
+	if(x==0.0) {
+		loss=loss+field;
+		if(field) announce("You lost your Field Bet! ~");
+		field=0.0;
+	} else {
+		wins=wins+x;
+		field=field+x;
+		if(field>LIMIT) {
+			total=total+(field-LIMIT);
+			field=LIMIT;
+		}
+		if(field) {
+			sprintf(line,"You won%s in the field! ~",
+				(sum==2||sum==12)?
+				((sum==12)?" Triple":" Double"):" ");
+			announce(line);
+		}
+	}
+}
+
+chk_hrd(x)
+int x;
+{
+	return((x==4)||(x==6)||(x==8)||(x==10));
+}
+
+chk_plc(x)
+int x;
+{
+	return((x==4)||(x==5)||(x==6)||(x==8)||(x==9)||(x==10));
+}
+
+d_or_p(x)
+int x;
+{
+	if(!x) return(0);
+	if(dont==0.0 && x==point) {
+		msg("You must have a dont pass bet to lay odds.",23,1);
+		return(1);
+	} else if(dcome[x]==0.0 && x!=point) {
+		sprintf(line,"You don't have a dont come bet on %d.",x);
+		msg(line,23,1);
+		return(1);
+	} else return(0);
+}
+
+c_or_p(x)
+int x;
+{
+	if(!x) return(0);
+	if(pass==0.0 && x==point) {
+		msg("You must have a pass line bet to take odds.",23,1);
+		return(1);
+	} else if(come[x]==0.0 && x!=point) {
+		sprintf(line,"You don't have a come bet on %d",x);
+		msg(line,23,1);
+		return(1);
+	} else return(0);
+}
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'final.c'
+then
+	echo shar: will not over-write existing file "'final.c'"
+else
+cat << \SHAR_EOF > 'final.c'
+#include "types.h"
+#include "ext.h"
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/file.h>
+
+/*
+ *
+ * here is the file name for the high roller list.
+ * It will need to be modified for your system.
+ *
+ */
+
+char *sfile="/usr/games/lib/craps.list";
+char *reclock="/usr/games/lib/craps.lock";
+
+#ifdef	SCORES
+#define	NAMELEN		40
+typedef struct node {
+	struct node *next;
+	int uid;
+	long ngames;
+	double amt;
+	char name[NAMELEN+1];
+} scores;
+#endif
+
+final(d)
+int d;
+{
+#ifdef	SCORES
+	FILE *list;
+	int f,sleepct=300,cuid,did=0,i,n=0,comp(),nchars;
+	long l;
+	double x;
+	char s[NAMELEN+1],c;
+	scores *score;
+
+	cuid=getuid();
+	clear(); refresh();
+	signal(SIGHUP,SIG_IGN);
+	signal(SIGINT,SIG_IGN);
+	while(link(sfile, reclock) == -1) {
+		perror(reclock);
+		if(!sleepct--) {
+			puts("I give up. Sorry.");
+			puts("Perhaps there is an old record_lock around?");
+			exit(-1);
+		}
+		printf("Waiting for access to record file. (%d)\n",
+			sleepct);
+		fflush(stdout);
+		sleep(1);
+	}
+	if((list=fopen(sfile,"r"))==NULL) {
+		fprintf(stderr,"can't open %s\n",sfile);
+		myexit();
+		return(0);
+	}
+	while((c=fgetc(list))!=EOF) if(c=='\n') n++;
+	rewind(list);
+	score=(scores *)malloc((n+1)*sizeof(scores));
+	cuid=getuid();
+	i=0;
+	while(1) {
+		if((fscanf(list,"%d %lf %ld",
+			&score[i].uid,
+			&score[i].amt,
+			&score[i].ngames))
+		== EOF) break;
+		while((c=fgetc(list))==' ') ;
+		nchars=0;
+		while(c!='\n' && nchars<NAMELEN) {
+			score[i].name[nchars++]=c;
+			c=fgetc(list);
+		}
+		while(c!='\n') c=fgetc(list);
+		score[i].name[nchars]=0;
+		if(score[i].uid==cuid) {
+			score[i].amt = score[i].amt + (wins-loss);
+			score[i].ngames = score[i].ngames + 1;
+			did=1;
+		}
+		i++;
+	}
+	fclose(list);
+	if(!did) {
+		score[n].uid = cuid;
+		score[n].amt = (wins-loss);
+		score[n].ngames = 1;
+		if(getenv("CRAPSNAME")==NULL)
+#ifdef	SYSV
+			strncpy(score[n].name,getenv("LOGNAME"),NAMELEN);
+#else
+#ifdef  XENIX
+			strncpy(score[n].name,getenv("LOGNAME"),NAMELEN);
+#else
+			strncpy(score[n].name,getenv("USER"),NAMELEN);
+#endif
+#endif
+		else strncpy(score[n].name,getenv("CRAPSNAME"),NAMELEN);
+		n++;
+	}
+	qsort(score,n,sizeof(scores),comp);
+	list=fopen(sfile,"w");
+	for(i=0;i<n;i++)
+		fprintf(list,"%d %.2f %ld %s\n",
+		score[i].uid,
+		score[i].amt,
+		score[i].ngames,
+		score[i].name);
+	fclose(list);
+	clear();
+	mvaddstr(0,10,"Name                Total to Date              Games");
+	mvaddstr(1,10,"----------------------------------------------------");
+	refresh();
+	putchar('\n');
+	for(i=0;i<n;i++)
+		printf("          %-28s%10.2f%14ld\n",score[i].name,score[i].amt,score[i].ngames);
+	myexit();
+#endif
+	return(0);
+}
+
+#ifdef	SCORES
+comp(x,y)
+scores *x,*y;
+{
+	if(x->amt > y->amt) return(-1);
+	if(x->amt == y->amt) return(0);
+	return(1);
+}
+#endif
+
+myexit()
+{
+	unlink(reclock);
+}
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'help.c'
+then
+	echo shar: will not over-write existing file "'help.c'"
+else
+cat << \SHAR_EOF > 'help.c'
+#include "types.h"
+#include "ext.h"
+
+help()
+{
+	clear(); refresh();
+	mvaddstr(0 ,20,"Key        Action");
+	mvaddstr(1 ,20,"---        ------");
+	mvaddstr(2, 20," r         Roll the Dice");
+	mvaddstr(3 ,20," p         Pass Line bet");
+	mvaddstr(4 ,20," d         Dont Pass bet");
+	mvaddstr(5 ,20," c         Come bet");
+	mvaddstr(6 ,20," D         Dont Come bet");
+	mvaddstr(7 ,20," o         Take odds on Pass Line/Come bets");
+	mvaddstr(8 ,20," l         Lay odds on Dont Pass/Dont Come bets");
+	mvaddstr(9 ,20," b         Place bet");
+	mvaddstr(10,20," f         Field bet");
+	mvaddstr(11,20," h         Hardway bet");
+	mvaddstr(12,20," s         Any Seven bet");
+	mvaddstr(13,20," a         Any Craps bet");
+	mvaddstr(14,20," 2         Snake Eyes (two) bet");
+	mvaddstr(15,20," 3         Three bet");
+	mvaddstr(16,20," y         Eeyo-'Leven (Eleven) bet");
+	mvaddstr(17,20," u         Boxcars (Twelve) bet");
+	mvaddstr(18,20," q         Quit");
+	mvaddstr(19,20," ?         This List");
+	mvaddstr(20,20," !         Shell escape");
+	mvaddstr(21,20,"^L         Redraw the screen");
+	refresh();
+	msg("Press [space] to continue",23,1);
+	print_board();
+	if(point) mvaddstr(4,pcol[point],"----");
+	pr_bets();
+	cheat=1;
+	roll();
+	cheat=0;
+	update(1);
+}
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'main.c'
+then
+	echo shar: will not over-write existing file "'main.c'"
+else
+cat << \SHAR_EOF > 'main.c'
+/*
+ *  I hearby put this program in the Public Domain.  It can be used
+ *  in any way, shape or form.
+ *
+ *  I assume no responsibility for anything this program may procure
+ *  (or not procure) on those who use it. :-)
+ *
+ *  Ray Tripamer,
+ *  Unviersity of Nevada, Las Vegas (Yes, that says Las Vegas!)
+ *
+ */
+#include "types.h"
+
+int pcol[11] = {0,0,0,0,C+11,C+19,C+27,0,C+35,C+43,C+51};
+
+char *keys="pcdDofblhsa23yuCq?!r",line[81];
+char *nums[] = {
+	"","","Two","Three","Four","Five","Six","Seven","Eight","Nine",
+	"Ten","Eleven","Twelve"
+};
+char *Bets[] = {
+	"pass line:", "come:", "don't pass:", "don't come:",
+	"take odds:", "field:", "place:","lay odds:", "hard way:",
+	"any seven:", "any craps:", "snake eyes:", "ace-duece:",
+	"eleven:", "boxcars:"
+};
+
+double total, wins, loss, otot, olos, owin, handle;
+
+double pass,comeb,come[11],odds[11];
+double dont,dcomeb,dcome[11],lodds[11];
+double place[11],field;
+double hways[11],aseven,acraps,eeyo,boxcars,aces,aceduece;
+
+int dice[2]={3,4},sum,point,cheat;
+int plcpays[11][2] = {	{0,0},{0,0},{0,0},{0,0},
+			{9,5},{7,5},{7,6},{0,0},
+			{7,6},{7,5},{9,5} };
+int op[11][2] ={	{0,0},{0,0},{0,0},{0,0},
+			{2,1},{3,2},{6,5},{0,0},
+			{6,5},{3,2},{2,1} };
+int hp[11][2] = {	{0,0},{0,0},{0,0},{0,0},
+			{7,1},{0,0},{9,1},{0,0},
+			{9,1},{0,0},{7,1} };
+int fpays[13] = {0,0,2,1,1,0,0,0,0,1,1,1,3};
+
+long numbets=0;
+
+main()
+{
+	int stop(), i;
+
+	signal(SIGINT,stop);
+	initscr();
+	noecho();
+	crmode();
+	seedrand();
+	total=100.0;
+	otot=owin=olos=handle=0.0;
+	loss=wins=pass=dont=dcomeb=comeb=0.0;
+	aseven=acraps=aceduece=boxcars=aces=eeyo=0.0;
+	for(i=0;i<11;i++) dcome[i]=come[i]=odds[i]=place[i]=hways[i]=0.0;
+	print_board();
+	update(1);
+	cheat=1;
+	roll();
+	while(1) {
+		make_bets();
+		roll();
+		pay_winners();
+	}
+}
+
+stop()
+{
+	final();
+	move(23,0); clrtoeol(); refresh();
+	echo();
+	nocrmode();
+	endwin();
+	exit(0);
+}
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'makeb.c'
+then
+	echo shar: will not over-write existing file "'makeb.c'"
+else
+cat << \SHAR_EOF > 'makeb.c'
+#include "types.h"
+#include "ext.h"
+
+make_bets()
+{
+	int i,fk,bad,y,z;
+	static int fl=0;
+	double getbet(),x,t;
+	char c, *shell = "/bin/csh",*cp="AahLyRUTKrVsc",pp[15];
+
+	pr_bets();
+	cheat=0;
+	while(1) {
+		if((z=zippo())==1) {
+			announce(0);
+			announce("Sorry, but you are FLAT BROKE! ~");
+			announce("Now BEAT IT!! ~");
+			pr_an();
+			stop();
+		} else if(z==2 && !fl) {
+			announce(0);
+			announce("You have no money in your rack, ~");
+			announce("but you still have bets working. ~");
+			fl=1;
+			pr_an();
+			continue;
+		}
+		addline(0);
+		addline("Bet:");
+		c=getchar();
+		if((i=ind(keys,c))== -1) {
+			BEEP;
+			continue;
+		} else {
+			switch(i) {
+				case ROLL:
+					break;
+				case HELP:
+					help();
+					continue;
+				case SHELL:
+					clear(); move(23,1); refresh();
+					echo(); nocrmode();
+					fk=fork();
+					if (fk==0) {
+						setuid(getuid());
+						execl(shell,shell,0);
+					} else wait(0);
+					noecho(); crmode();
+					clear(); 
+					print_board();
+					if(point)
+						mvaddstr(4,pcol[point],"----");
+					pr_bets();
+					update(1);
+					cheat=1;
+					roll();
+					cheat=0;
+					continue;
+				case QUIT:
+					stop();
+				case REFRESH:
+					wrefresh(curscr);
+					continue;
+				case CHEAT:
+					addline("Enter password:");
+					gs(pp,15);
+					if(strcmp(crypt(pp,"Aa"),cp)) {
+						BEEP;
+						continue;
+					}
+					cheat=1;
+					addline("first die?");
+					dice[0]=(int)getbet(1);
+					if(dice[0]==-1||dice[0]>6) continue;
+					addline("second die?");
+					dice[1]=(int)getbet(1);
+					if(dice[1]==-1||dice[1]>6) continue;
+					continue;
+				case FIELD:
+					if(mbet(i,&field)==ESC) continue;
+					pr_bets();
+					update(0);
+					continue;
+				case ASEVEN:
+					if(mbet(i,&aseven)==ESC) continue;
+					pr_bets();
+					update(0);
+					continue;
+				case EEYO:
+					if(mbet(i,&eeyo)==ESC) continue;
+					pr_bets();
+					update(0);
+					continue;
+				case TWELVE:
+					if(mbet(i,&boxcars)==ESC) continue;
+					pr_bets();
+					update(0);
+					continue;
+				case TWO:
+					if(mbet(i,&aces)==ESC) continue;
+					pr_bets();
+					update(0);
+					continue;
+				case THREE:
+					if(mbet(i,&aceduece)==ESC) continue;
+					pr_bets();
+					update(0);
+					continue;
+				case ACRAPS:
+					if(mbet(i,&acraps)==ESC) continue;
+					pr_bets();
+					update(0);
+					continue;
+				case HWAY:
+					do {
+						addline(0);
+						addline(Bets[i]);
+						addline(" number?");
+						y=(int)getbet(1);
+						if(y==-1) break;
+					} while(!chk_hrd(y));
+					if(y==-1) continue;
+					t=hways[y];
+					if(mbet(i,&t)==ESC) continue;
+					hways[y]=t;
+					pr_bets();
+					update(0);
+					continue;
+				case DONT:
+					if(point) msg("The point is already established. Try a dont come bet",23,1);
+					else if(mbet(i,&dont)==ESC) continue;
+					pr_bets();
+					update(0);
+					continue;
+				case DCOME:
+					if(!point)
+						msg("There is no point yet.  Bet on the Dont Pass Line.",23,1);
+					else if(mbet(i,&dcomeb)==ESC) continue;
+					pr_bets();
+					update(0);
+					continue;
+				case LODDS:
+					do {
+						addline(0);
+						addline(Bets[i]);
+						addline(" number?");
+						y=(int)getbet(1);
+						if(y==-1) break;
+					} while((!chk_plc(y)) ||(d_or_p(y)));
+					if(y==-1) continue;
+					t=lodds[y];
+					if(mbet(i,&t)==ESC) continue;
+					lodds[y]=t;
+					pr_bets();
+					update(0);
+					continue;
+				case PASS:
+					if(point) msg("The point is already established. Try a come bet.",23,1);
+					else if(mbet(i,&pass)==ESC) continue;
+					pr_bets();
+					update(0);
+					continue;
+				case COME:
+					if(!point)
+						msg("There is no point yet.  Bet on the Pass Line.",23,1);
+					else if(mbet(i,&comeb)==ESC) continue;
+					pr_bets();
+					update(0);
+					continue;
+				case ODDS:
+					do {
+						addline(0);
+						addline(Bets[i]);
+						addline(" number?");
+						y=(int)getbet(1);
+						if(y==-1) break;
+					} while((!chk_plc(y)) ||(c_or_p(y)));
+					if(y==-1) continue;
+					t=odds[y];
+					if(mbet(i,&t)==ESC) continue;
+					odds[y]=t;
+					pr_bets();
+					update(0);
+					continue;
+				case PLACE:
+					do {
+						addline(0);
+						addline(Bets[i]);
+						addline(" number?");
+						y=(int)getbet(1);
+						if(y==-1) break;
+					} while(!chk_plc(y));
+					if(y==-1) continue;
+					t=place[y];
+					if(mbet(i,&t)==ESC) continue;
+					place[y]=t;
+					pr_bets();
+					update(0);
+					continue;
+			}
+			refresh();
+			break;
+		}
+	}
+}
+
+zippo()
+{
+	double s;
+	int i;
+
+	if(total==0.0) {
+		s=pass+odds[point]+dont+lodds[point];
+		s=s+aseven+eeyo+boxcars+aces+aceduece+acraps;
+		s=s+comeb+dcomeb+field;
+		for(i=0;i<11;i++) {
+			if(i!=point) {s=s+odds[i];s=s+lodds[i];}
+			s=s+place[i]+dcome[i]+come[i]+hways[i];
+		}
+		if(s!=0.0) return(2);
+		else return(1);
+	} else return(0);
+}
+
+mbet(i,x)
+int i;
+double *x;
+{
+	int bad=0;
+	double t=0.0;
+
+	do {
+		if(bad) BEEP;
+		bad=0;
+		do {
+			if(t>LIMIT) BEEP;
+			addline(0);
+			addline(Bets[i]);
+			addline(" how much ? $");
+			if((t=getbet(1))== -1.0) return(ESC);
+		} while(t>LIMIT);
+		total += *x;
+		*x = t;
+		total -= *x;
+		if(t!=0.0) {numbets=numbets+1; handle=handle+t;}
+		if(total <0.0) {
+			bad=1;
+			total += *x;
+			*x = 0.0;
+			if(t!=0.0) {numbets=numbets-1; handle=handle-t;}
+		}
+	} while(bad);
+	return(1);
+}
+
+gs(s,n)
+char *s;
+int n;
+{
+	char c;
+
+	while(1) {
+		c=getchar();
+		if(c=='\n'||c==EOF) break;
+		if(n) {
+			--n;
+			*s++=c;
+		}
+	}
+	*s=0;
+}
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'pass.c'
+then
+	echo shar: will not over-write existing file "'pass.c'"
+else
+cat << \SHAR_EOF > 'pass.c'
+#include "types.h"
+#include "ext.h"
+
+double bet(x,n,d)
+double x;
+int n,d;
+{
+	int dollars=(int)x,quarters;
+
+	if(n==0 || d==0 || x==(double)0.0) return(0.0);
+	quarters=(int)((x-(double)dollars)/.25)+((dollars%d)*4);
+	dollars -= (dollars%d);
+	return((double)(((dollars/d*n)+(dollars%d))) +
+	       (double)(((quarters/d)*n*.25)+((double)(quarters%d)*.25)));
+}
+
+ppassln()	/* pay the pass line */
+{
+	double bet(),x;
+
+	x=pass+bet(odds[point],op[point][0],op[point][1]);
+	total=total+x+odds[point];
+	wins=wins+x;
+	if(pass!=0.0) {
+		sprintf(line,"You won %.2f on the Pass Line! ~",x);
+		announce(line);
+	}
+	odds[point]=0.0;
+}
+
+cpassln()	/* clear the pass line */
+{
+	loss=loss+pass+odds[point];
+	if(pass!=0.0) announce("Line Away! ~");
+	pass=0.0;
+	odds[point]=0.0;
+}
+
+pcomeb(on)	/* pay the come bar */
+{
+	total=total+comeb;
+	wins=wins+comeb;
+	if(comeb!=0.0) announce("You won your Come Bar Bet! ~");
+	if(on) {
+		total=total+comeb;
+		if(comeb!=0.0) announce("Your Come Bet is back. ~");
+		comeb=0.0;
+	}
+}
+
+ccomeb()	/* clear the come bar */
+{
+	loss=loss+comeb;
+	if(comeb!=0.0) announce("You lost your Come Bar Bet! ~");
+	comeb=0.0;
+}
+
+ccome(off)	/* clear the come points */
+int off;
+{
+	int i,j=0;
+
+	for(i=0;i<11;i++) {
+		loss=loss+come[i];
+		if(come[i]!=0.0) j++;
+		if(off) total=total+odds[i];
+		else loss=loss+odds[i];
+		come[i]=odds[i]=0.0;
+	}
+	sprintf(line,"Your come %s lost! ~",(j==1) ? "bet":"bets all");
+	if(j) announce(line);
+	if(off && j) announce("But you got your odds back! ~");
+}
+
+do_come(n,on)
+int n,on;
+{
+	double bet(), x;
+
+	x=come[n];
+	if(on) x = x + bet(odds[n],op[n][0],op[n][1]);
+	if(come[n]!=0.0 && comeb!=0.0) {
+		if(come[n]==comeb) {
+			total=total+x;
+			wins=wins+x;
+			sprintf(line,"Off and On on the %d for %.2f. ~",n,x);
+			announce(line);
+		} else {
+			total=total+x+come[n]+odds[n];
+			wins=wins+x;
+			sprintf(line,"You won %.2f on your Come Bet! ~",x);
+			announce(line);
+			announce("You got your come bet");
+			if(odds[n]!=0.0) announce("/odds");
+			announce(" back. ~");
+			come[n]=odds[n]=0.0;
+			come[n]=comeb;
+			comeb=0.0;
+			sprintf(line,"Your come bet got moved to the %d. ~",n);
+			announce(line);
+		}
+	} else if(come[n]!=0.0 && comeb==0.0) {
+		total=total+x+come[n]+odds[n];
+		wins=wins+x;
+		sprintf(line,"You won %.2f on your Come Bet! ~",x);
+		announce(line);
+		if(!on) announce("But your odds were off! ~");
+		come[n]=odds[n]=0.0;
+	} else if(comeb!=0.0) {
+		come[n]=comeb;
+		comeb=0.0;
+		sprintf(line,"Your come bet got moved to the %d. ~",n);
+		announce(line);
+	}
+}
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'pay.c'
+then
+	echo shar: will not over-write existing file "'pay.c'"
+else
+cat << \SHAR_EOF > 'pay.c'
+#include "types.h"
+#include "ext.h"
+
+pay_winners()
+{
+	int clrp=0,mark=0;
+
+	if(sum==7) {
+		if(!point) {
+			announce("Seven, A Natural! ~");
+			ppassln();
+			cdontln();
+			ccome(1);
+			pdonts();
+		} else {
+			announce("Seven out! ~");
+			announce(line);
+			cpassln();
+			cplace();
+			ccome(0);
+			cdontb();
+			pcomeb(1);
+			pdontln();
+			pdonts();
+			do_dont(sum);
+			clrp=1;
+		}
+	} else if(sum==11) {
+		announce("Eee-yo 'LEVEN! ~");
+		if(!point) {
+			ppassln();
+			cdontln();
+		} else {
+			pcomeb(0);
+			cdontb();
+		}
+	} else if(sum==2 || sum==3 || sum==12) {
+		announce("Craps! ");
+		if(sum==2) announce(" - aces! ~");
+		else if(sum==3) announce(" - ace-duece! ~");
+		else announce(" - sixes! ~");
+		if(!point) {
+			cpassln();
+			if(sum!=12) pdontln();
+			else bar_the_12();
+		} else {
+			ccomeb();
+			if(sum!=12) pdontb();
+			else bar_the_12();
+		}
+	} else {
+		sprintf(line,"%s!",nums[sum]);
+		if(dice[1]==dice[0]) strcat(line,", The Hardway!");
+		strcat(line," ~");
+		announce(line);
+		if(sum==point) {
+			ppassln();
+			pplace(sum);
+			cdontln();
+			do_dont(sum);
+			clrp=1;
+			do_come(sum,1);
+		} else {
+			if(point) pplace(sum);
+			else mark=1;
+			csdont(sum,0);
+			do_dont(sum);
+			do_come(sum,(point!=0));
+		}
+	}
+	pfield();
+	props(sum);
+	if(clrp) cl_point();
+	if(mark) mark_point(sum);
+	pr_an();
+	update(0);
+}
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'prints.c'
+then
+	echo shar: will not over-write existing file "'prints.c'"
+else
+cat << \SHAR_EOF > 'prints.c'
+#include "types.h"
+#include "ext.h"
+
+pr_bets()
+{
+	int i;
+
+	mvaddstr(R+15,C+40,"       ");	/* clear pass line */
+	mvaddstr(R+13,C+40,"       ");	/* clear dont pass */
+	mvaddstr(R+15,C+47,"        ");	/* clear pass line odds */
+	mvaddstr(R+13,C+47,"        "); /* clear dont pass odds */
+	mvaddstr(R+11,C+48,"       ");	/* clear field */
+	mvaddstr(R+8 ,C+48,"       "); 	/* clear come bar */
+	mvaddstr(R+6 ,C+2 ,"       ");	/* clear dont come bar */
+	mvaddstr(R+2 ,D+5 ,"       ");	/* clear any seven */
+	mvaddstr(R+6 ,D+1 ,"       ");	/* clear hard 6 */
+	mvaddstr(R+6 ,D+9 ,"       ");	/* clear hard 10 */
+	mvaddstr(R+10,D+1 ,"       ");	/* clear hard 8 */
+	mvaddstr(R+10,D+9 ,"       ");	/* clear hard 4 */
+	mvaddstr(R+14,D+1 ,"       ");  /* clear eleven */
+	mvaddstr(R+14,D+9 ,"       ");	/* clear twelve */
+	mvaddstr(R+18,D+1 ,"       ");	/* clear snake eyes */
+	mvaddstr(R+18,D+9 ,"       ");	/* clear ace-duece */
+	mvaddstr(R+21,D+5 ,"       ");	/* clear any craps */
+	for(i=0;i<11;i++) {
+		if(chk_plc(i)) {
+			mvaddstr(R+7,pcol[i]-1,"-------"); /* place bets */
+			mvaddstr(R+6,pcol[i]-1,"       "); /* come bet */
+			mvaddstr(R+5,pcol[i]-1,"       "); /* come bet odds */
+			mvaddstr(R+1,pcol[i]-1,"       "); /* done come bet */
+			mvaddstr(R  ,pcol[i]-1,"-------"); /* dont come odds */
+		}
+	}
+	if(pass!=0.0) {move(R+15,C+40); printw("$%.2f",pass);}
+	if(dont!=0.0) {move(R+13,C+40); printw("$%.2f",dont);}
+	if(point && odds[point]!=0.0) {
+		move(R+15,C+47); printw("/$%.2f",odds[point]);
+	}
+	if(point && lodds[point]!=0.0) {
+		move(R+13,C+47); printw("/$%.2f",lodds[point]);
+	}
+	if(field!=0.0) {move(R+11,C+48); printw("$%.2f",field);}
+	if(comeb!=0.0) {move(R+8,C+48); printw("$%.2f",comeb);}
+	if(dcomeb!=0.0) {move(R+6,C+2); printw("$%.2f",dcomeb);}
+	if(aseven!=0.0) {move(R+2,D+5); printw("$%.2f",aseven);}
+	if(hways[6]!=0.0) {move(R+6,D+1); printw("$%.2f",hways[6]);}
+	if(hways[10]!=0.0) {move(R+6,D+9); printw("$%.2f",hways[10]);}
+	if(hways[8]!=0.0) {move(R+10,D+1); printw("$%.2f",hways[8]);}
+	if(hways[4]!=0.0) {move(R+10,D+9); printw("$%.2f",hways[4]);}
+	if(eeyo!=0.0) {move(R+14,D+1); printw("$%.2f",eeyo);}
+	if(boxcars!=0.0) {move(R+14,D+9); printw("$%.2f",boxcars);}
+	if(aces!=0.0) {move(R+18,D+1); printw("$%.2f",aces);}
+	if(aceduece!=0.0) {move(R+18,D+9); printw("$%.2f",aceduece);}
+	if(acraps!=0.0) {move(R+21,D+5); printw("$%.2f",acraps);}
+	for(i=0;i<11;i++) {
+		if(place[i]!=0.0 && chk_plc(i)) {
+			move(R+7,pcol[i]-1);
+			printw("$%.2f",place[i]);
+		}
+		if(come[i]!=0.0 && chk_plc(i)) {
+			move(R+6,pcol[i]-1);
+			printw("$%.2f",come[i]);
+			if(odds[i]!=0.0) {
+				move(R+5,pcol[i]-1);
+				printw("$%.2f",odds[i]);
+			}
+		}
+		if(dcome[i]!=0.0 && chk_plc(i)) {
+			move(R+1,pcol[i]-1);
+			printw("$%.2f",dcome[i]);
+			if(lodds[i]!=0.0) {
+				move(R,pcol[i]-1);
+				printw("$%.2f",lodds[i]);
+			}
+		}
+	}
+	refresh();
+}
+
+print_board()
+{
+
+	clear();
+mvaddstr(R   ,C,"----------------------------------------------------------");
+mvaddstr(R+1 ,C,"|        |       |       |       |       |       |       |");
+mvaddstr(R+2 ,C,"|  DONT  -------------------------------------------------");
+mvaddstr(R+3 ,C,"|  COME  |   4   |   5   |   6   |   8   |   9   |  10   |");
+mvaddstr(R+4 ,C,"|        |       |       |       |       |       |       |");
+mvaddstr(R+5 ,C,"| BAR 12 |       |       |       |       |       |       |");
+mvaddstr(R+6 ,C,"|        |       |       |       |       |       |       |");
+mvaddstr(R+7 ,C,"----------------------------------------------------------");
+mvaddstr(R+8 ,C,"|                            C O M E                     |");
+mvaddstr(R+9 ,C,"----------------------------------------------------------");
+mvaddstr(R+10,C,"         |   double     F I E L D      triple            |");
+mvaddstr(R+11,C,"         |     2    3   4   9  10  11    12              |");
+mvaddstr(R+12,C,"         -------------------------------------------------");
+mvaddstr(R+13,C,"         |        DONT PASS BAR 12                       |");
+mvaddstr(R+14,C,"         -------------------------------------------------");
+mvaddstr(R+15,C,"         |        P A S S    L I N E                     |");
+mvaddstr(R+16,C,"         -------------------------------------------------");
+refresh();
+mvaddstr(R   ,D,"-----------------");
+mvaddstr(R+1 ,D,"| Any Seven 4-1 |");
+mvaddstr(R+2 ,D,"|               |");
+mvaddstr(R+3 ,D,"-----------------");
+mvaddstr(R+4 ,D,"|Hard 6 |Hard 10|");
+mvaddstr(R+5 ,D,"|  9-1  |  7-1  |");
+mvaddstr(R+6 ,D,"|       |       |");
+mvaddstr(R+7 ,D,"-----------------");
+mvaddstr(R+8 ,D,"|Hard 8 |Hard 4 |");
+mvaddstr(R+9 ,D,"|  9-1  |  7-1  |");
+mvaddstr(R+10,D,"|       |       |");
+mvaddstr(R+11,D,"-----------------");
+mvaddstr(R+12,D,"|Eleven |Twelve |");
+mvaddstr(R+13,D,"| 14-1  | 29-1  |");
+mvaddstr(R+14,D,"|       |       |");
+mvaddstr(R+15,D,"-----------------");
+mvaddstr(R+16,D,"|  Two  | Three |");
+mvaddstr(R+17,D,"| 29-1  |  14-1 |");
+mvaddstr(R+18,D,"|       |       |");
+mvaddstr(R+19,D,"-----------------");
+mvaddstr(R+20,D,"| Any Craps 8-1 |");
+mvaddstr(R+21,D,"|               |");
+mvaddstr(R+22,D,"-----------------");
+}
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'props.c'
+then
+	echo shar: will not over-write existing file "'props.c'"
+else
+cat << \SHAR_EOF > 'props.c'
+#include "types.h"
+#include "ext.h"
+
+props(n)		/* do the proposition bets */
+int n;
+{
+	int i,j=0,affect;
+	double x,bet();
+
+	if(aseven!=0.0)
+		if(n==7) {
+			x=bet(aseven,4,1);
+			total=total+x;
+			wins=wins+x;
+			sprintf(line,"You won $%.2f on your Any Seven! ~",x);
+			announce(line);
+		} else {
+			loss=loss+aseven;
+			announce("Any Seven Bet Lost! ~");
+			aseven=0.0;
+		}
+	if(acraps!=0.0)
+		if(n==2||n==3||n==12) {
+			x=bet(acraps,8,1);
+			total=total+x;
+			wins=wins+x;
+			sprintf(line,"You won $%.2f on Any Craps! ~",x);
+			announce(line);
+		} else {
+			loss=loss+acraps;
+			announce("Any Craps Bet Lost! ~");
+			acraps=0.0;
+		}
+	if(eeyo!=0.0)
+		if(n==11) {
+			x=bet(eeyo,14,1);
+			total=total+x;
+			wins=wins+x;
+			sprintf(line,"You won $%.2f on Eleven! ~",x);
+			announce(line);
+		} else {
+			loss=loss+eeyo;
+			announce("Eleven Bet Lost! ~");
+			eeyo=0.0;
+		}
+	if(boxcars!=0.0)
+		if(n==12) {
+			x=bet(boxcars,29,1);
+			total=total+x;
+			wins=wins+x;
+			sprintf(line,"You won $%.2f on Boxcars! ~",x);
+			announce(line);
+		} else {
+			loss=loss+boxcars;
+			announce("Boxcars Bet Lost! ~");
+			boxcars=0.0;
+		}
+	if(aces!=0.0)
+		if(n==2) {
+			x=bet(aces,29,1);
+			total=total+x;
+			wins=wins+x;
+			sprintf(line,"You won $%.2f on Snake Eyes! ~",x);
+			announce(line);
+		} else {
+			loss=loss+aces;
+			announce("Snake Eyes Bet Lost! ~");
+			aces=0.0;
+		}
+	if(aceduece!=0.0)
+		if(n==3) {
+			x=bet(aceduece,14,1);
+			total=total+x;
+			wins=wins+x;
+			sprintf(line,"You won $%.2f on Threee Bet! ~",x);
+			announce(line);
+		} else {
+			loss=loss+aceduece;
+			announce("Three Bet Lost! ~");
+			aceduece=0.0;
+		}
+	for(affect=0,i=0;i<11;i++) {
+		if(hways[i]!=0.0) j++;
+		if(hways[i]!=0.0 && n==7)
+			if(point) {loss=loss+hways[i]; hways[i]=0.0;}
+			else affect=1;
+		if(hways[i]!=0.0 && n==i && dice[0]==dice[1])
+			if(point) {
+				if(i==4||i==10) x=bet(hways[i],7,1);
+				else x=bet(hways[i],9,1);
+				total=total+x;
+				wins=wins+x;
+				sprintf(line,"You won $%.2f on the Hard %s.~",x,nums[i]);
+				announce(line);
+			} else affect=1;
+		if(hways[i]!=0.0 && n==i && dice[0]!=dice[1])
+			if(point) {
+				loss=loss+hways[i];
+				hways[i]=0.0;
+				sprintf(line,"Hard %s Down! ~",nums[i]);
+				announce(line);
+			} else affect=1;
+	}
+	sprintf(line,"Hardway Bet%sDown! ~",(j==1)?" ":"s ");
+	if(n==7 && j && point) announce(line);
+	if(j && !point && affect) announce("Hardways off on the Comeout! ~");
+}
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'random.c'
+then
+	echo shar: will not over-write existing file "'random.c'"
+else
+cat << \SHAR_EOF > 'random.c'
+#include "types.h"
+#include "ext.h"
+#ifdef	BSD42
+#include <sys/time.h>
+#endif
+
+/*
+ * seed the random number generator
+ *
+ */
+seedrand()
+{
+#ifdef BSD42
+	struct timeval tp;
+	struct timezone tpz;
+
+	gettimeofday(&tp,&tpz);
+	srandom((int)tp.tv_sec);
+#endif
+#ifdef BSD29
+	randomize();
+#endif
+#ifdef SYSV
+	long seed;
+	long time();
+	void srand48();
+
+	time(&seed);
+	srand48(seed);
+#endif
+#ifdef XENIX
+	long seed;
+	long time();
+
+	time(&seed);
+	srand(seed);
+#endif
+}
+
+/*
+ * get_rand - return a random number 1-6
+ *
+ */
+get_rand()
+{
+#ifdef BSD42
+	long random();
+	return( (int) random() % 6 + 1);
+#endif
+#ifdef BSD29
+	double ranm();
+	return( (int) (ranm() * 6.0) + 1.0);
+#endif
+#ifdef SYSV
+	double drand48();
+	return( (int) (drand48() * 6.0) + 1.0);
+#endif
+#ifdef XENIX
+	return( rand() % 6 + 1);
+#endif
+}
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'subs.c'
+then
+	echo shar: will not over-write existing file "'subs.c'"
+else
+cat << \SHAR_EOF > 'subs.c'
+#include "types.h"
+#include "ext.h"
+
+char bark[600];
+
+clrtocol(n)
+int n;
+{
+	int y,x,x1;
+
+	getyx(stdscr,y,x); x1=x;
+	while(x<=n) mvaddch(y,x++,' ');
+	move(y,x1);
+}
+
+ind(s,c)
+char *s,c;
+{
+	int i;
+
+	for(i=0;*s;i++,s++) if(*s==c) break;
+	if(!(*s)) return(-1);
+	else return(i);
+}
+
+msg(s,y,x)
+char *s;
+{
+	char c;
+
+	move(y,x); clrtocol(D-1); refresh();
+	printw("%s-More-",s); refresh();
+	while((c=getchar())!=' ') BEEP;
+}
+
+addline(s)
+char *s;
+{
+	static int acol=1;
+	if(!s) {
+		move(23,1); clrtoeol(); refresh(); acol=1;
+	} else {
+		if(acol+strlen(s) > 70) acol=1;
+		move(23,acol); clrtoeol(); printw("%s ",s); refresh();
+		acol += strlen(s)+1;
+	}
+}
+
+double getbet(half)
+int half;
+{
+	char c;
+	int nd=0,dot=0,dc=0;
+	double i=0.0,frac=0.0;
+
+	while(1) {
+		c=getchar();
+		if(c=='\n') {
+			if(frac==0.20||frac==0.70) {BEEP; continue;}
+			else break;
+		}
+		if((c<'0' || c>'9')&&(c!='.')&&(c!=(char)8)&&(c!=ESC)) BEEP;
+		else if(c==ESC) return(-1.0);
+		else if(c=='.') {
+			if(dot==1) BEEP;
+			else {
+				dot=1;
+				addch(c); refresh();
+			}
+		} else if(c==(char)8) {
+			if(!nd && (!dc && !dot)) BEEP;
+			if(dc) {
+				if(frac==0.25) frac=0.20;
+				else if(frac==0.75) frac=0.70;
+				else if(frac==0.50 && dc==2) frac=0.50;
+				else if(frac==0.50) frac=0.0;
+				else if(frac==0.20) frac=0.0;
+				else if(frac==0.70) frac=0.0;
+			}
+			if(nd) i = (float) ((int) (i/10.0));
+			if(nd || dc || dot) {
+				addch((char)8); addch(' '); addch((char)8);
+				refresh();
+				if(dc) dc--;
+				else if(dot && !dc) dot=0;
+				else if(nd) nd--;
+			}
+		} else {
+			if(dot)
+				switch(dc) {
+					case 0: if(c=='2'||c=='5'||c=='7') {
+							frac=(double)(c-'0')/10.0;
+							dc++;
+							addch(c); refresh();
+						} else BEEP;
+						break;
+					case 1:	if(c=='5') {
+							if(frac==.2||frac==.7) {
+								frac=frac+0.05;
+								dc++;
+								addch(c);
+								refresh();
+							} else BEEP;
+						} else if(c=='0') {
+							if(frac==.5) {
+								frac=0.5;
+								dc++;
+								addch(c);
+								refresh();
+							} else BEEP;
+						} else BEEP;
+						break;
+					default:BEEP;
+				}
+			else {
+				if(nd==3) {BEEP; continue;}
+				i = (i*10.0) + c - '0';
+				nd++;
+				addch(c); refresh();
+			}
+		}
+	}
+	return(i+frac);
+}
+
+announce(s)
+char *s;
+{
+	if(!s) bark[0]=0;
+	else strcat(bark,s);
+}
+
+pr_an()
+{
+	int i=0,j=0,k=0,l,K=11;
+	char temp[81];
+
+	line[0]=0;
+	while(bark[i]) {
+		while(bark[i] != '~') temp[j++]=bark[i++];
+		i++;
+		temp[j]=0;
+		l=K+((D-7-K-strlen(temp))/2);
+		move(18,K); clrtocol(D-1); refresh();
+		msg(temp,18,l);
+		j=0;
+	}
+	move(18,K); clrtocol(D-1); refresh();
+}
+
+update(force)
+int force;
+{
+	if(otot!=total || olos!=loss || owin!=wins || force) {
+		move(20,6); clrtocol(D-1); refresh();
+		printw("Rack:%.2f",total);
+		printw("  Winnings:%.2f",wins);
+		printw("  Losses:%.2f",loss);
+		refresh();
+	}
+	otot=total; olos=loss; owin=wins;
+}
+
+roll()
+{
+	int i,k,l;
+
+	announce(0);
+	mvaddstr(10,2,"-------");
+	mvaddstr(11,2,"|     |");
+	mvaddstr(12,2,"|     |");
+	mvaddstr(13,2,"|     |");
+	mvaddstr(14,2,"-------");
+	mvaddstr(15,2,"-------");
+	mvaddstr(16,2,"|     |");
+	mvaddstr(17,2,"|     |");
+	mvaddstr(18,2,"|     |");
+	mvaddstr(19,2,"-------");
+	if(cheat) {
+		spots(dice[0],11,3);
+		spots(dice[1],16,3);
+	} else for(i=0;i<10;i++) {
+		dice[0]=get_rand();
+		dice[1]=get_rand();
+		spots(dice[0],11,3);
+		spots(dice[1],16,3);
+		refresh();
+	}
+	sum=dice[0]+dice[1];
+}
+
+spots(i,y,x)
+int i,y,x;
+{
+	switch(i) {
+		case 1:
+			mvaddstr(y,x,"     ");
+			mvaddstr(y+1,x,"  o  ");
+			mvaddstr(y+2,x,"     ");
+			break;
+		case 2:
+			mvaddstr(y,x,"o    ");
+			mvaddstr(y+1,x,"     ");
+			mvaddstr(y+2,x,"    o");
+			break;
+		case 3:
+			mvaddstr(y,x,"o    ");
+			mvaddstr(y+1,x,"  o  ");
+			mvaddstr(y+2,x,"    o");
+			break;
+		case 4:
+			mvaddstr(y,x,"o   o");
+			mvaddstr(y+1,x,"     ");
+			mvaddstr(y+2,x,"o   o");
+			break;
+		case 5:
+			mvaddstr(y,x,"o   o");
+			mvaddstr(y+1,x,"  o  ");
+			mvaddstr(y+2,x,"o   o");
+			break;
+		case 6:
+			mvaddstr(y,x,"o   o");
+			mvaddstr(y+1,x,"o   o");
+			mvaddstr(y+2,x,"o   o");
+			break;
+	}
+}
+
+mark_point(n)
+int n;
+{
+	mvaddstr(4,pcol[n],"----");
+	refresh();
+	point=n;
+	sprintf(line,"The Point is %d! ~",point);
+	announce(line);
+	move_place(n);
+}
+
+cl_point()
+{
+	mvaddstr(4,pcol[point],"    ");
+	refresh();
+	point=0;
+}
+
+bar_the_12()
+{
+	int i,j=0;
+
+	for(i=0;i<11;i++) if(dcome[i]!=0.0) j=1;
+	if(dcomeb!=0.0) j=1;
+	if(j || (dont!=0.0 && !point)) announce("Bar the Dont's! ~");
+}
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'ext.h'
+then
+	echo shar: will not over-write existing file "'ext.h'"
+else
+cat << \SHAR_EOF > 'ext.h'
+extern int pcol[11];
+
+extern char *keys,line[81];
+extern char *nums[];
+extern char *Bets[];
+
+extern double total, wins, loss, otot, olos, owin, handle;
+
+extern double pass,comeb,come[11],odds[11];
+extern double dont,dcomeb,dcome[11],lodds[11];
+extern double place[11],field;
+extern double hways[11],aseven,acraps,eeyo,boxcars,aces,aceduece;
+
+extern int dice[2],sum,point,cheat;
+extern int plcpays[11][2];
+extern int op[11][2];
+extern int hp[11][2];
+extern int fpays[13];
+
+extern long numbets;
+SHAR_EOF
+fi # end of overwriting check
+if test -f 'types.h'
+then
+	echo shar: will not over-write existing file "'types.h'"
+else
+cat << \SHAR_EOF > 'types.h'
+#include <curses.h>
+#include <signal.h>
+#define BEEP	putchar((char)7)
+#define ESC	(char)27
+#define LIMIT	500.00
+#define SLIMIT	1000.00
+#define R	0
+#define C	1
+#define D	C+62
+#define PASS	0
+#define COME	1
+#define DONT	2
+#define DCOME	3
+#define ODDS	4
+#define FIELD	5
+#define PLACE	6
+#define LODDS	7
+#define HWAY	8
+#define ASEVEN	9
+#define	ACRAPS	10
+#define	TWO	11
+#define	THREE	12
+#define	EEYO	13
+#define TWELVE	14
+#define CHEAT	15
+#define QUIT	16
+#define HELP	17
+#define SHELL	18
+#define ROLL	19
+#define REFRESH 20
+SHAR_EOF
+fi # end of overwriting check
+#	End of shell archive
+exit 0

@@ -1,0 +1,4 @@
+-rw-r--r-- 0/0              61 Feb 20 23:06 1995 Makefile
+-rwxr-xr-x 0/0           21426 Feb 20 23:18 1995 weekday
+-rw-r--r-- 0/0           28019 Feb 20 23:33 1995 weekday.c
+-rw-r--r-- 0/0            7440 Feb 20 23:31 1995 weekday.man

@@ -1,0 +1,1 @@
+tail -20 /usr/spool/uucp/LOGFILE

@@ -1,0 +1,6 @@
+-rw-r--r-- 3/3            1531 Aug 19 12:33 1994 /usr/lib/Help/lib/L/ctrl
+-rwxr-xr-x 3/3            4922 Aug 19 12:02 1994 /usr/local/ctrl
+-rwxr-xr-x 3/3               0 Aug 19 12:02 1994 /usr/local/unesc link to /usr/local/ctrl
+-rwxr-xr-x 3/3               0 Aug 19 12:02 1994 /usr/local/esc link to /usr/local/ctrl
+-rwxr-xr-x 3/3               0 Aug 19 12:02 1994 /usr/local/bell link to /usr/local/ctrl
+-rwxr-xr-x 3/3               0 Aug 19 12:02 1994 /usr/local/beep link to /usr/local/ctrl

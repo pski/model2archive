@@ -1,0 +1,6 @@
+-rw-rw-rw- 10/10           277 Feb  7 00:05 1995 Makefile
+-rw-rw-rw- 10/10          2484 Mar  1 03:34 1990 README
+-rw-rw-rw- 10/10          8060 Feb  6 21:33 1995 esc.c
+-rw-rw-rw- 10/10          1391 Feb  6 22:36 1995 header.h
+-rw-rw-rw- 10/10         57759 Mar  1 03:34 1990 main.c
+-rw-rw-rw- 10/10           351 Mar  1 03:34 1990 vttest.1

@@ -1,0 +1,13 @@
+-rw-r--r-- 0/0              66 Jun 25 15:46 1995 INSTALL
+-rw-r--r-- 0/0            1979 Jun 25 15:54 1995 README
+-rw-r--r-- 0/0            3100 May  6 07:45 1995 input.c
+-rw-r--r-- 0/0             823 Jun 25 15:30 1995 makefile
+-rw-r--r-- 0/0            3705 Jun 25 14:37 1995 p_deal.c
+-rw-r--r-- 0/0            8988 May  6 07:45 1995 p_decide.c
+-rw-r--r-- 0/0            7876 May  6 07:45 1995 p_hand.c
+-rw-r--r-- 0/0           12208 Jun 25 14:17 1995 p_scr.c
+-rw-r--r-- 0/0           13969 May  6 07:45 1995 p_strat.c
+-rwxr-xr-x 0/0           45362 Jun 25 15:44 1995 poker
+-rw-r--r-- 0/0            8381 May  6 07:09 1995 poker.c
+-rw-r--r-- 0/0            1965 Jun 25 15:32 1995 poker.h
+-rw-r--r-- 0/0            4373 May  6 07:09 1995 poker_rules

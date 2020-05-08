@@ -1,0 +1,866 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  Makefile config.h decodeqwk.c readme
+# Wrapped by root@coupon on Thu Feb 23 16:01:13 1995
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'Makefile' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Makefile'\"
+else
+echo shar: Extracting \"'Makefile'\" \(80 characters\)
+sed "s/^X//" >'Makefile' <<'END_OF_FILE'
+Xdecodeqwk:	decodeqwk.c config.h
+X	cc -+ -O  -Dvoid=int decodeqwk.c -o decodeqwk 
+END_OF_FILE
+if test 80 -ne `wc -c <'Makefile'`; then
+    echo shar: \"'Makefile'\" unpacked with wrong size!
+fi
+# end of 'Makefile'
+fi
+if test -f 'config.h' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'config.h'\"
+else
+echo shar: Extracting \"'config.h'\" \(482 characters\)
+sed "s/^X//" >'config.h' <<'END_OF_FILE'
+X/*
+X  What program to call to submit the translated article
+X  to your news system
+X*/
+X#define RELAYNEWS "/u/lib/newsbin/relay/relaynews"
+X/*
+X  What program to call to submit the translated article
+X  to your local mail system
+X*/
+X#define SENDMAIL  "/usr/local/elm"
+X
+X#define MAX_IN_LINE 128	   /* Maximum length of line I will read in */
+X#define MAX_GROUPS 256	   /* Maximum number of groups (Conferences) handled */
+X#define MAX_LEGAL_NAME 256 /* Maximum legal usenet groupname length */
+END_OF_FILE
+if test 482 -ne `wc -c <'config.h'`; then
+    echo shar: \"'config.h'\" unpacked with wrong size!
+fi
+# end of 'config.h'
+fi
+if test -f 'decodeqwk.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'decodeqwk.c'\"
+else
+echo shar: Extracting \"'decodeqwk.c'\" \(19084 characters\)
+sed "s/^X//" >'decodeqwk.c' <<'END_OF_FILE'
+X/*
+X	This is a .QWK to local usenet news translator.
+X	Given that I didn't want to write a full blown .QWK reader
+X	when news readers are readily available, (trn, rn etc) why
+X	not just convert the .QWK info into a local news group
+X	and read them there?
+X	So, what this program will do is convert a series of downloaded
+X	articles from a FIDO style BBS that supports QWK format,
+X	into a usenet group with the bbsid as the top level.
+X	i.e. bbs name of 'PANDORA' will have a series of groups
+X	under 'pandora.xxx' where 'xxx' is the name of the conference
+X	carried at pandora, and off-line read.
+X
+X	The following changes/enhancements are planned.
+X	1) Write some code to convert a usenet relay spool
+X	   into qwk format for uploading. (For replies)
+X
+X	The following known bugs exist.
+X	1) Cannot handle more than fixed number of conferences at a time
+X	   (configuration parameter)
+X
+X	D. Bruce	Sept 24 '92
+X*/
+X
+X#include <stdio.h>
+X#include <ctype.h>
+X#include <string.h>
+X#include <fcntl.h>
+X#include "config.h"
+X
+X#define YES 1
+X#define NO 0
+X
+Xchar version[]="$Id: decodeqwk.c,v 1.2 1992/11/09 03:24:02 db Exp $";
+X
+X/*
+X	From spec for .QWK format as outlined in news article
+X
+XArticle: 52 of comp.mail.misc
+XXref: diana alt.bbs:27 comp.mail.misc:52 alt.bbs.internet:5
+XNewsgroups: alt.bbs,comp.mail.misc,alt.bbs.internet
+XPath: diana!gjk!revcan!cunews!utgpu!cs.utexas.edu!uunet!world!aboba
+XFrom: aboba@world.std.com (Bernard D Aboba)
+XSubject: Re: looking for spec for ".qwk" mailbox format
+XMessage-ID: <BJG6y4.M83@world.std.com>
+XOrganization: The World Public Access UNIX, Brookline, MA
+XReferences: <1992Feb8.221931.24085@msen.com>
+XDate: Tue, 11 Feb 1992 08:15:40 GMT
+XStatus: OR
+X
+XHere is the spec for the .QWK format. Hopefully this info will prove
+Xuseful to someone writing a QWK reader for UNIX.
+X
+X	Thank you Bernard...
+X*/
+X
+X/*
+X  First record of messages.dat consists of who/what made the file.
+X*/
+X
+Xstruct first_record {
+X  char info[128];
+X};
+X
+X/*
+X  The first record of the message tells us when the message was entered
+X  to whom and from the message is etc. and how many more 128 byte
+X  blocks are in the actual message.
+X*/
+X
+Xstruct message_record {
+X  char message_status;
+X  char message_number[7];
+X  char message_date[8];
+X  char message_time[5];
+X  char message_to[25];
+X  char message_from[25];
+X  char message_subject[25];
+X  char message_password[12];
+X  char message_reference[8];
+X  char message_nblocks[6];
+X  char message_kill;
+X  char conference_number[2];
+X  char xxx[3];	/* Not used */
+X};
+X
+X/*
+X  Each successive 128 byte block consists of the message with each line
+X  separated by a 'SEP' character.
+X*/
+X
+X#define SEP 227		/* Text separator character */
+X
+Xstruct message_block{
+X  char message_line[128];
+X};
+X
+X/*
+X  The group number to group name translation table to be built
+X  up by 'decode_control'
+X
+X  Ideally this would be done using a hash table lookup, as this
+X  would enable this code to work on more than 256 groups at a time.
+X  However, In using this code, I have never had more than a
+X  few groups at a time downloaded, since the BBS I download from
+X  only allows 600 messages at a time to be packed.
+X*/
+X
+Xunsigned char *group_names[MAX_GROUPS];
+X
+Xint fin_message_in;
+XFILE *fp_control_in;
+X
+Xvoid decode_control();
+Xvoid decode_messages();
+Xvoid strtolower();
+Xvoid make_usenet_date();
+Xvoid strip_crlf();
+Xvoid strip_trailing_blanks();
+Xvoid safe_fgets();
+Xvoid bad_control();
+Xvoid bad_message();
+X
+X
+Xunsigned char *cut_to_length();
+Xunsigned char *map_to_news_name();
+Xint get_group_number();
+X
+Xint getopt();
+X
+Xchar *make_legal_group_name();
+Xchar *find_fido_address();
+X
+Xint test;
+X
+Xint number_of_conferences;
+Xchar organization[MAX_IN_LINE];
+Xchar bbs_id[MAX_IN_LINE];
+X
+Xmain(argc,argv)
+Xint argc;
+Xchar *argv[];
+X{
+X  int c;
+X  extern char *optarg;
+X  extern int optind, opterr;
+X  test = NO;
+X
+X/*
+X  If -t option is set, then decoded messages go directly to standard out
+X  If -v option is set, version is printed, and program continues.
+X  I always check for '-?' or '-h' for help.
+X*/
+X
+X  opterr = 0;
+X
+X  while ((c = getopt(argc, argv, "vth?")) != -1)
+X    {
+X      switch (c)
+X	{
+X	case 't':
+X	  test = YES;
+X	  break;
+X	case 'v':
+X	  (void)fprintf(stderr,"%s: version %s\n", argv[0], version );
+X	  (void)exit(0);
+X	  break;
+X	case 'h':
+X	case '?':
+X	default:
+X	  (void)fprintf(stderr,"%s [-t][-v]\n", argv[0]);
+X	  (void)fprintf(stderr,
+X	  "-t for 'test' mode, decoded messages output to standard output.\n");
+X	  (void)fprintf(stderr,"-v for 'version'.\n");
+X	  (void)fprintf(stderr,"-? -h for help.\n");
+X	  (void)exit(0);
+X	  break;
+X	}
+X    }
+X
+X  if( (fin_message_in = open("messages.dat", O_RDONLY)) < 0 )
+X    {
+X      (void)fprintf(stderr,"%s: Unable to open \"messages.dat\"\n", argv[0]);
+X      (void)exit(0);
+X    }
+X
+X  if( (fp_control_in = fopen("control.dat", "r")) == NULL )
+X    {
+X      (void)fprintf(stderr,"%s: Unable to open \"control.dat\"\n", argv[0]);
+X      (void)exit(0);
+X    }
+X
+X  decode_control( fp_control_in );
+X  decode_messages( argv[0], fin_message_in );
+X  (void)exit(0);
+X}
+X
+X/*
+X  decode_control()
+X
+X  Decode the contents of the control.dat file.
+X
+X  What I have to do here is:
+X    1)	I determine what the originating BBS is for this qwk file.
+X
+X    2)	Build up a decode table of numbers to Conference names,
+X	as found in the control.dat file. These will be used to
+X	produce the correct local newsgroup name when the
+X	messages.dat file is decoded.
+X	To simplify things, I have assumed a minimum number of
+X	groups are available i.e. less than MAX_GROUPS. The qwk
+X	format seems to allow up to 65535 groups, but I should think
+X	256 is probably plenty.
+X
+X*/
+X
+Xvoid decode_control(fp)
+XFILE *fp;
+X{
+Xchar line_in[MAX_IN_LINE];
+Xint group_number;
+Xint i,j;
+X
+X  safe_fgets(organization, MAX_IN_LINE, fp, bad_control );
+X
+X  for( i = 0; i < MAX_IN_LINE; i++ )
+X    if( (organization[i] == '\n') || (organization[i] == '\r' ) )
+X      organization[i] = '\0';
+X
+X	/*
+X	  Skip the unused records
+X	*/
+X
+X  safe_fgets(line_in, MAX_IN_LINE, fp, bad_control);	/* blank line */
+X  safe_fgets(line_in, MAX_IN_LINE, fp, bad_control);	/* phone number */
+X  safe_fgets(line_in, MAX_IN_LINE, fp, bad_control);	/* SYSOP */
+X  safe_fgets(line_in, MAX_IN_LINE, fp, bad_control);
+X					/* Mail door reg#,BBS name */
+X
+X  for( j = i = 0; i < MAX_IN_LINE; i++ )
+X    {
+X      if( line_in[i] == ',' )
+X	{
+X	  j = 0;
+X	  continue;
+X	}
+X      else if( (line_in[i] == '\n') || (line_in[i] == '\r') )
+X	{
+X	  line_in[i] = '\0';
+X	  break;
+X	}
+X      else if( line_in[i] == ' ' )
+X	line_in[i] = '\0';
+X      bbs_id[j++] = line_in[i];
+X    }
+X  strtolower(bbs_id);
+X
+X/*
+X  Discard whatever lines are not needed.
+X*/
+X  for( i = 0; i < 5; i++ )
+X    {
+X      safe_fgets(line_in, MAX_IN_LINE, fp, bad_control);
+X    }
+X
+X
+X  safe_fgets(line_in, MAX_IN_LINE, fp, bad_control);
+X  (void)sscanf(line_in,"%d", &number_of_conferences);
+X  number_of_conferences++;
+X
+X  for( i = 0; i < number_of_conferences; i++ )
+X    {
+X      safe_fgets(line_in, MAX_IN_LINE, fp, bad_control);
+X      (void)sscanf(line_in,"%d",&group_number);
+X
+X      safe_fgets(line_in, MAX_IN_LINE, fp, bad_control);
+X
+X      if( (group_number < 0) || (group_number > MAX_GROUPS) )
+X	group_number = 0;
+X
+X      strip_crlf( line_in );
+X      strip_trailing_blanks( line_in );
+X      group_names[ group_number ] = (unsigned char*)strdup( line_in );
+X    }
+X}
+X
+X/*
+X  strip_crlf()
+X
+X  What I am doing here:
+X    1) Discarding the MSDOS <CR><LF> at the end of each line, in place.
+X*/
+X
+Xvoid strip_crlf( line_in )
+Xchar *line_in;
+X{
+Xint j;
+X
+X/*
+X  If it's MSDOG it should always be <CR><LF>, so I could always be lazy
+X  and assume the <CR> is first... ha!
+X*/
+X  for( j = 0; j < MAX_IN_LINE; j++ )
+X    {
+X      if( ( line_in[j] == '\n') || (line_in[j] == '\r') )
+X	{
+X	  line_in[j] = '\0';
+X	  break;
+X	}
+X    }
+X}
+X
+X/*
+X  strip_trailing_blanks()
+X
+X  What I am doing here:
+X  1) Simply replacing trailing blank characters with a null,
+X     in place, thus truncating the string.
+X*/
+X
+Xvoid strip_trailing_blanks( line_in )
+Xchar *line_in;
+X{
+Xint j;
+X
+X  for( j = 0; j < MAX_IN_LINE; j++ )
+X    {
+X      if( isspace( line_in[j] ) )
+X	{
+X	  line_in[j] = '\0';
+X	  break;
+X	}
+X    }
+X}
+X
+X/*
+X  make_legal_group_name()
+X
+X  What I am doing here:
+X    1) replacing embedded blanks with an underscore
+X    2) replacing embedded '/' with a period character
+X    3) adding bbs name to beginning of name
+X    4) convert the whole mess to lower case
+X    5) return a pointer to this new legal name.
+X       Which is in a static, and must be copied immediately.
+X*/
+X
+Xchar *make_legal_group_name( line_in )
+Xchar *line_in;
+X{
+Xint j;
+Xstatic char legal_name[2*MAX_LEGAL_NAME];
+X
+X  for( j = 0; j < MAX_IN_LINE; j++ )
+X    {
+X      if( line_in[j] == ' ' ) line_in[j] = '_';
+X      else if( line_in[j] == '/' ) line_in[j] = '_';
+X      else if( line_in[j] == '\0' )break;
+X    }
+X
+X  legal_name[0] = '\0';
+X
+X  (void)strcpy(legal_name,bbs_id);
+X  (void)strcat(legal_name,".");
+X
+X  (void)strcat(legal_name, line_in );
+X  strtolower( legal_name );
+X  return(legal_name);
+X}
+X
+X/*
+X  strtolower()
+X
+X  1) Convert a string in place from upper case to lower case.
+X*/
+X
+Xvoid strtolower( s )
+Xchar *s;
+X{
+X  while( *s )
+X    {
+X      if( isupper(*s) ) *s = tolower(*s);
+X      s++;
+X    }
+X}
+X
+X/*
+X  decode_messages()
+X
+X  1) "Walk" through the 128 byte records (ugh! shades of CPM!)
+X     as defined by the .QWK standard.
+X*/
+X
+Xvoid decode_messages(prog_name,fin)
+Xchar *prog_name;
+Xint fin;
+X{
+Xstruct first_record info_record;
+Xstruct message_record msg_info_record;
+Xstruct message_block msg_record;
+Xint nblocks;
+Xint i;
+Xunsigned char *p;
+Xchar temp_date[20];
+XFILE *out;
+XFILE *temp_out;
+Xchar line_in[MAX_IN_LINE];
+Xchar template[40];
+Xchar *fido_address;
+Xint group_number;
+Xint being_mailed;
+X
+X  if( test )
+X    out = stdout;
+X
+X  if( read(fin,(char *)&info_record, sizeof( info_record )) <= 0 )
+X    {
+X      (void)fprintf(stderr,"Malformed messages.dat, bailing out!\n");
+X      (void)exit(0);
+X    }
+X
+X/*
+X  If one is curious as to who the messages were packed by...
+X
+X  p = cut_to_length(info_record.info,128);
+X  (void)fprintf(stderr,"Messages packed by %s\n", p );
+X*/
+X
+X  while(read(fin,(char *)&msg_info_record, sizeof( msg_info_record)) > 0)
+X    {
+X      being_mailed = NO;
+X      (void)strcpy(template,"/tmp/decodeqwkXXXXXX");
+X      temp_out = fdopen(mktemp(template),"r+");
+X      if( temp_out == NULL )
+X	{
+X	  (void)fprintf(stderr,"Can't open temp_out\n");
+X	  (void)exit(0);
+X	}
+X
+X/*
+X  If I am debugging the output, I do not actually call up
+X  sendmail or relaynews, but output to stdout.
+X*/
+X
+X      if( !test )
+X	{
+X/*
+X  Private message has '*' or '-' set in the status field,
+X  I am being simple minded and assuming that I will not see
+X  a 'To' field that isn't on my private unix machine,
+X  if is a private message. i.e. a private message obviously
+X  wouldn't be sent to me if it belongs to someone else.
+X  N.B. An alias used on the BBS end will be translated to the
+X  same alias name on the unix end however...
+X*/
+X	  if( msg_info_record.message_status == '*' ||
+X	     msg_info_record.message_status == '+' )
+X	    {
+X/*
+X  I redundantly get the 'to' field if it is a private message. so?
+X*/
+X	      p = cut_to_length(msg_info_record.message_to, 25 );
+X	      (void)strcpy(line_in,SENDMAIL);
+X	      (void)strcat(line_in," ");
+X	      (void)strcat(line_in, (char *)p);
+X	      being_mailed = YES;
+X	      out = popen(line_in,"w");
+X	      if( out == (FILE *)NULL )
+X		{
+X		  (void)fprintf(stderr,"%s: Cannot mail\n", prog_name);
+X		  (void)exit(0);
+X		}
+X	    }
+X	  else
+X	    {
+X	      out = popen(RELAYNEWS,"w");
+X	      if( out == (FILE *)NULL )
+X		{
+X		  (void)fprintf
+X		    (stderr,"%s: Cannot run relaynews\n", prog_name);
+X		  (void)exit(0);
+X		}
+X	    }
+X	}
+X
+X      p = cut_to_length(msg_info_record.message_from, 25 );
+X      (void)fprintf(out,"From: %s\n", p );
+X      (void)fflush(out);
+X
+X      p = cut_to_length(msg_info_record.message_to, 25 );
+X      (void)fprintf(out,"To: %s\n", p );
+X      (void)fflush(out);
+X
+X      group_number = get_group_number(msg_info_record.conference_number);
+X      p = map_to_news_name( group_number );
+X      (void)fprintf(out,"Newsgroups: %s\n", p );
+X      (void)fprintf(out,"Path: diana!%s\n", bbs_id);
+X      p = cut_to_length(msg_info_record.message_subject, 25 );
+X      (void)fprintf(out,"Subject: %s\n", p );
+X
+X    /*
+X      Date needs some massaging to be a legal Usenet date
+X      legal date needs day# month year# with month spelled
+X      out in 3 letter short form
+X    */
+X      make_usenet_date(msg_info_record.message_date,temp_date);
+X      (void)fprintf(out,"Date: %s ", temp_date);
+X    /*
+X      Output the time, show the seconds as zero since it isn't
+X      supplied but the field is needed
+X    */
+X
+X      p = cut_to_length(msg_info_record.message_time, 5 );
+X      (void)strcat((char *)p,":00\n");
+X      (void)fputs((char *)p,out);
+X
+X      (void)sscanf(msg_info_record.message_nblocks,"%6d",&nblocks);
+X      nblocks--;
+X
+X      while ( nblocks )
+X	{
+X	  if( read(fin,(char *)&msg_record, sizeof( msg_record )) <= 0 )
+X	     {
+X	       (void)fprintf(stderr,"Malformed messages.dat, bailing out!\n");
+X	       (void)exit(0);
+X	     }
+X
+X	  p = (unsigned char *)&msg_record;
+X	  for( i = 0 ; i < 128; i++ )
+X	    if( p[i] == SEP )
+X	      (void)fputc('\n',temp_out);
+X	    else
+X	      (void)fputc((char)p[i],temp_out);
+X	  nblocks--;
+X	}
+X      (void)fputc('\n',temp_out);
+X
+X      (void)rewind( temp_out );
+X
+X      fido_address = NULL;
+X
+X      while( fgets(line_in,MAX_IN_LINE,temp_out) != NULL )
+X	{
+X	  if(strncmp(line_in+1,"* Origin:",9) == 0 )
+X	    {
+X	      (void)strcpy(organization, line_in+11 );
+X	      strip_crlf( organization );
+X
+X	      fido_address = find_fido_address(organization);
+X
+X	      if( fido_address == NULL )
+X		{
+X		  if( fgets(line_in,MAX_IN_LINE,temp_out) != NULL )
+X		    {
+X		      strip_crlf( line_in );
+X		      fido_address = find_fido_address(line_in);
+X		    }
+X		  break;
+X		}
+X	    }
+X	}
+X
+X      if( fido_address == NULL )
+X	fido_address = bbs_id;
+X
+X      if( !being_mailed )
+X	{
+X	  short unsigned int checksum;
+X/*
+X  The message id is derived from as much unique information as I could
+X  gather from the message headers. In the FIDO spec, there is
+X  a unique message ID used to prevent infinite message loops
+X  much as 'Message-Id"' is used in the usenet world. (It is hidden
+X  using a Control-A in the text)
+X  However, it does not appear in the QWK format output, so I fake one up.
+X
+X  The time/date/group name and fido address are almost enough to be
+X  unique, unfortunately sometimes two messages still 'hash' to
+X  same Id, (Multi-ported BBS's or fast message entry.) so
+X  I 'perturb' the Id using a very simple checksum.
+X
+X  I did use the message number, but this meant that the identical
+X  same message downloaded from another board would have
+X  a different ID.
+X  The only solution I could think of is a checksum calculated
+X  from the contents or the header of the message.
+X
+X  A very simple 16 bit checksum of the to/from and subject
+X  fields of the message should be enough.
+X*/
+X	  checksum = 0;
+X
+X	  for(i = 0; i < 25; i++ )
+X	    checksum += msg_info_record.message_to[i];
+X	  for(i = 0; i < 25; i++ )
+X	    checksum += msg_info_record.message_from[i];
+X	  for(i = 0; i < 25; i++ )
+X	    checksum += msg_info_record.message_subject[i];
+X
+X	  (void)fprintf(out,
+X			"Message-Id: <19%c%c%c%c%c%c%c.%c%c%c%c%d.%s@%s>\n",
+X			temp_date[7],temp_date[8],
+X			temp_date[3],temp_date[4],temp_date[5],
+X			temp_date[0],temp_date[1],
+X			msg_info_record.message_time[0],
+X			msg_info_record.message_time[1],
+X			msg_info_record.message_time[3],
+X			msg_info_record.message_time[4],
+X			checksum,
+X			group_names[group_number],
+X			fido_address);
+X	      }
+X
+X      (void)fprintf(out,"Organization: %s\n\n", organization );
+X
+X      rewind( temp_out );
+X      while( fgets(line_in,MAX_IN_LINE,temp_out) != NULL )
+X	{
+X	  (void)fputs(line_in, out );
+X	}
+X      (void)fclose( temp_out );
+X      (void)unlink(template);
+X
+X      if( !test )
+X	(void)pclose( out );
+X    }
+X  (void)fclose( temp_out );
+X  (void)unlink(template);
+X}
+X
+X/*
+X  make_usenet_date()
+X
+X  Convert fidonet date form into usenet date form
+X*/
+X
+Xchar *month_strings[]={"???","Jan","Feb","Mar","Apr","May","Jun",
+X			     "Jul","Aug","Sep","Oct","Nov","Dec"};
+X
+Xvoid make_usenet_date( fidonet_date, usenet_date )
+Xchar *fidonet_date;
+Xchar *usenet_date;
+X  {
+X    int date_number;
+X
+X/*       I know, it's quick and dirty */
+X
+X    (void)strcpy(usenet_date,"         ");	/* blank fill it */
+X
+X    /* Put the day number into right spot */
+X    usenet_date[0] = fidonet_date[3];
+X    usenet_date[1] = fidonet_date[4];
+X    /* Put the year number into right spot */
+X    usenet_date[7] = fidonet_date[6];
+X    usenet_date[8] = fidonet_date[7];
+X    /* Getting month converted is trickier */
+X    (void)sscanf(fidonet_date,"%d",&date_number);
+X    if( date_number > 12 || date_number < 0 ) date_number = 0;
+X    (void)strncpy(usenet_date+3,month_strings[date_number],3);
+X    usenet_date[9] = '\0';
+X  }
+X
+X/*
+X  cut_to_length()
+X
+X    1) Cut a string down to maximum length as given by length parameter
+X       blow away trailing blank space as it is a waste of space.
+X    2) return a pointer to this new string.
+X
+X*/
+X
+Xunsigned char *cut_to_length(s,length)
+Xchar *s;
+Xint length;
+X{
+Xstatic unsigned char temp_buff[MAX_IN_LINE];
+Xint i;
+X
+X  if( length >= MAX_IN_LINE )length = MAX_IN_LINE - 1;
+X  (void)strncpy((char *)temp_buff,s,length);
+X  temp_buff[length] = '\0';
+X  i = length - 1;
+X
+X  while( i > 0 )
+X    {
+X      if( isspace(temp_buff[i]) )
+X	temp_buff[i--] = '\0';
+X      else
+X	break;
+X    }
+X  return( temp_buff );
+X}
+X
+X/*
+X  find_fido_address()
+X
+X    1) Try to figure out what the fido net address is...
+X
+X    Form of fido net address should be "(xx:xxxx/x)"
+X    There must be a ':' found, or I could be seeing an area
+X    code (*sigh*), i.e. some addresses have (xxx) xxx-xxxx
+X    for phone number...
+X*/
+X
+Xchar *find_fido_address( s )
+Xchar *s;
+X{
+Xint i,j;
+Xstatic char fido_address[40];
+Xint colon_found = NO;
+X
+X  if( s == NULL )
+X    i = 0;
+X  else
+X    i = strlen( s );
+X
+X  if( i != 0 ) i--;
+X
+X  while( i > 0 )
+X    {
+X      if( s[i-1] == '(' )break;
+X      if( s[i] == ':' )colon_found = YES;
+X      i--;
+X    }
+X
+X  if( (i == 0) || !colon_found )  /* Didn't find a valid fido address, */
+X      return( NULL );             /* try next line */
+X
+X  j = 0;
+X  while( (s[i] != ')') && (s[i] != '\0'))
+X    {
+X      if( isspace( s[i] ) ) s[i] = '_';
+X      fido_address[j++] = s[i++];
+X      }
+X  fido_address[j] = '\0';
+X
+X  return(fido_address);
+X}
+X
+X/*
+X  map_to_news_name()
+X
+X  1) map a group number into a group name.
+X*/
+X
+Xunsigned char *map_to_news_name( number_in )
+Xint number_in;
+X{
+X  return((unsigned char *)
+X	 make_legal_group_name ( (char *)group_names[number_in]));
+X}
+X
+X/*
+X  get_group_number
+X
+X  1) Convert two 1 byte binary values to one integer, return this value as
+X  int. Done this way to get around little endian versus big endian problems.
+X*/
+X
+Xint get_group_number( char_number_in )
+Xchar char_number_in[2];
+X{
+Xint number;
+X
+X  number = ((int)char_number_in[0] & 0xFF);
+X/*	number += (((int)char_number_in[1] & 0xFF) * 256); */
+X  return( number );
+X}
+X
+X/*
+X  safe_fgets
+X    exit with appropriate error message if a fgets returns
+X    an empty line at the wrong time.
+X*/
+X
+Xvoid safe_fgets( line_in, max, fp, error_fn )
+Xchar *line_in;
+Xint max;
+XFILE *fp;
+Xvoid (*error_fn)();
+X{
+X      if ( fgets(line_in, max, fp) == NULL )(*error_fn)();
+X}
+X
+Xvoid bad_control()
+X  {
+X    (void)fprintf(stderr,"Malformed control.dat, bailing out!\n");
+X    (void)exit(0);
+X  }
+END_OF_FILE
+if test 19084 -ne `wc -c <'decodeqwk.c'`; then
+    echo shar: \"'decodeqwk.c'\" unpacked with wrong size!
+fi
+# end of 'decodeqwk.c'
+fi
+if test -f 'readme' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'readme'\"
+else
+echo shar: Extracting \"'readme'\" \(253 characters\)
+sed "s/^X//" >'readme' <<'END_OF_FILE'
+Xdecodeqwk.c contains a system name hardcoded into it (diane).  You will
+Xhave to edit the source and place your own in their.
+X
+XThe Xenix 3.2 compiler gives a couple of errors during compiling but I
+Xdon't think they are important since the code looks ok.
+END_OF_FILE
+if test 253 -ne `wc -c <'readme'`; then
+    echo shar: \"'readme'\" unpacked with wrong size!
+fi
+# end of 'readme'
+fi
+echo shar: End of shell archive.
+exit 0

@@ -1,0 +1,104 @@
+The XENIX 3.2 Core release contains hidden files on 
+Install 2 and the FM disk.   This is for the double-sided version
+only.   The normal system installation does not install them.  If you
+have booted your original FM disk, the files on it are probably lost, as
+they are stored in the swap area.
+
+To recover the files:
+	1.	login as root
+	2.	cd /
+	3.	Insert disk in drive 0 (or change the next command
+		accordingly).
+	4.	dd if=/dev/rfd0 bs=20b skip=75 | tar xvf -
+		(nothing happens for a minute, so don't panic)
+
+To just view the files, change the "xvf" to "tvf".
+
+Here is a list of the files you should find:
+
+From Install 2:
+rw-r--r--  0/0      872 Nov 24 15:07 1986 README
+rwx--x--x 11/11   11220 Dec  7 20:16 1982 usr/games/fish
+rwxr-xr-x 11/11  132916 Feb 19 21:04 1985 usr/games/adventure
+rwx--x--x 11/11   15152 Dec  7 20:16 1982 usr/games/arithmetic
+rwxr-xr-x 11/11   20042 Nov 26 13:07 1986 usr/games/backgammon
+rwx--x--x 11/11   61150 Nov 24 11:31 1986 usr/games/vtrek
+rws--x--x 11/11   95608 Nov 24 11:31 1986 usr/games/warp
+rwx--x--x 11/11   10904 Dec  7 20:16 1982 usr/games/wump
+rw------- 11/11    1306 Sep  9 14:50 1985 usr/games/lib/warplib/6.4/Makefile
+rw------- 11/11    9069 Nov  4 13:19 1985 usr/games/lib/warplib/6.4/warp.doc
+rw------- 11/11     136 Sep  6 23:31 1985 usr/games/lib/warplib/6.4/warp.news
+rw------- 11/11    1840 Sep  6 23:31 1985 usr/games/lib/warplib/6.4/smp.0
+rw------- 11/11    1840 Sep  6 23:31 1985 usr/games/lib/warplib/6.4/smp.1
+rw------- 11/11    1143 Sep  6 23:31 1985 usr/games/lib/warplib/6.4/smp.2
+rw------- 11/11     287 Sep  6 23:31 1985 usr/games/lib/warplib/6.4/smp.3
+rw------- 11/11    1409 Sep  6 23:31 1985 usr/games/lib/warplib/6.4/smp.4
+rw------- 11/11     173 Sep  6 23:31 1985 usr/games/lib/warplib/6.4/smp.5
+rw------- 11/11    1828 Sep  6 23:31 1985 usr/games/lib/warplib/6.4/smp.6
+rw------- 11/11    1424 Sep  6 23:31 1985 usr/games/lib/warplib/6.4/smp.7
+rw------- 11/11       0 Nov 24 14:21 1986 usr/games/lib/warplib/6.4/warp.log
+rw------- 11/11    3289 Sep  8 23:33 1985 usr/games/lib/warplib/6.4/smap.0
+rw-r--r-- 11/11       0 Nov 24 14:21 1986 usr/games/lib/warplib/6.4/warp.top
+rw-r--r-- 11/11       0 Nov 24 14:21 1986 usr/games/lib/warplib/6.4/warp.lowtop
+rwx--x--x 11/11   10932 Nov 24 13:31 1986 usr/games/lib/warplib/6.4/sm
+rw------- 11/11    3309 Sep  8 23:33 1985 usr/games/lib/warplib/6.4/smap.1
+rw------- 11/11    1630 Sep  8 23:33 1985 usr/games/lib/warplib/6.4/smap.2
+rw------- 11/11     359 Sep  8 23:33 1985 usr/games/lib/warplib/6.4/smap.3
+rw------- 11/11    3060 Sep  8 23:33 1985 usr/games/lib/warplib/6.4/smap.4
+rw------- 11/11      83 Sep  8 23:33 1985 usr/games/lib/warplib/6.4/smap.5
+rw------- 11/11    3962 Sep  8 23:33 1985 usr/games/lib/warplib/6.4/smap.6
+rw------- 11/11     936 Sep  8 23:33 1985 usr/games/lib/warplib/6.4/smap.7
+rw-r--r-- 11/11    1436 May 12 21:38 1986 usr/games/lib/warplib/6.4/smap.11
+rw-r--r-- 11/11    1170 Nov 26 14:25 1986 usr/games/lib/backrules
+rws--x--x 11/11   37334 Nov 24 13:59 1986 usr/games/robots
+rw------- 11/11       0 Nov 25 15:03 1986 usr/games/lib/robots_tmp
+rw------- 11/11       0 Nov 25 15:04 1986 usr/games/lib/robots_hof
+rw-r--r-- 11/11    4021 Dec  1 14:05 1986 usr/games/lib/vtrek.doc
+rw-r--r-- 11/11    3993 Dec  1 14:06 1986 usr/games/lib/vtrek_h.doc
+
+From File Maintenance:
+rw------- 11/11    8160 Dec 12 22:45 1984 usr/games/p/monsters
+rw-r--r-- 11/11   34776 Dec 12 22:45 1984 usr/games/p/phant.help
+rw------- 11/11       0 Nov 24 14:30 1986 usr/games/p/gold
+rw------- 11/11       0 Nov 24 14:30 1986 usr/games/p/motd
+rw------- 11/11       0 Nov 24 14:30 1986 usr/games/p/mess
+rw------- 11/11     224 Nov 24 14:30 1986 usr/games/p/characs
+rw------- 11/11      18 Nov 24 14:30 1986 usr/games/p/void
+rw------- 11/11       1 Nov 24 14:30 1986 usr/games/p/lastdead
+rws--x--x 11/11  162254 Nov 24 15:03 1986 usr/games/ph
+rws--x--x 11/11  162254 Nov 24 15:03 1986 usr/games/phantasia linked to usr/games/ph
+rwx--x--x 11/11   32820 Nov 24 14:01 1986 usr/games/battle
+rw-r--r-- 11/11     619 Jan 27 17:19 1987 usr/games/lib/wof/Names
+rw-r--r-- 11/11   17010 Feb 18 10:53 1987 usr/games/lib/wof/Title
+rw-r--r-- 11/11    3699 Feb  8 19:25 1987 usr/games/lib/wof/Place
+rw-r--r-- 11/11    3076 Feb 18 16:36 1987 usr/games/lib/wof/People
+rw-r--r-- 11/11    5567 Feb 24 12:49 1987 usr/games/lib/wof/Person
+rw-r--r-- 11/11    3252 Jan 29 20:29 1987 usr/games/lib/wof/intros.dat
+rw-r--r-- 11/11    3260 Feb 24 12:51 1987 usr/games/lib/wof/Fiction
+rw-r--r-- 11/11   10102 Feb 24 12:52 1987 usr/games/lib/wof/Phrase
+rw-r--r-- 11/11    5700 Jan 29 19:35 1987 usr/games/lib/wof/Thing
+rw-rw-rw- 11/11       0 Dec 30 12:37 1986 usr/games/lib/wof/save/null
+rw-rw-rw- 11/11     300 Mar  8 20:00 1987 usr/games/lib/wof/.wof_score
+rw-rw-rw- 11/11     300 Mar  8 20:00 1987 usr/games/lib/wof/.puzhist
+rw-r--r-- 11/11    2836 Mar  9 18:35 1987 usr/games/doc/wof.6
+rw-r--r-- 11/11    4950 Jan 28 14:48 1987 usr/games/doc/wof.rules
+rwxr-xr-x 11/11   92514 Mar  9 18:49 1987 usr/games/wof
+
+I recommend you try wof.  It is a game you will find nowhere else (for
+reasons that should become apparent at once).  As always, the standard
+colossal cave (adventure), backgammon and star trek games are present.
+As the README says, these are 100% UNSUPPORTED, use at own risk, don't
+call Radio Shack as they know nothing about them, your fault if they
+write on your database, etc.  Some files have permissions set, and these
+are required for proper operation of the given game.   There are no known
+security holes.  I had to chmod the /usr/games/lib/wof/save directory to
+777 so that saves could occur, but that is all I recall having to do.
+
+We were sorta hoping someone out there would find this stuff and let the
+world know.  Oh well.   So do enjoy.
+
+
+Frank Durda IV <uhclem@nemesis.lonestar.org>|"Shut her down Scotty, she's
+...utacfd!nemesis!uhclem (nearest internet) | sucking mud again!
+...letni!rwsys!nemesis!uhclem	            | Bugchk: SckMud"
+...decvax!microsoft!trsvax!nemesis!uhclem   | - 6000 XENIX 03.01.00

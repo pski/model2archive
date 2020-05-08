@@ -1,0 +1,35 @@
+#!/bin/sh
+############################################################################
+#	A sh script to allow spelling checks either in vi or stand alone   #
+#	Usage: spell_check < file or within vi,				   #
+#		:(addressed lines)!spell_check				   #
+#									   #
+#       Wrongly spelled words will be surrounded as ###bad-word###         #
+#	WARNING: Do not try and sell this tiny shell script to some        #
+#       poor sucker!							   #
+#	Badri Lokanathan, 30 September 1988                                #
+############################################################################
+doc=/tmp/splchk.$$
+scr=/tmp/sedscr.$$
+
+trap 'rm -f $doc $scr; exit 1' 1 2 15
+cat > $doc
+
+cat > $scr <<HEAD
+s/^/ /
+s/\$/ /
+HEAD
+
+spell < $doc |
+	sed -e 's/^/s;\\([ 	][^a-zA-Z0-9]*\\)\\(/
+		s/$/\\)\\([^a-zA-Z0-9]*[ 	]\\);\\1###\\2###\\3;g/
+		s/ $//' >> $scr
+
+cat >> $scr <<TAIL
+s/^ //
+s/ \$//
+TAIL
+
+sed -f $scr $doc
+rm -f $doc $scr
+

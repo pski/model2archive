@@ -1,0 +1,15 @@
+-rw-r--r-- 0/0            2375 Oct 24 01:49 1994 README
+-rwxr-xr-x 0/0             388 Oct 24 01:49 1994 SORT1
+-rwxr-xr-x 0/0             396 Oct 24 01:49 1994 SORT2
+-rwxr-xr-x 0/0             399 Oct 24 01:49 1994 SORT3
+-rw-r--r-- 0/0             575 Oct 24 01:49 1994 basename.c
+-rw-r--r-- 0/0             505 Oct 24 01:49 1994 constdefs.h
+-rw-r--r-- 0/0            2903 Oct 24 01:49 1994 cscan.l
+-rw-r--r-- 0/0            4194 Oct 24 01:49 1994 cxref.1
+-rw-r--r-- 0/0           10706 Oct 24 01:49 1994 cxref.c
+-rw-r--r-- 0/0           92160 Oct 24 02:49 1994 cxref.exe.tar
+-rw-r--r-- 0/0            5997 Oct 24 01:49 1994 cxrfilt.c
+-rw-r--r-- 0/0            2019 Oct 24 01:49 1994 docxref.c
+-rw-r--r-- 0/0            4305 Oct 24 01:49 1994 fmtxref.c
+-rw-r--r-- 0/0            2522 Oct 24 02:11 1994 makefile
+-rw-r--r-- 0/0            6259 Oct 24 01:49 1994 old.cxref.c

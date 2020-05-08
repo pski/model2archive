@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3           38192 Sep 23 10:04 1990 /usr/local/pathalias
+-rw-r--r-- 3/3           19195 Sep 23 10:00 1990 /usr/lib/Help/lib/L/pathalias

@@ -1,0 +1,8 @@
+-rw-r--r-- 3/3            4788 Mar 25 11:46 1995 /usr/lib/Help/lib/L/funzip
+-rw-r--r-- 3/3           37194 Mar 25 11:44 1995 /usr/lib/Help/lib/L/unzip
+-rw-r--r-- 3/3           16238 Mar 25 11:45 1995 /usr/lib/Help/lib/L/unzipsfx
+-rw-r--r-- 3/3           24160 Mar 25 11:46 1995 /usr/lib/Help/lib/L/zipinfo
+-rwxr-xr-x 3/3           21286 Mar 25 00:53 1995 /usr/local/funzip
+-rwxr-xr-x 3/3           95208 Mar 25 00:49 1995 /usr/local/unzip
+-rwxr-xr-x 3/3           49670 Mar 25 00:57 1995 /usr/local/unzipsfx
+-rwxr-xr-x 3/3               0 Mar 25 00:49 1995 /usr/local/zipinfo link to /usr/local/unzip

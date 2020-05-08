@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3           56626 Feb  7 00:04 1995 /usr/local/vttest
+-rw-r--r-- 3/3             971 Sep 23 15:12 1990 /usr/lib/Help/lib/L/vttest

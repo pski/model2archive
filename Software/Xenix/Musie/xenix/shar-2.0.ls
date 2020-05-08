@@ -1,0 +1,9 @@
+-rw------- 12221/1         568 May  4 23:08 1995 shar/makefile
+-rw------- 12221/1        3279 May  4 23:07 1995 shar/shar.1
+-rw-r--r-- 0/0            5096 May  4 23:10 1995 shar/shar.man
+-rw------- 12221/1       11628 Jun 12 13:40 1991 shar/shar.c
+-rw------- 12221/1        1168 May  3 23:15 1995 shar/traverse.3
+-rw------- 12221/1        1875 May  3 23:21 1995 shar/traverse.c
+-rw-r--r-- 0/0            1902 May  4 23:10 1995 shar/traverse.man
+-rwxr-xr-x 0/0           20218 May  4 23:11 1995 shar/shar
+-rw-r--r-- 0/0             107 May  4 23:07 1995 shar/readme

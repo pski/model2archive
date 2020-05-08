@@ -1,0 +1,7 @@
+if [ "$1" = "" ]
+then
+echo "Usage: whichfiles command"
+echo "Gives names of most files that would be run or used if command was executed"
+exit
+fi
+strings $1|grep "^\/*\/"|less

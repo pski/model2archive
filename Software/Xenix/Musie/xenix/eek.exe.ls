@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3            9177 Sep 25 22:51 1993 /usr/local/eek
+-rw-r--r-- 3/3            1685 Oct 11 12:04 1994 /usr/lib/Help/lib/L/eek

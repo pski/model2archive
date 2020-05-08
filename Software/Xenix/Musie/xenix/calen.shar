@@ -1,0 +1,604 @@
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  calen.c calen.man readme
+# Wrapped by root@coupon on Sun Oct 23 19:58:06 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'calen.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'calen.c'\"
+else
+echo shar: Extracting \"'calen.c'\" \(14609 characters\)
+sed "s/^X//" >'calen.c' <<'END_OF_FILE'
+X/*
+X *	Calendar program - one month per page
+X *
+X *	Originally written in FORTRAN-IV for GE Timesharing, 10/65
+X *	Re-coded in C for UNIX, 3/83
+X *
+X *	Author: AW Rogers
+X *
+X *	Parameters:
+X *
+X *		calen yy		generates calendar for year yy
+X *
+X *		calen mm yy [len]	generates calendar for len months
+X *					(default = 1) starting with mm/yy
+X *
+X * 	Option flags (must precede params):
+X *
+X *		-l			left-justify dates (default)
+X *		-r			right-justify dates
+X *		-m			mixed-case output (default)
+X *		-u			upper-case output
+X *		-o[seq]			use "seq" as overstrike sequence
+X *					 for heading (default: HIX)
+X *		-bN			add N blank lines after form-feed
+X *
+X *		Output is to standard output.
+X *		
+X */
+X 
+X#include <stdio.h>
+X#include <ctype.h>
+X
+X#define FALSE   0
+X#define TRUE    1
+X 
+X#define JAN 	1			/* significant months/years */
+X#define FEB	2
+X#define DEC	12
+X#define MINYR	1753
+X#define MAXYR	9999
+X 
+X#define SOLID	0			/* pseudo-enumeration for line styles */
+X#define OPEN	1
+X
+X#define LEFT	0			/* ... and justification of dates     */
+X#define RIGHT	1
+X
+X#define MIXED	0			/* ... and case of output text	      */
+X
+X#define UPPER	1
+X
+X#define	OVERSTRIKE	"@"		/* overstrike sequence for month/year */
+X#define MAX_OVERSTR	3		/* maximum overstrikes permitted */
+X
+X#define isLeap(y) ((y) % 4 == 0 && ((y) % 100 != 0 || (y) % 400 == 0))	/* leap year macro */
+X 
+Xtypedef struct				/* info for a single month */
+X    {
+X    int 	mm;
+X    int		yy;
+X    char 	mmname[10];
+X    char	dates[6][7][3];
+X    } monthRec;
+X 
+Xtypedef monthRec *mptr;			/* pointer to above struct */
+X
+X/* globals corresponding to command-line flags */
+X
+Xint just = LEFT;			/* default justification of dates */
+Xint ocase = MIXED;			/* default case for output */
+Xint nblank = 0;				/* default blank lines after FF */
+Xchar *seq = OVERSTRIKE;			/* default overstrike sequence */
+X
+X
+X/*
+X *	Main - gets and validates parameters, opens output file, executes
+X *	loop to fill and print months of calendar, closes output file
+X */
+Xmain(argc, argv)
+X    int argc;
+X    char *argv[];
+X    {
+X    int nmonths;			/* consecutive months to print */
+X    int badopt = FALSE;			/* flag set if bad option */
+X    int badpar = FALSE;			/* flag set if bad param  */
+X    monthRec mRec[3];			/* space for main and small calendars */
+X    mptr prev = &mRec[0], 		/* pointers to calendars (initially) */
+X	 curr = &mRec[1],
+X	 next = &mRec[2],
+X	 temp;
+X
+X    /* Get command line flags */
+X
+X    while (argc > 1 && argv[1][0] == '-')
+X        {
+X        switch (argv[1][1])
+X	    {
+X	    case 'b':
+X		sscanf(&argv[1][2], "%d", &nblank);
+X		break;
+X	    case 'l':
+X		just = LEFT;
+X		break;
+X	    case 'r':
+X		just = RIGHT;
+X		break;
+X	    case 'm':
+X		ocase = MIXED;
+X		break;
+X	    case 'u':
+X		ocase = UPPER;
+X		break;
+X	    case 'o':
+X		if (argv[1][2] != '\0')
+X		    seq = &argv[1][2];
+X		break;
+X	    default:
+X		fprintf(stderr, "Invalid flag: %s\n", argv[1]);
+X		badopt = TRUE;
+X		break;
+X	    }
+X        argv++;
+X	argc--;
+X	}
+X
+X    if (badopt)
+X	fprintf(stderr, "Valid flags are -b -l -m -o -r -u\n");
+X
+X    /* Get and validate parameters */
+X    
+X    if (argc == 2)		/* only one arg - treat as yy */
+X	{
+X	sscanf(argv[1], "%d", &curr->yy);
+X	curr->mm = JAN;
+X	nmonths = 12;
+X	}
+X 
+X    else if (argc >= 3)		/* two or more - treat as mm yy [len] */
+X	{
+X	sscanf(argv[1], "%d", &curr->mm);
+X	sscanf(argv[2], "%d", &curr->yy);
+X	if (argc >= 4)
+X	    sscanf(argv[3], "%d", &nmonths);
+X	}
+X 
+X    else			/* none specified - get interactively */
+X	{
+X	fprintf(stderr, "Enter calendar specs (month year length): ");
+X	scanf("%d %d %d", &curr->mm, &curr->yy, &nmonths);
+X	}
+X 
+X    if (curr->yy > 0 && curr->yy < 100)		/* nn -> 19nn */
+X	curr->yy += 1900;
+X 
+X    if (nmonths < 1)				/* default for month count */
+X	nmonths = 1;
+X 
+X    if (curr->mm < JAN || curr->mm > DEC)	/* validate month/year */
+X      {
+X      fprintf(stderr, "Month %d not in range %d .. %d\n", curr->mm, JAN, DEC);
+X      badpar = TRUE;
+X      }
+X
+X    if (curr->yy < MINYR || curr->yy > MAXYR)
+X      {
+X      fprintf(stderr, "Year %d not in range %d .. %d\n", curr->yy, MINYR,
+X	      MAXYR);
+X      badpar = TRUE;
+X      }
+X
+X    if (badpar)		/* quit if month or year invalid */
+X      exit(1);
+X 
+X    /* fill in calendars for previous and current month */
+X 
+X    prev->mm = (curr->mm == JAN) ? DEC : curr->mm - 1;
+X    prev->yy = (curr->mm == JAN) ? curr->yy - 1 : curr->yy;
+X    fillCalendar(prev);
+X 
+X    fillCalendar(curr);
+X 
+X    /*
+X     * Main loop: print each month of the calendar (with small calendars for
+X     * the preceding and following months in the upper corners).  The current
+X     * and next months' calendars can be reused the following month; only
+X     * the 'next' calendar need be recalculated each time.
+X     */
+X 
+X    for (; nmonths > 0 && curr->yy <= MAXYR; nmonths--)	/* main loop */
+X	{
+X	next->mm = (curr->mm == DEC) ? JAN : curr->mm + 1;
+X	next->yy = (curr->mm == DEC) ? curr->yy + 1 : curr->yy;
+X	fillCalendar(next);			/* fill in following month */
+X 
+X	printCalendar(prev, curr, next);
+X 
+X	temp = prev;				/* swap the three months */
+X	prev = curr;
+X	curr = next;
+X	next = temp;
+X	}
+X 
+X    }
+X
+X/*
+X *	Print the calendar for the current month, generating small calendars
+X *	for the previous and following months in the upper corners and the
+X *	month/year (in large characters) centered at the top.
+X */
+XprintCalendar(prev, curr, next)
+X    mptr prev;			/* Previous month (upper-left corner)  */
+X    mptr curr;			/* Current month (main calendar)       */
+X    mptr next;			/* Next month (upper-right corner)     */
+X    {
+X    int nchars, i, j;
+X    static char *mc_wkday[] =
+X	{
+X	" Sunday  ", " Monday  ", " Tuesday ", "Wednesday", "Thursday ",
+X	" Friday  ", "Saturday "
+X	};
+X    static char *uc_wkday[] =
+X	{
+X	" SUNDAY  ", " MONDAY  ", " TUESDAY ", "WEDNESDAY", "THURSDAY ",
+X	" FRIDAY  ", "SATURDAY "
+X	};
+X
+X    char **wkday;				/* pointer to one of above */
+X    char *blanks = "                     "; 	/* 21 blanks for centering */
+X    char *padding;				/* Pointer into 'blanks'   */
+X    char monthAndYear[20];			/* Work area 		   */
+X    char *ovr;					/* overstrike sequence	   */
+X 
+X    nchars = strlen(curr->mmname);		/* set up month/year heading */
+X    padding = blanks + (3 * (nchars - 3));	/* and center it  	     */
+X    sprintf(monthAndYear, "%s%5d", curr->mmname, curr->yy);
+X 
+X    printf("\f\n");			/* print month/year in large chars */
+X    for (i = 0; i < nblank; i++)
+X	printf("\n");
+X
+X    for (i = 0; i < 9; i++)		/* surrounded by small calendars   */
+X        {
+X	for (ovr = seq;			/* overstruck lines first */
+X	     ovr < seq + MAX_OVERSTR - 1 && *(ovr+1);
+X	     ovr++) 
+X	    {
+X	    printf("%20s%s", " ", padding);
+X	    printHdr(monthAndYear, i, *ovr);
+X	    printf("\r");
+X	    }
+X	printSmallCal(prev, i);		/* then small calendars, etc. */
+X	printf("%s", padding);
+X	printHdr(monthAndYear, i, *ovr);
+X	printf(" %s", padding);
+X        printSmallCal(next, i);
+X        printf("\n");
+X        }
+X 
+X    printf("\n");			/* print the weekday names */
+X    print_line(1, SOLID);
+X    print_line(1, OPEN);
+X    printf("  ");
+X    wkday = ocase == UPPER ? uc_wkday : mc_wkday;
+X    for (j = 0; j < 7; j++)
+X        printf("|%13.9s    ", wkday[j]);
+X    printf("|\n");
+X    print_line(1, OPEN);
+X    
+X    for (i = 0; i < 4; i++)		/* print first four rows */
+X        {
+X        print_line(1, SOLID);
+X        print_dates(curr, i, just);
+X        print_line(7, OPEN);
+X        }
+X 
+X    print_line(1, SOLID);		/* print bottom row */
+X    print_dates(curr, 4, just);
+X    print_line(2, OPEN);
+X    print_divider(curr->dates[5]);	/* divider for 23/30, 24/31 */
+X
+X    print_line(3, OPEN);
+X    print_dates(curr, 5, !just);	/* print 6th line (30/31) at bottom */
+X    print_line(1, SOLID);
+X    }
+X
+X/*
+X *	Fill in the month name and date fields of a specified calendar record
+X *	(assumes mm, yy fields already filled in)
+X */
+XfillCalendar(month)
+X    mptr month;			/* Pointer to month info record */
+X    {
+X    typedef struct		/* Local info about months */
+X	{
+X	char *name[2];		/* Name of month (mixed/upper-case)	*/
+X	int offset[2];		/* Offset of m/1 from 1/1 (non-leap/leap) */
+X	int length[2];		/* Length (non-leap/leap)		*/
+X	} monthInfo;
+X 
+X    static monthInfo info[12] = {
+X	{ {"January",	"JANUARY"},	{0, 0},	{31, 31} },
+X	{ {"February",	"FEBRUARY"},	{3, 3},	{28, 29} },
+X	{ {"March",	"MARCH"},	{3, 4},	{31, 31} },
+X	{ {"April",	"APRIL"},	{6, 0},	{30, 30} },
+X	{ {"May",	"MAY"},		{1, 2},	{31, 31} },
+X	{ {"June",	"JUNE"},	{4, 5},	{30, 30} },
+X	{ {"July",	"JULY"},	{6, 0},	{31, 31} },
+X	{ {"August",	"AUGUST"},	{2, 3},	{31, 31} },
+X	{ {"September",	"SEPTEMBER"},	{5, 6},	{30, 30} },
+X	{ {"October",	"OCTOBER"},	{0, 1},	{31, 31} },
+X	{ {"November",	"NOVEMBER"},	{3, 4},	{30, 30} },
+X	{ {"December",	"DECEMBER"},	{5, 6},	{31, 31} }
+X    };
+X 
+X    int i, first, last, date = 0, y = month->yy, m = month->mm-1;
+X    int leap = isLeap(y);
+X 
+X    first = (y + (y-1)/4 - (y-1)/100 + (y-1)/400 + info[m].offset[leap]) % 7;
+X    last = first + info[m].length[leap] - 1;
+X 
+X    for (i = 0; i < 42; i++)			/* fill in the dates */
+X	if (i < first || i > last)
+X	    strcpy(month->dates[i/7][i%7], "  ");
+X	else
+X	    sprintf(month->dates[i/7][i%7], "%2d", ++date);
+X 
+X    strcpy(month->mmname, info[m].name[ocase]);	/* copy name of month */
+X    } 
+X
+X/*
+X *	Print one line of a small calendar (previous and next months in
+X *	upper left and right corners of output)
+X */
+XprintSmallCal(month, line)
+X    mptr month;			/* Month info record pointer	*/
+X    int line;			/* Line to print (see below)	*/
+X    {
+X    int i;
+X  
+X    switch (line)
+X	{
+X	case 0:		/* month/year at top */
+X	    printf("   %-10s%4d   ", month->mmname, month->yy);
+X	    break;
+X	case 1:		/* blank line */
+X	    printf("%20s", " ");
+X	    break;
+X	case 2:		/* weekdays */
+X	    printf(ocase == UPPER ? "SU MO TU WE TH FR SA" :
+X				    "Su Mo Tu We Th Fr Sa");
+X	    break;
+X	default:	/* line of calendar */
+X	    for (i = 0; i <= 5; i++)
+X    		printf("%s ", month->dates[line-3][i]);
+X	    printf("%s", month->dates[line-3][6]);
+X	    break;
+X	}
+X    }
+X
+X/*
+X *	Print n lines in selected style
+X */
+Xprint_line(n, style)
+X    int n;			/* Number of lines to print (> 0)   */
+X    int style;			/* SOLID or OPEN 		    */
+X    {
+X    int i;
+X    char *fmt1 = (style == SOLID) ? "+-----------------" :
+X				    "|                 " ;
+X    char *fmt2 = (style == SOLID) ? "+\n" : "|\n" ;
+X
+X    for (; n > 0; n--)
+X	{
+X	printf("  ");
+X	for (i = 0; i < 7; i++)
+X	    printf(fmt1);
+X	printf(fmt2);
+X	}
+X    }
+X
+X
+X
+X/*
+X *	Print line of large calendar (open w/left- or right-justified dates)
+X */
+Xprint_dates(month, line, just)
+X    mptr month;			/* Month info record pointer	*/
+X    int line;			/* Line to print (0-5)		*/
+X    int just;			/* justification (LEFT / RIGHT)	*/
+X    {
+X    int i;
+X    char *fmt = (just == LEFT) ? "| %-16s" : "|%16s " ;
+X
+X    printf("  ");
+X    for (i = 0; i < 7; i++)
+X	printf(fmt, month->dates[line][i]);
+X    printf("|\n");
+X    }
+X
+X/*
+X *	Print divider between 23/30 and 24/31
+X */
+Xprint_divider(dates)
+X    char dates[7][3];
+X    {
+X    int j;
+X
+X    printf("  ");
+X    for (j = 0; j < 7; j++)
+X        if (strcmp(dates[j], "  ") == 0)
+X    	    printf("|                 ");
+X        else
+X    	    printf("|_________________");
+X    printf("|\n");
+X    }
+X
+X 
+X/*
+X *	Print LS 6 bits of n (0 = ' '; 1 = selected non-blank)
+X */
+Xdecode(n, c)
+X    int n;				/* Number to print (0-31) */
+X    char c;
+X    {
+X    int msk = 1 << 5;
+X 
+X    for (; msk; msk /= 2) 
+X	printf("%c", (n & msk) ? c : ' ');
+X    }
+X 
+X 
+X/*
+X *	Print one line of string in large characters
+X */
+XprintHdr(str, line, c)
+X    char *str;				/* string to print		    */
+X    int line;				/* line to print (0-8; else blanks) */
+X    char c;				/* output character to use	    */
+X    {
+X 
+X    /* 5x9 dot-matrix representations of A-Z, a-z, 0-9 */
+X 
+X    static char uppers[26][9] =
+X	{
+X	{14, 17, 17, 31, 17, 17, 17,  0,  0},	{30, 17, 17, 30, 17, 17, 30,  0,  0},	/* AB */
+X	{14, 17, 16, 16, 16, 17, 14,  0,  0},	{30, 17, 17, 17, 17, 17, 30,  0,  0},	/* CD */
+X	{31, 16, 16, 30, 16, 16, 31,  0,  0},	{31, 16, 16, 30, 16, 16, 16,  0,  0},	/* EF */
+X	{14, 17, 16, 23, 17, 17, 14,  0,  0},	{17, 17, 17, 31, 17, 17, 17,  0,  0},	/* GH */
+X	{31,  4,  4,  4,  4,  4, 31,  0,  0},	{ 1,  1,  1,  1,  1, 17, 14,  0,  0},	/* IJ */
+X	{17, 18, 20, 24, 20, 18, 17,  0,  0},	{16, 16, 16, 16, 16, 16, 31,  0,  0},	/* KL */
+X	{17, 27, 21, 21, 17, 17, 17,  0,  0},	{17, 17, 25, 21, 19, 17, 17,  0,  0},	/* MN */
+X	{14, 17, 17, 17, 17, 17, 14,  0,  0},	{30, 17, 17, 30, 16, 16, 16,  0,  0},	/* OP */
+X	{14, 17, 17, 17, 21, 18, 13,  0,  0},	{30, 17, 17, 30, 20, 18, 17,  0,  0},	/* QR */
+X	{14, 17, 16, 14,  1, 17, 14,  0,  0},	{31,  4,  4,  4,  4,  4,  4,  0,  0},	/* ST */
+X	{17, 17, 17, 17, 17, 17, 14,  0,  0},	{17, 17, 17, 17, 17, 10,  4,  0,  0},	/* UV */
+X	{17, 17, 17, 21, 21, 21, 10,  0,  0},	{17, 17, 10,  4, 10, 17, 17,  0,  0},	/* WX */
+X	{17, 17, 17, 14,  4,  4,  4,  0,  0},	{31,  1,  2,  4,  8, 16, 31,  0,  0}	/* YZ */
+X	}; 
+X 
+X    static char lowers[26][9] =
+X	{
+X	{ 0,  0, 14,  1, 15, 17, 15,  0,  0},	{16, 16, 30, 17, 17, 17, 30,  0,  0},	/* ab */
+X	{ 0,  0, 15, 16, 16, 16, 15,  0,  0},	{ 1,  1, 15, 17, 17, 17, 15,  0,  0},	/* cd */
+X	{ 0,  0, 14, 17, 31, 16, 14,  0,  0},	{ 6,  9, 28,  8,  8,  8,  8,  0,  0},	/* ef */
+X	{ 0,  0, 14, 17, 17, 17, 15,  1, 14},	{16, 16, 30, 17, 17, 17, 17,  0,  0},	/* gh */
+X	{ 4,  0, 12,  4,  4,  4, 31,  0,  0},	{ 1,  0,  3,  1,  1,  1,  1, 17, 14},	/* ij */
+X	{16, 16, 17, 18, 28, 18, 17,  0,  0},	{12,  4,  4,  4,  4,  4, 31,  0,  0},	/* kl */
+X	{ 0,  0, 30, 21, 21, 21, 21,  0,  0},	{ 0,  0, 30, 17, 17, 17, 17,  0,  0},	/* mn */
+X	{ 0,  0, 14, 17, 17, 17, 14,  0,  0},	{ 0,  0, 30, 17, 17, 17, 30, 16, 16},	/* op */
+X	{ 0,  0, 15, 17, 17, 17, 15,  1,  1},	{ 0,  0, 30, 17, 16, 16, 16,  0,  0},	/* qr */
+X	{ 0,  0, 15, 16, 14,  1, 30,  0,  0},	{ 8,  8, 30,  8,  8,  9,  6,  0,  0},	/* st */
+X	{ 0,  0, 17, 17, 17, 17, 14,  0,  0},	{ 0,  0, 17, 17, 17, 10,  4,  0,  0},	/* uv */
+X	{ 0,  0, 17, 21, 21, 21, 10,  0,  0},	{ 0,  0, 17, 10,  4, 10, 17,  0,  0},	/* wx */
+X	{ 0,  0, 17, 17, 17, 17, 15,  1, 14},	{ 0,  0, 31,  2,  4,  8, 31,  0,  0}	/* yz */
+X	};
+X
+X    static char digits[10][9] =
+X	{
+X	{14, 17, 17, 17, 17, 17, 14,  0,  0},	{ 2,  6, 10,  2,  2,  2, 31,  0,  0},	/* 01 */
+X	{14, 17,  2,  4,  8, 16, 31,  0,  0},	{14, 17,  1, 14,  1, 17, 14,  0,  0},	/* 23 */
+X	{ 2,  6, 10, 31,  2,  2,  2,  0,  0},	{31, 16, 16, 30,  1, 17, 14,  0,  0},	/* 45 */
+X	{14, 17, 16, 30, 17, 17, 14,  0,  0},	{31,  1,  2,  4,  8, 16, 16,  0,  0},	/* 67 */
+X	{14, 17, 17, 14, 17, 17, 14,  0,  0},	{14, 17, 17, 15,  1, 17, 14,  0,  0}	/* 89 */
+X	};
+X 
+X    char ch;
+X 
+X    for ( ; *str; str++)
+X	{
+X	ch = (line >= 0 && line <= 8) ? *str : ' ';
+X	if (isupper(ch))
+X	    decode(uppers[ch-'A'][line], c);
+X	else if (islower(ch))
+X	    decode(lowers[ch-'a'][line], c);
+X	else if (isdigit(ch))
+X	    decode(digits[ch-'0'][line], c);
+X	else
+X	    decode(0, c);
+X	}
+X    }
+END_OF_FILE
+if test 14609 -ne `wc -c <'calen.c'`; then
+    echo shar: \"'calen.c'\" unpacked with wrong size!
+fi
+# end of 'calen.c'
+fi
+if test -f 'calen.man' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'calen.man'\"
+else
+echo shar: Extracting \"'calen.man'\" \(1764 characters\)
+sed "s/^X//" >'calen.man' <<'END_OF_FILE'
+X
+X
+X
+X
+XCALEN(L)               XENIX Programmer's Manual               CALEN(L)
+X
+X
+X
+XName
+X     calen -  Calendar program - one month per page
+X
+XSyntax
+X     calen yy		generates calendar for year yy
+X
+X     calen mm yy [len]	generates calendar for len months
+X			(default = 1) starting with mm/yy
+X
+X     Option flags (must precede params):
+X
+X	-l			left-justify dates (default)
+X	-r			right-justify dates
+X	-m			mixed-case output (default)
+X	-u			upper-case output
+X	-o[seq]			use "seq" as overstrike sequence
+X 				for heading (default: @)
+X	-bN			add N blank lines after form-feed
+X
+X	Output is to standard output.
+X	
+XDescription
+X     Here's another calendar program which I think is considerably more
+X     useful than pcal.  For starters, the calendars really do occupy a full
+X     line-printer page; they also include small calendars for the previous
+X     and subsequent months along with a month/year heading in 5x9
+X     dot-matrix characters, printed with overstrikes (on line printers
+X     capable of handling them).  Options are available to select:
+X
+X     Calen prints a full size wall calendar suitable for printing on
+X     14" wide paper in 10 characters per inch.
+X
+X     Originally written in FORTRAN-IV for GE Timesharing, 10/65
+X     Re-coded in C for UNIX, 3/83
+X
+X
+X	1) right- or left- justification of the dates within the boxes
+X	2) mixed- or upper-case names of months and days
+X	3) overstrike sequence used to print month/year heading (useful for
+X	   printers which do not support overstrikes, since a single character
+X	   can be specified - try "-o@")
+X	4) number of blank lines at top of page (useful to center calendar
+X	   vertically when operators are careless about aligning paper)
+X
+X      Andrew W. Rogers	{decvax,husc6,mit-eddie}!genrad!teddy!awr
+X			awr@teddy.genrad.com
+END_OF_FILE
+if test 1764 -ne `wc -c <'calen.man'`; then
+    echo shar: \"'calen.man'\" unpacked with wrong size!
+fi
+# end of 'calen.man'
+fi
+if test -f 'readme' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'readme'\"
+else
+echo shar: Extracting \"'readme'\" \(74 characters\)
+sed "s/^X//" >'readme' <<'END_OF_FILE'
+XTo compile on a Tandy6000 running 3.2 Xenix:
+X
+Xcc -+ -O -o calen calen.c
+X
+X
+END_OF_FILE
+if test 74 -ne `wc -c <'readme'`; then
+    echo shar: \"'readme'\" unpacked with wrong size!
+fi
+# end of 'readme'
+fi
+echo shar: End of shell archive.
+exit 0

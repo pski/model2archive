@@ -1,0 +1,2 @@
+-rwxrwxrwx 3/3           13792 Nov 21 12:12 1993 /usr/games/cursive
+-rw-r--r-- 3/3            2365 May 28 20:39 1989 /usr/lib/Help/lib/L/cursive

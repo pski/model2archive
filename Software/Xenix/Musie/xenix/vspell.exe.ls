@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3            1471 Jan 21 01:43 1995 /usr/local/vspell
+-rw-r--r-- 3/3            1771 Feb 10 19:47 1994 /usr/lib/Help/lib/L/vspell

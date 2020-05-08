@@ -1,0 +1,14 @@
+-rwxr-xr-x 0/0             772 Oct 24 22:09 1994 Makefile
+-rw-r--r-- 0/0            6355 Oct 24 22:06 1994 README.ee
+-rw-r--r-- 0/0             521 Oct 25 03:23 1994 Tandy6000
+-rwxr-xr-x 0/0            3267 Oct 24 22:24 1994 create.make
+-rw-r--r-- 0/0           15905 Oct 25 02:16 1994 ee.1
+-rw-r--r-- 0/0          104203 Oct 24 23:38 1994 ee.c
+-rw-r--r-- 0/0            7130 Oct 24 22:14 1994 ee.i18n.guide
+-rw-r--r-- 0/0            6587 Oct 24 22:14 1994 ee.msg
+-rw-r--r-- 0/0            1332 Oct 25 02:42 1994 ee.patch
+-rw-r--r-- 0/0            1731 Oct 25 02:53 1994 make.default
+-rw-r--r-- 0/0             332 Oct 24 22:29 1994 make.local
+-rw-r--r-- 0/0               0 Oct 25 02:53 1994 makefile link to make.default
+-rw-r--r-- 0/0           78990 Oct 24 23:32 1994 new_curse.c
+-rw-r--r-- 0/0            4162 Oct 24 22:06 1994 new_curse.h

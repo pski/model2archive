@@ -1,0 +1,6 @@
+-rw-r--r-- 0/0             467 Nov  2 00:36 1994 Makefile
+-rw-r--r-- 0/0           11092 Nov  2 00:36 1994 rot.c
+-rw-r--r-- 0/0            6100 Nov  2 00:41 1994 rot.cat
+-rwxr-xr-x 0/0           12202 Nov  2 00:42 1994 rot.exe
+-rw-r--r-- 0/0             713 Nov  2 00:36 1994 rot.hdr
+-rw-r--r-- 0/0            3492 Nov  2 00:36 1994 rot.man

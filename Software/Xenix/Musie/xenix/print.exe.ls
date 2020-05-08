@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3            5960 Oct  5 22:06 1990 /usr/local/printable
+-rw-r--r-- 3/3             377 Jan 19 02:09 1995 /usr/lib/Help/lib/L/printable

@@ -1,0 +1,17 @@
+-rw-r--r-- 3/3           40941 Jul 29 00:51 1994 /usr/lib/Help/lib/L/kermit
+-rwxr-xr-x 3/3          419946 Feb 27 02:04 1995 /usr/local/kermit
+-rwxr-xr-x 3/3             623 Feb 22 01:11 1995 /usr/local/zscript
+-rw-r--r-- 3/3            4332 Mar 23 00:12 1995 /usr/local/lib/kermit/kermrc
+-rw-r--r-- 3/3            4930 Aug 29 12:07 1994 /usr/local/lib/kermit/ckedemo.ini
+-rw-rw-r-- 3/3            2806 Aug 29 12:07 1994 /usr/local/lib/kermit/ckeracu.ini
+-rw-r--r-- 3/3           21833 Mar 18 20:53 1995 /usr/local/lib/kermit/ckermit.ini
+-rw-rw-r-- 3/3            7798 Sep 28 21:52 1994 /usr/local/lib/kermit/ckermod.ini
+-rw-r--r-- 3/3            3622 Sep 28 21:53 1994 /usr/local/lib/kermit/cketest.ini
+-rw-r--r-- 0/0            6583 Mar 23 01:12 1995 /usr/local/lib/kermit/readme
+-rw-rw-r-- 0/0             357 Aug 29 12:07 1994 /usr/local/lib/kermit/ckevt.ini
+-rw-rw-r-- 0/0            3815 Sep 28 21:55 1994 /usr/local/lib/kermit/ckurzsz.ini
+-rwxr-xr-x 0/0             902 Mar 18 22:53 1995 /usr/local/lib/kermit/dialscreen
+-rw-rw-r-- 0/0             484 Mar 18 22:37 1995 /usr/local/lib/kermit/ckermit.ksd
+-rw-r--r-- 3/3             518 Feb 27 02:31 1995 /usr/local/lib/kermit/ckermit.kdd
+-rw-rw-r-- 0/0             484 Mar 18 22:34 1995 /usr/local/lib/kermit/ksd.sample
+-rw-rw-r-- 0/0             709 Mar 18 22:35 1995 /usr/local/lib/kermit/kdd.sample

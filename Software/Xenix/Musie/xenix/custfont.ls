@@ -1,0 +1,4 @@
+-rw-r--r-- 0/0             645 Jun  5 14:12 1995 /usr/lib/fonts/README
+-rw-r--r-- 0/0           13547 Nov  6 12:57 1993 /usr/lib/fonts/mbold1.dl
+-rw-r--r-- 0/0           14651 Oct 30 15:15 1993 /usr/lib/fonts/mbold2.dl
+-rw-r--r-- 3/3            5884 Jul  1 15:32 1994 /usr/lib/Help/lib/L/fload

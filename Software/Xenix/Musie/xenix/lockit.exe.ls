@@ -1,0 +1,2 @@
+-rwxr-xr-x 3/3           12662 Sep  3 00:37 1994 /usr/local/lockit
+-rw-r--r-- 3/3             895 Oct 11 23:14 1994 /usr/lib/Help/lib/L/lockit

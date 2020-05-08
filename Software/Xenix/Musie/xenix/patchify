@@ -1,0 +1,167 @@
+From plains!ogicse!network.ucsd.edu!usc!cs.utexas.edu!uunet!seas.smu.edu!utacfd.uta.edu!trsvax!rwsys!sneaky!gordon Sat Mar 28 16:58:53 CST 1992
+Article: 4416 of comp.sys.tandy
+Path: plains!ogicse!network.ucsd.edu!usc!cs.utexas.edu!uunet!seas.smu.edu!utacfd.uta.edu!trsvax!rwsys!sneaky!gordon
+From: gordon@sneaky.lonestar.org (Gordon Burditt)
+Newsgroups: comp.sys.tandy
+Subject: patchify - transfer binaries to core-only Tandy 6000
+Keywords: Tandy 6000 binaries patch
+Message-ID: <1992Mar22.211057.28891@sneaky.lonestar.org>
+Date: 22 Mar 92 21:10:57 GMT
+Organization: Gordon Burditt
+Lines: 152
+Posted: Sun Mar 22 13:10:57 1992
+
+: Run this shell script with "sh" not "csh"
+PATH=:/usr/local:/usr/ucb:/bin:/usr/bin
+export PATH
+if test -f 'README'
+then
+echo shar: over-writing existing file "'README'"
+else
+/bin/echo x - README
+fi
+sed 's/^X//' <<'//go.sysin dd *' >README
+XThe enclosed horrible kludge is a way of bootstrapping binary files onto
+Xa Tandy 16/16B/6000 system without a Development system.  On the
+Xreceiving system, it uses /usr/bin/patch, which should be present on 
+Xany core system at least version 01.03.00 (and maybe earlier).  Extraction
+Xis slow, and I suspect patch spends most of its time generating prompts
+Xwhich are thrown away.  But if you don't have uudecode, uucp, or a
+Xcommunications program capable of transferring binaries, this is
+Xan option that works.
+X
+XLet's suppose you have access to a UNIX or Xenix system (which might be 
+Xanother Tandy 6000) which has a binary, let's call it 'uudecode', available 
+Xfor download, if only you could figure out how.  
+X
+X- Transfer the enclosed patchify.c and Makefile to the system with the binary.
+X- Compile patchify.  It should be very portable since it only uses the 
+X  basics of stdio.  
+X
+X- cd to the directory containing the binary.
+X- Run patchify and redirect its output to a file, for example:
+X	patchify uudecode > uudecode.sh
+X  You will have to ensure that patchify is in your path, or use a full path
+X  name in place of 'patchify'.  It is best to run patchify with a simple
+X  file name, not an absolute path name, since this name is also used for
+X  unpacking on the Tandy 6000.  You may patchify more than one file at
+X  a time.  Note that patchify expands files by a factor of about 3.
+X- Download this "patchify format" file to the Tandy 6000 using cu, cu.s3, 
+X  or any other convenient method.  Make sure the file name is NOT the name 
+X  of the binary you are transferring.  A suggested convention is to add the 
+X  suffix '.sh'.  Don't get ^M's (carriage returns) into the file, otherwise 
+X  you'll have to remove them after the transfer.
+X- You do not need to have the patchify sources or a patchify binary on 
+X  the Tandy 6000 to transfer binaries to it.
+X- On the Tandy 6000, as root (/usr/bin/patch as shipped is only executable
+X  by root or bin.  You may wish to change the permissions on /usr/bin/patch
+X  to 711 to avoid the need to run as root.), run the transferred file with
+X  the shell.  Example:
+X	sh uudecode.sh
+X- You will now have the executable in the current working directory (provided
+X  you followed the advice above to use filenames, not path names, above in
+X  creating the patch file.
+X- Install the program in an appropriate place (A user's $HOME/bin, /usr/local,
+X  or maybe /usr/bin).  You may wish to change the owner or permissions.
+X- Once you've bootstrapped basic utilities like uudecode, communications
+X  programs, etc. quit using patchify format.  Uuencode is more efficient
+X  and more standard.  Perhaps an archive site can be persuaded to offer
+X  uudecode in patchify format.
+X
+XPlease report bugs to:
+X	Gordon L. Burditt
+X	sneaky.lonestar.org!gordon
+X
+X$Id: README,v 1.2 1992/03/22 21:05:51 gordon Exp $
+//go.sysin dd *
+/bin/chmod 0444 README
+if test -f 'patchify.c'
+then
+echo shar: over-writing existing file "'patchify.c'"
+else
+/bin/echo x - patchify.c
+fi
+sed 's/^X//' <<'//go.sysin dd *' >patchify.c
+X/*
+X * Transform binaries for reconstruction with the Tandy 6000
+X * "/usr/bin/patch" program.  This is much less efficient than
+X * uuencode, but the Tandy Xenix core system doesn't have uudecode.
+X *
+X * patchify files ... > outfile.sh
+X *
+X * Author:  Gordon L. Burditt, sneaky.lonestar.org!gordon
+X *
+X * $Id: patchify.c,v 1.2 1992/03/22 21:05:51 gordon Exp $
+X */
+X# include <stdio.h>
+X
+Xmain(argc, argv)
+Xint	argc;
+Xchar	**argv;
+X{
+X	FILE	*f;
+X	int	i;
+X	int	c;
+X
+X	printf(": use /bin/sh\n");
+X	/* process each file */
+X	for (i = 1; i < argc; i++)
+X	{
+X		/* open the file */
+X		f = fopen(argv[i], "r");
+X		if (f == NULL)
+X		{
+X			perror(argv[i]);
+X			continue;
+X		}
+X		/* create the output file */
+X		printf("cp /dev/null %s\n", argv[i]);
+X		/* patch an empty file into the binary we want */
+X		printf("/usr/bin/patch %s > /dev/null <<!\n", argv[i]);
+X		/* byte offset */
+X		printf("0\n");
+X		/* dump the file in hex */
+X		while ((c = getc(f)) != EOF)
+X			printf("%x\n", c);
+X		/* finish up */
+X		printf("q\n\n!\nchmod 755 %s\n", argv[1]);
+X		printf("echo \"%s extracted\"\n", argv[1]);
+X		fclose(f);
+X	}
+X	/* shell script trailer */
+X	printf("exit 0\n");
+X	exit(0);
+X}
+//go.sysin dd *
+/bin/chmod 0444 patchify.c
+if test -f 'Makefile'
+then
+echo shar: over-writing existing file "'Makefile'"
+else
+/bin/echo x - Makefile
+fi
+sed 's/^X//' <<'//go.sysin dd *' >Makefile
+X#
+X#	Makefile for patchify
+X#
+X#	$Id: Makefile,v 1.1 1992/03/22 20:16:33 gordon Exp $
+X#
+XCFLAGS = -O
+Xpatchify:	patchify.o
+X	$(CC) -o patchify patchify.o
+X
+Xpatchify.sh:	patchify
+X	strip -sxe patchify
+X	./patchify patchify > patchify.sh
+X
+Xpatchify.shar:	README patchify.c Makefile patchify.sh
+X	-makex README patchify.c Makefile > patchify.shar
+X
+Xclean:
+X	rm -f patchify.o
+Xclobber:	clean
+X	rm -f patchify patchify.sh patchify.shar
+//go.sysin dd *
+/bin/chmod 0444 Makefile
+
+

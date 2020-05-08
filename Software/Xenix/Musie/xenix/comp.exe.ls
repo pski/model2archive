@@ -1,0 +1,21 @@
+-rw-r--r-- 3/3            8080 Mar 31 20:21 1989 /usr/lib/Help/lib/L/compress
+-rw-r--r-- 3/3            1509 Jul 29 00:42 1994 /usr/lib/Help/lib/L/compressdir
+-rw-r--r-- 3/3            5066 Jul 29 01:07 1994 /usr/lib/Help/lib/L/zmoreold
+-rw-r--r-- 3/3            3637 Jul 29 00:41 1994 /usr/lib/Help/lib/L/btoa
+-rwxr-xr-x 3/3           16654 Jun  8 12:31 1989 /usr/local/compress
+-rwxr-xr-x 3/3             304 Jul  5 18:46 1989 /usr/local/compressdir
+-rwxr-xr-x 3/3             458 Jan  2 01:09 1994 /usr/local/zless.old
+-rwxr-xr-x 3/3             456 May  7 00:36 1994 /usr/local/zmore.old
+-rwxr-xr-x 3/3               0 Jun  8 12:31 1989 /usr/local/uncompress link to /usr/local/compress
+-rwxr-xr-x 3/3             292 Jul  5 18:45 1989 /usr/local/uncompressdir
+-rwxr-xr-x 3/3               0 Jun  8 12:31 1989 /usr/local/zcat link to /usr/local/compress
+-rwxr-xr-x 3/3             450 Jan  2 00:51 1994 /usr/local/pless
+-rwxr-xr-x 3/3             452 Jan  2 00:51 1994 /usr/local/pmore
+-rwxr-xr-x 3/3             761 Jul  5 18:46 1989 /usr/local/zcmp.old
+-rwxr-xr-x 3/3             725 Jul  5 18:47 1989 /usr/local/zdiff.old
+-rwxr-xr-x 3/3            1325 Oct  5 10:13 1994 /usr/local/zgrep
+-rwxr-xr-x 3/3            7384 Dec 29 19:42 1988 /usr/local/btoa
+-rwxr-xr-x 3/3           11408 Dec 29 19:42 1988 /usr/local/atob
+-rwxr-xr-x 3/3             305 Jul  5 18:44 1989 /usr/local/tarmail
+-rwxr-xr-x 3/3             176 Jul  5 18:46 1989 /usr/local/untarmail
+-rw-r--r-- 0/0             132 Oct 19 01:03 1994 README

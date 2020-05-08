@@ -1,0 +1,14 @@
+-rw-r--r-- 0/0             331 Nov  9 23:28 1994 Makefile
+-rw-r--r-- 0/0             968 Nov  7 09:22 1994 README
+-rw-r--r-- 0/0             428 Nov  7 09:22 1994 cut+paste..hdr
+-rw-r--r-- 0/0            2652 Nov  7 09:22 1994 cut.1
+-rw-r--r-- 0/0            4941 Nov  7 09:22 1994 cut.c
+-rwxr-xr-x 0/0           12506 Nov  9 23:37 1994 cut.exe
+-rw-r--r-- 0/0            4376 Nov  9 23:12 1994 cut.man
+-rw-r--r-- 0/0            3739 Nov  7 09:22 1994 getopt.c
+-rw-r--r-- 0/0             241 Nov  7 21:34 1994 makefile.old
+-rw-r--r-- 0/0            2608 Nov  7 09:22 1994 paste.1
+-rw-r--r-- 0/0            4780 Nov  7 09:22 1994 paste.c
+-rwxr-xr-x 0/0            9002 Nov  9 23:37 1994 paste.exe
+-rw-r--r-- 0/0            4236 Nov  9 23:12 1994 paste.man
+-rw-r--r-- 0/0            2641 Nov  7 09:22 1994 spaste.c

@@ -1,0 +1,374 @@
+Subject:  v18i110:  Transform symbolic to real escape sequences
+Newsgroups: comp.sources.unix
+Sender: sources
+Approved: rsalz@uunet.UU.NET
+
+Submitted-by: Maarten Litmaath <maart@cs.vu.nl>
+Posting-number: Volume 18, Issue 110
+Archive-name: ctrl
+
+with this little utility a lot of annoyance can be avoided.  For example
+	unesc '^[[7m\fIStandout mode on a Sun console\fR.'
+is equivalent to
+	echo "`esc`[7m\fIStandout mode on a Sun console\fR."
+
+Regards,
+					Maarten Litmaath @ VU Amsterdam:
+					maart@cs.vu.nl, mcvax!botter!maart
+
+#! /bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of shell archive."
+# Contents:  Makefile ctrl.1 ctrl.c install.sh myperror.c
+# Wrapped by root@coupon on Fri Aug 19 11:35:38 1994
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'Makefile' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'Makefile'\"
+else
+echo shar: Extracting \"'Makefile'\" \(294 characters\)
+sed "s/^X//" >'Makefile' <<'END_OF_FILE'
+X#To compile ctrl.c on a Tandy 6000, rindex had to be changed to strrchr.
+Xctrl:	ctrl.o myperror.o
+X	cc -O -x -n -s -o ctrl ctrl.o myperror.o
+X
+Xctrl.o:		ctrl.c
+X		cc -O -Dvoid=int -x -c ctrl.c
+X
+Xmyperror.o:	myperror.c
+X		cc -O -Dvoid=int -x -c myperror.c
+X
+Xinstall:	ctrl
+X		sh install.sh
+X		@echo Ready.
+END_OF_FILE
+if test 294 -ne `wc -c <'Makefile'`; then
+    echo shar: \"'Makefile'\" unpacked with wrong size!
+fi
+# end of 'Makefile'
+fi
+if test -f 'ctrl.1' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'ctrl.1'\"
+else
+echo shar: Extracting \"'ctrl.1'\" \(759 characters\)
+sed "s/^X//" >'ctrl.1' <<'END_OF_FILE'
+X.TH CTRL 1 Mar\ 29\ 1989
+X.SH NAME
+Xctrl, unesc \- translate printable characters to
+X.br
+X.RS
+X.RS
+X.RS
+Xcorresponding control characters
+X.RE
+X.RE
+X.RE
+X.br
+Xesc, bell, beep \- generate ESC and BEL characters
+X.SH SYNOPSIS
+X.B ctrl
+X.I string
+X.br
+X.B unesc
+X.I symbolic escape sequence
+X.br
+X.B esc
+X.br
+X.B bell
+X[
+X.I count
+X]
+X.br
+X.B beep
+X[
+X.I count
+X]
+X.SH DESCRIPTION
+XThe use of
+X.B ctrl
+Xin all its forms is to avoid real escape sequences in ordinary ASCII files,
+Xe.g.
+X.I .login.
+X.SH EXAMPLES
+Xunesc '^[[7m\fIStandout mode on a Sun console\fR.'
+X.br
+X.br
+X.RS
+Xis equivalent to
+X.RE
+X.br
+X.br
+Xecho "`esc`[7m\fIStandout mode on a Sun console\fR."
+X.br
+X.br
+Xctrl GG G
+X.br
+X.br
+X.RS
+Xis equivalent to
+X.RE
+X.br
+X.br
+Xbell 3
+X.SH AUTHOR
+XMaarten Litmaath @ VU Informatika Amsterdam
+X.br
+X(maart@cs.vu.nl)
+END_OF_FILE
+if test 759 -ne `wc -c <'ctrl.1'`; then
+    echo shar: \"'ctrl.1'\" unpacked with wrong size!
+fi
+# end of 'ctrl.1'
+fi
+if test -f 'ctrl.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'ctrl.c'\"
+else
+echo shar: Extracting \"'ctrl.c'\" \(1820 characters\)
+sed "s/^X//" >'ctrl.c' <<'END_OF_FILE'
+X/*
+X * ctrl.c - translate printable characters to corresponding control characters
+X *          doesn't use stdio, to keep the size small
+X *
+X * author: Maarten Litmaath @ VU Informatika Amsterdam (maart@cs.vu.nl)
+X */
+X
+X#define		BUF_SIZE	1024
+X
+X
+Xint	ctrl(), unesc(), esc(), bell();
+X
+Xstruct	func {
+X		char	*name;
+X		int	(*func)();
+X	} ftab[] = {
+X		{ "ctrl", ctrl },
+X		{ "unesc", unesc },
+X		{ "esc", esc },
+X		{ 0, bell }
+X	};
+X
+X
+Xmain(argc, argv)
+Xint	argc;
+Xregister char	**argv;
+X{
+X	struct	func	*f = ftab;
+X	char	buf[BUF_SIZE], *name, *strrchr();
+X	int	n, status = 0;
+X	void	myperror();
+X
+X
+X	if (!(name = strrchr(*argv, '/')))
+X		name = *argv;
+X	else
+X		++name;
+X	++argv;
+X
+X	while (f->name && strcmp(f->name, name) != 0)
+X		++f;
+X
+X	n = (*f->func)(argv, buf);
+X
+X	if (write(1, buf, n) != n) {
+X		myperror(name);
+X		status = 1;
+X	}
+X
+X	_exit(status);
+X}
+X
+X
+Xint	ctrl(argv, buf)
+Xregister char	**argv;
+Xchar	*buf;
+X{
+X	register char	*s, *p = buf, c;
+X
+X
+X	while (s = *argv++) {
+X		while (c = *s++)
+X			*p++ = '?' <= c && c <= '_' ? c ^ 0100 : c;
+X		*p++ = ' ';
+X	}
+X
+X	if (p != buf)
+X		--p;
+X
+X	*p++ = '\n';
+X	*p = '\0';
+X
+X	return p - buf;
+X}
+X
+X
+Xint	unesc(argv, buf)
+Xregister char	**argv;
+Xchar	*buf;
+X{
+X	register char	*s, *p = buf, c;
+X
+X
+X	while (s = *argv++) {
+X		while (c = *s++)
+X			switch (c) {
+X			case '\\':
+X				*p++ = *s ? *s++ : c;
+X				break;
+X			case '^':
+X				*p++ = '?' <= *s && *s <= '_' ? *s++ ^ 0100 :
+X					*s ? *s++ : c;
+X				break;
+X			default:
+X				*p++ = c;
+X				break;
+X			}
+X		*p++ = ' ';
+X	}
+X
+X	if (p != buf)
+X		--p;
+X
+X	*p++ = '\n';
+X	*p = '\0';
+X
+X	return p - buf;
+X}
+X
+X
+Xint	esc(argv, buf)
+Xchar	**argv;
+Xregister char	*buf;
+X{
+X	*buf++ = '\033';
+X	*buf++ = '\n';
+X	*buf = '\0';
+X	return 2;
+X}
+X
+X
+Xint	bell(argv, buf)
+Xchar	**argv, *buf;
+X{
+X	register char	*p = buf;
+X	register int	n = *argv ? atoi(*argv) : 1;
+X
+X
+X	while (--n >= 0)
+X		*p++ = '\007';
+X
+X	*p++ = '\n';
+X	*p = '\0';
+X	return p - buf;
+X}
+END_OF_FILE
+if test 1820 -ne `wc -c <'ctrl.c'`; then
+    echo shar: \"'ctrl.c'\" unpacked with wrong size!
+fi
+# end of 'ctrl.c'
+fi
+if test -f 'install.sh' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'install.sh'\"
+else
+echo shar: Extracting \"'install.sh'\" \(442 characters\)
+sed "s/^X//" >'install.sh' <<'END_OF_FILE'
+X#!/bin/sh
+X
+X[ "x`echo -n x`" = "x-n x" ] && {
+X	C=\\c
+X	N=
+X} || {
+X	C=
+X	N=-n
+X}
+X
+Xecho $N 'Into which directory do you want "ctrl" c.s. to be placed? '$C
+X
+Xwhile :
+Xdo
+X	read dir
+X	[ = = "$dir" -o != = "$dir" ] && dir=./$dir
+X	[ -d "$dir" -a -x "$dir" -a -w "$dir" ] && break
+X	echo "There is no writable directory '$dir'."
+X	echo $N 'Try again: '$C
+Xdone
+X
+Xmv ctrl "$dir" || exit 1
+X
+Xcd "$dir" || exit 1
+X
+Xln ctrl unesc
+Xln ctrl esc
+Xln ctrl bell
+Xln ctrl beep
+END_OF_FILE
+if test 442 -ne `wc -c <'install.sh'`; then
+    echo shar: \"'install.sh'\" unpacked with wrong size!
+fi
+# end of 'install.sh'
+fi
+if test -f 'myperror.c' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'myperror.c'\"
+else
+echo shar: Extracting \"'myperror.c'\" \(789 characters\)
+sed "s/^X//" >'myperror.c' <<'END_OF_FILE'
+X/*
+X * myperror.c - unbuffered version of stdio perror(3s)
+X *
+X * author: Maarten Litmaath @ VU Informatika Amsterdam (maart@cs.vu.nl)
+X */
+X
+X#define		ERRBUF_SIZE		32
+X
+X
+Xvoid	myperror(s)
+Xchar	*s;
+X{
+X	extern	int	errno, sys_nerr;
+X	extern	char	*sys_errlist[];
+X	register char	*p;
+X	register int	n = 0;
+X	int	min = 0;
+X	char	buf[ERRBUF_SIZE];
+X
+X
+X	if (s && *s) {
+X		(void) write(2, s, strlen(s));
+X		(void) write(2, ": ", 2);
+X	}
+X
+X	if (0 <= errno && errno < sys_nerr)
+X		p = sys_errlist[errno];
+X	else {
+X		p ="Unknown error ";
+X		n = errno;
+X	}
+X
+X	(void) write(2, p, strlen(p));
+X
+X	if (n) {
+X		p = buf + sizeof buf;
+X		if (n < 0) {
+X			min = 1;
+X			n *= -1;
+X		}
+X		while (n) {
+X			*--p = '0' + n % 10;
+X			n /= 10;
+X		}
+X		if (min)
+X			*--p = '-';
+X		(void) write(2, p, buf + sizeof buf - p);
+X	}
+X	(void) write(2, "\n", 1);
+X}
+END_OF_FILE
+if test 789 -ne `wc -c <'myperror.c'`; then
+    echo shar: \"'myperror.c'\" unpacked with wrong size!
+fi
+# end of 'myperror.c'
+fi
+echo shar: End of shell archive.
+exit 0
