@@ -11,4 +11,8 @@ Single-Sided
 
 To upgrade a XENIX 3.2 system, run "install" as root.  
 
+Notes:
+
+If you have the 3.0 Development System installed, you must upgrade it to the 3.2 Development System first.
+
 If you plan on using the 3.2 Development System, install the 3.3 upgrade AFTER you install the 3.2 Development system.
