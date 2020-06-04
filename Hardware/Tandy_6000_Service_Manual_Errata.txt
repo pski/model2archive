@@ -1,0 +1,8 @@
+The purpose of this document is to maintain corrections to the Tandy 6000 Service Manual.
+
+
+Page 156
+
+The schematic incorrectly shows U52 pin 9 connecting to Z3 pin 1 when it actually connects to Z3 pin 4.
+
+Correction:  U52.9 -> Z3.4
