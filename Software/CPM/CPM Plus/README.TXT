@@ -5,7 +5,7 @@ CP/M Plus
 
 This is the Radio Shack release of CP/M Plus (aka CP/M 3.0)
 
-This was released as a 4 disk set.  We have 2 different versions with incomplete sets.  However, both versions have the critical unbanked system disk which allows you to use CP/M with 64K.
+This was released as a 4 disk set.  We have 2 different versions, the second of which is incomplete.  However, both versions have the critical unbanked system disk which allows you to use CP/M with 64K.
 
 
 Digital_Research_CPM_Plus_Command_Summary.pdf
