@@ -3,7 +3,7 @@ TRS-80 Model II
 TRSDOS-II 4.3
 
 
-26-6502.IMD
+26-6502A.IMD
 File Processor 1.0.0
 v4.3.11
 Single-Sided
@@ -11,10 +11,11 @@ This is the production release of TRSDOS-II ARCNET File Processor
 
 
 26-6501B.IMD
+File Processor 1.0.0
 v4.3.11
 Single-Sided
 3-21-83
-This appears to be a master release copy of v4.3.11 without ARCNET
+This is a pristine master release copy of v4.3.11 ARCNET File Processor
 
 
 ARC80FP.IMD
