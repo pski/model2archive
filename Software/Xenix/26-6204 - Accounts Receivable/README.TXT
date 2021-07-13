@@ -1,11 +1,12 @@
 TRS-80 Model 16 Multi-User
-26-6204
+26-6204 (700-2054)
 Accounts Receivable
 v02.00.00
 
 26-6204.IMD
 Single-Sided
 Special Install
+
 
 This is a single disk TRS-XENIX installation package. 
 
