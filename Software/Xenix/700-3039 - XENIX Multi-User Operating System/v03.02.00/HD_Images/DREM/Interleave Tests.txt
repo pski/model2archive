@@ -1,0 +1,28 @@
+Tests with Tandy 6000, Type 4 Controller, 1MB RAM, Xenix 3.2
+
+Set IL is the interleave I specify in the .cfg file and the same number I provide the diskutil format utility.
+Time is the time in seconds it takes to format 5 cylinders of a 1024 cy/8 hd dsk
+Log IL is the interleave I see being used in the DREM log file
+
+Set IL		Time (5 cyl)	Drem IL
+1			38.2			1
+2			27.6			9
+3			17.3			6
+4			49.8			13
+5			40.78 			7
+6			29.76			3
+7			19.40			5
+8			31.53			15
+9			43.16			2
+10			32.4			12
+11			22.82			14
+12			34.5			10
+13			45.7			4
+14			34.9			11
+15			25.5			8
+16			33.7			16
+
+
+Drem IL 6 is proving to be unreliable.  Formats will stall at track 7.
+
+Drem IL 5 provides the best performance/reliability so far.
