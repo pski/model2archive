@@ -1,6 +1,20 @@
 The purpose of this document is to maintain corrections to the Tandy 6000 Service Manual.
 
 
+Page 130
+
+In the section E42,E43,E44,E45,E46,E47,E48, E42-E45 is incorrect.
+
+Correction: E42-E43 -5VDC to PIN 1
+
+
+Page 130
+
+In the section E32 THRU E39, E38-E39 incorrectly references page 15,16.  
+
+Correction: E38-E39 BANKSEL = PAGE 14,15
+
+
 Page 156
 
 The schematic incorrectly shows U52 pin 9 connecting to Z3 pin 1 when it actually connects to Z3 pin 4.

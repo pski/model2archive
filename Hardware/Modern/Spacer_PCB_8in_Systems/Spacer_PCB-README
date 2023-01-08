@@ -1,0 +1,7 @@
+SPACER
+
+This is a small board that will allow you to space out the Z80 boards in a card cage.  By using the jumpers for IEIN/IEOUT AND BAKIN/BAKOUT, you can continue the Z80 family interrupt chain.  Lots of other uses.
+
+Share and enjoy.
+
+Ken Brookner 01.05.2023
