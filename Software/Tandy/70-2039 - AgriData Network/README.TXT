@@ -1,0 +1,7 @@
+TRS-80 Model II
+70-2039
+AgriData Network
+v01.00.00
+
+70-2039.IMD	
+SSDD
