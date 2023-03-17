@@ -1,7 +1,7 @@
 Tandy 6000
 700-3039
 XENIX Multi-User Operating System
-v03.02.00
+v03.03.00
 
 
 DREM
